@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Certificate - {{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .certificate-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .certificate-wrapper {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        max-width: 900px;
+        width: 100%;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .certificate-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+        border-radius: 20px;
+        z-index: -1;
+    }
+    
+    .certificate-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .certificate-logo {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+    }
+    
+    .certificate-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    
+    .certificate-subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        margin-bottom: 2rem;
+    }
+    
+    .certificate-body {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 2px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    .recipient-name {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #1a202c;
+        text-align: center;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 10px;
+    }
+    
+    .course-info {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .course-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+    
+    .course-details {
+        color: #64748b;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+    
+    .certificate-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 2rem;
+        border-top: 2px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    .certificate-date {
+        text-align: left;
+    }
+    
+    .date-label {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+    
+    .date-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .certificate-id {
+        text-align: right;
+    }
+    
+    .id-label {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+    
+    .id-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .certificate-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .btn-download {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-download:hover {
+        background: linear-gradient(135deg, #5a67d8, #667eea);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-share {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-share:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+    }
+    
+    .verification-info {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 10px;
+    }
+    
+    .verification-code {
+        font-family: 'Courier New', monospace;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #667eea;
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        display: inline-block;
+        border: 2px solid #667eea;
+    }
+    
+    @media print {
+        .certificate-container {
+            background: white;
+            padding: 0;
+        }
+        
+        .certificate-wrapper {
+            box-shadow: none;
+            border: 2px solid #667eea;
+        }
+        
+        .certificate-actions {
+            display: none;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .certificate-wrapper {
+            padding: 2rem 1rem;
+            margin: 1rem;
+        }
+        
+        .certificate-title {
+            font-size: 2rem;
+        }
+        
+        .recipient-name {
+            font-size: 1.5rem;
+        }
+        
+        .certificate-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="certificate-container">
+    <div class="certificate-wrapper">
+        <!-- Certificate Header -->
+        <div class="certificate-header">
+            <div class="certificate-logo">
+                <img src="{% static 'images/logo.png' %}" alt="AgoraProf Logo" style="width: 80px; height: 80px; object-fit: contain;">
+            </div>
+            <h1 class="certificate-title">Certificate of Completion</h1>
+            <p class="certificate-subtitle">This is to certify that</p>
+        </div>
+        
+        <!-- Certificate Body -->
+        <div class="certificate-body">
+            <div class="recipient-name">
+                {{ user.get_full_name|default:user.email }}
+            </div>
+            
+            <div class="course-info">
+                <h2 class="course-name">{{ course.title }}</h2>
+                <div class="course-details">
+                    <p><strong>Duration:</strong> {{ course.duration_hours }} hours</p>
+                    <p><strong>Difficulty:</strong> {{ course.difficulty|default:"Beginner" }}</p>
+                    <p><strong>Completion Date:</strong> {{ enrollment.completion_date|date:"F j, Y" }}</p>
+                    {% if course.category %}
+                    <p><strong>Category:</strong> {{ course.category.name }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Certificate Footer -->
+        <div class="certificate-footer">
+            <div class="certificate-date">
+                <div class="date-label">Issued On</div>
+                <div class="date-value">{{ certificate.issued_date|date:"F j, Y" }}</div>
+            </div>
+            
+            <div class="certificate-id">
+                <div class="id-label">Certificate ID</div>
+                <div class="id-value">{{ certificate.certificate_id }}</div>
+            </div>
+        </div>
+        
+        <!-- Certificate Actions -->
+        <div class="certificate-actions">
+            <button onclick="window.print()" class="btn-download">
+                <i class="fas fa-print"></i>
+                Print Certificate
+            </button>
+            <button onclick="downloadPDF()" class="btn-download">
+                <i class="fas fa-download"></i>
+                Download PDF
+            </button>
+            <button onclick="shareCertificate()" class="btn-share">
+                <i class="fas fa-share-alt"></i>
+                Share
+            </button>
+        </div>
+        
+        <!-- Verification Information -->
+        <div class="verification-info">
+            <p><strong>Verification Code:</strong></p>
+            <div class="verification-code">{{ certificate.verification_code }}</div>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #64748b;">
+                Verify this certificate at: <strong>https://agoraprof.com/verify/{{ certificate.verification_code }}</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function downloadPDF() {
+    // Trigger PDF download
+    window.location.href = '?download=pdf';
+}
+
+function downloadCertificate() {
+    // Create a print-friendly version and trigger download
+    window.print();
+}
+
+function shareCertificate() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Certificate of Completion - {{ course.title }}',
+            text: 'I have successfully completed the course "{{ course.title }}" and earned a certificate!',
+            url: window.location.href
+        }).catch(err => console.log('Error sharing:', err));
+    } else {
+        // Fallback: Copy link to clipboard
+        const dummy = document.createElement('input');
+        document.body.appendChild(dummy);
+        dummy.value = window.location.href;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        showMessage('Certificate link copied to clipboard!', 'success');
+    }
+}
+
+// Auto-hide success messages after 5 seconds
+setTimeout(() => {
+    const messages = document.querySelectorAll('.alert');
+    messages.forEach(msg => {
+        if (msg.textContent.includes('successfully') || msg.textContent.includes('Congratulations')) {
+            msg.style.transition = 'opacity 0.5s';
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 500);
+        }
+    });
+}, 5000);
+</script>
+{% endblock %}

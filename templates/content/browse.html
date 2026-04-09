@@ -1,0 +1,544 @@
+{% extends "base.html" %}
+{% block title %}Browse Courses - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .browse-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .browse-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .browse-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .browse-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .browse-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .browse-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    .search-bar {
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        position: relative;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 1rem 3rem 1rem 1.5rem;
+        border-radius: 50px;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        color: white;
+        font-size: 1.1rem;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .search-input:focus {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .filter-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-tab {
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .filter-tab:hover, .filter-tab.active {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .course-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .course-card:hover::before {
+        left: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .course-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .course-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .course-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+    
+    .course-instructor {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .course-description {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .course-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.75rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .course-duration, .course-level {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .course-progress {
+        margin-bottom: 1rem;
+    }
+    
+    .progress-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .course-actions {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .btn-course {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+    
+    .empty-description {
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="browse-container pt-24 pb-8">
+    <!-- Browse Header -->
+    <div class="browse-header">
+        <div class="browse-content">
+            <h1 class="browse-title">Explore Courses</h1>
+            <p class="browse-subtitle">Discover and enroll in courses to advance your learning journey</p>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search for courses..." id="courseSearch">
+                <button class="search-btn" onclick="searchCourses()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <div class="filter-tab active" onclick="filterCourses('all')">All Courses</div>
+        <div class="filter-tab" onclick="filterCourses('enrolled')">Enrolled</div>
+        <div class="filter-tab" onclick="filterCourses('completed')">Completed</div>
+        <div class="filter-tab" onclick="filterCourses('in-progress')">In Progress</div>
+    </div>
+    
+    <!-- Courses Grid -->
+    <div class="courses-grid" id="coursesGrid">
+        {% for course in courses %}
+        <div class="course-card" data-category="{% if course.is_completed %}completed{% elif course.is_enrolled %}in-progress{% else %}available{% endif %}">
+            <div class="course-header">
+                <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div>
+                    <h3 class="course-title">{{ course.title }}</h3>
+                    <p class="course-instructor">{% if course.instructor %}{{ course.instructor.get_full_name|default:course.instructor.email }}{% else %}Instructor not assigned{% endif %}</p>
+                </div>
+            </div>
+            
+            <p class="course-description">{{ course.description|truncatewords:20 }}</p>
+            
+            <div class="course-meta">
+                <div class="course-duration">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ course.duration_hours|default:"Self-paced" }}h</span>
+                </div>
+                <div class="course-level">
+                    <i class="fas fa-signal"></i>
+                    <span>{{ course.difficulty|default:"All Levels" }}</span>
+                </div>
+            </div>
+            
+            {% if course.is_enrolled %}
+            <div class="course-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ course.progress_percentage|default:0 }}%"></div>
+                </div>
+                <div class="progress-text">{{ course.progress_percentage|default:0 }}% Complete</div>
+            </div>
+            {% endif %}
+            
+            <div class="course-actions">
+                {% if course.is_enrolled %}
+                    {% if course.is_completed %}
+                        <a href="{% url 'course_certificate' course.id %}" class="btn-course btn-primary">
+                            <i class="fas fa-certificate"></i>
+                            View Certificate
+                        </a>
+                    {% else %}
+                        <a href="{% url 'content:course_detail' course.id %}" class="btn-course btn-primary">
+                            <i class="fas fa-play"></i>
+                            Continue Learning
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'content:course_detail' course.id %}" class="btn-course btn-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        Details
+                    </a>
+                {% else %}
+                    <button class="btn-course btn-primary" onclick="enrollCourse('{{ course.id }}')">
+                        <i class="fas fa-plus"></i>
+                        Enroll Now
+                    </button>
+                    <a href="{% url 'content:course_detail' course.id %}" class="btn-course btn-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        Details
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state col-span-full">
+            <div class="empty-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3 class="empty-title">No Courses Found</h3>
+            <p class="empty-description">Check back later for new courses or adjust your search criteria.</p>
+            <button class="btn-course btn-primary" onclick="resetFilters()">
+                <i class="fas fa-redo"></i>
+                Reset Filters
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function searchCourses() {
+    const searchTerm = document.getElementById('courseSearch').value.toLowerCase();
+    const courseCards = document.querySelectorAll('.course-card');
+    
+    courseCards.forEach(card => {
+        const title = card.querySelector('.course-title').textContent.toLowerCase();
+        const description = card.querySelector('.course-description').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function filterCourses(category) {
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const courseCards = document.querySelectorAll('.course-card');
+    
+    // Update active tab
+    filterTabs.forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Filter courses
+    courseCards.forEach(card => {
+        if (category === 'all') {
+            card.style.display = 'block';
+        } else {
+            const cardCategory = card.dataset.category;
+            if (category === 'enrolled' && (cardCategory === 'in-progress' || cardCategory === 'completed')) {
+                card.style.display = 'block';
+            } else if (category === cardCategory) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+    });
+}
+
+function enrollCourse(courseId) {
+    fetch(`/content/enroll/${courseId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(data => {
+        showMessage('Successfully enrolled in course!', 'success');
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Error enrolling in course', 'error');
+    });
+}
+
+function resetFilters() {
+    document.getElementById('courseSearch').value = '';
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const courseCards = document.querySelectorAll('.course-card');
+    
+    filterTabs.forEach(tab => tab.classList.remove('active'));
+    filterTabs[0].classList.add('active');
+    
+    courseCards.forEach(card => {
+        card.style.display = 'block';
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    messageDiv.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+            ${message}
+        </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 5000);
+}
+
+// Search on enter key
+document.getElementById('courseSearch').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchCourses();
+    }
+});
+</script>
+{% endblock %}

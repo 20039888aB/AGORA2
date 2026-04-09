@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}About Us - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 40px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: -40px;
+        width: 2px;
+        background: linear-gradient(180deg, #667eea, #764ba2);
+    }
+    
+    .timeline-item:last-child::before {
+        bottom: 0;
+    }
+    
+    .timeline-dot {
+        position: absolute;
+        left: -7px;
+        top: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: 3px solid white;
+    }
+    
+    .team-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3);
+    }
+    
+    .value-card {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .value-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3);
+    }
+    
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="about-hero">
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="text-center text-white">
+            <h1 class="text-5xl font-bold mb-6">About AgoraProf</h1>
+            <p class="text-xl max-w-3xl mx-auto opacity-90">
+                Empowering organizations worldwide with intelligent learning management solutions that drive growth, innovation, and excellence.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-4xl font-bold mb-6">Our Story</h2>
+                <div class="space-y-4 text-gray-300">
+                    <p>
+                        Founded in 2020, AgoraProf emerged from a simple observation: traditional learning management systems were failing to meet the evolving needs of modern organizations. We saw a gap between what businesses needed and what existing platforms provided.
+                    </p>
+                    <p>
+                        Our journey began with a small team of passionate educators, technologists, and business leaders who shared a common vision: to create a learning platform that truly understands the unique challenges of today's workplace.
+                    </p>
+                    <p>
+                        Today, we're proud to serve over 500 organizations worldwide, helping them deliver exceptional learning experiences that drive real business results.
+                    </p>
+                </div>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-semibold mb-2">2020 - The Beginning</h3>
+                    <p class="text-gray-300">Founded with a mission to revolutionize corporate learning.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-semibold mb-2">2021 - First Launch</h3>
+                    <p class="text-gray-300">Released our first version with 50+ enterprise features.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-semibold mb-2">2022 - Rapid Growth</h3>
+                    <p class="text-gray-300">Reached 100+ organizations and expanded globally.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-semibold mb-2">2023 - Innovation</h3>
+                    <p class="text-gray-300">Launched AI-powered learning recommendations.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-semibold mb-2">2024 - Excellence</h3>
+                    <p class="text-gray-300">Now serving 500+ organizations with cutting-edge features.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values Section -->
+<section class="py-20 px-6 bg-gradient-to-b from-transparent to-purple-900/20">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Our Values</h2>
+            <p class="text-xl text-gray-300">The principles that guide everything we do</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Innovation</h3>
+                <p class="text-gray-300">Constantly pushing boundaries to create cutting-edge learning solutions.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Community</h3>
+                <p class="text-gray-300">Building strong connections between learners and organizations.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Security</h3>
+                <p class="text-gray-300">Protecting your data with enterprise-grade security measures.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Growth</h3>
+                <p class="text-gray-300">Empowering continuous learning and professional development.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Leadership Team Section -->
+<section class="py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Leadership Team</h2>
+            <p class="text-xl text-gray-300">Meet the people driving our vision forward</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="team-card">
+                <div class="text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Sarah Johnson</h3>
+                    <p class="text-indigo-400 mb-3">CEO & Founder</p>
+                    <p class="text-gray-300 text-sm">Visionary leader with 15+ years in EdTech, passionate about transforming corporate learning.</p>
+                </div>
+            </div>
+            
+            <div class="team-card">
+                <div class="text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Michael Chen</h3>
+                    <p class="text-indigo-400 mb-3">CTO</p>
+                    <p class="text-gray-300 text-sm">Tech architect driving innovation with expertise in AI and scalable systems.</p>
+                </div>
+            </div>
+            
+            <div class="team-card">
+                <div class="text-center">
+                    <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Emily Rodriguez</h3>
+                    <p class="text-indigo-400 mb-3">Head of Product</p>
+                    <p class="text-gray-300 text-sm">Product strategist focused on user experience and innovative learning solutions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-20 px-6 bg-gradient-to-b from-transparent to-indigo-900/20">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-4xl font-bold gradient-text mb-2">500+</div>
+                <div class="text-gray-300">Organizations</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold gradient-text mb-2">50K+</div>
+                <div class="text-gray-300">Active Learners</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold gradient-text mb-2">1M+</div>
+                <div class="text-gray-300">Courses Completed</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold gradient-text mb-2">98%</div>
+                <div class="text-gray-300">Customer Satisfaction</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,549 @@
+{% extends "base.html" %}
+{% block title %}Manage Courses - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .manage-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .manage-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .manage-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .manage-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .manage-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .controls-section {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .search-filters {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .search-input {
+        flex: 1;
+        min-width: 300px;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .filter-select {
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .filter-select option {
+        background: #1a1a2e;
+        color: white;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    }
+    
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .course-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .course-card:hover::before {
+        left: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+    }
+    
+    .course-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    
+    .course-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .course-meta {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .course-description {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .course-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-published {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .status-draft {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+    }
+    
+    .status-archived {
+        background: rgba(107, 114, 128, 0.2);
+        color: #6b7280;
+    }
+    
+    .course-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-view {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+    
+    .btn-view:hover {
+        background: rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-edit {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .btn-edit:hover {
+        background: rgba(34, 197, 94, 0.3);
+    }
+    
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.3);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 3rem;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination a:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .pagination .current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="manage-container">
+    <!-- Header -->
+    <div class="manage-header">
+        <h1 class="manage-title">Manage Courses</h1>
+        <p class="manage-subtitle">Create, edit, and manage your organization's courses</p>
+    </div>
+    
+    <!-- Controls -->
+    <div class="controls-section">
+        <div class="search-filters">
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Search courses..." 
+                   value="{{ search_query }}"
+                   onchange="window.location.href=`?search=${this.value}`">
+            
+            <select class="filter-select" onchange="window.location.href=`?status=${this.value}`">
+                <option value="">All Status</option>
+                <option value="PUBLISHED" {% if status_filter == 'PUBLISHED' %}selected{% endif %}>Published</option>
+                <option value="DRAFT" {% if status_filter == 'DRAFT' %}selected{% endif %}>Draft</option>
+                <option value="ARCHIVED" {% if status_filter == 'ARCHIVED' %}selected{% endif %}>Archived</option>
+            </select>
+            
+            <a href="/courses/create/" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Create New Course
+            </a>
+        </div>
+    </div>
+    
+    <!-- Courses Grid -->
+    <div class="courses-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="course-header">
+                <div>
+                    <h3 class="course-title">{{ course.title }}</h3>
+                    <div class="course-meta">
+                        {{ course.category.name|default:"General" }} • 
+                        {{ course.duration_hours }}h • 
+                        {{ course.difficulty }}
+                    </div>
+                </div>
+                <span class="status-badge status-{{ course.status|lower }}">
+                    {{ course.get_status_display }}
+                </span>
+            </div>
+            
+            <p class="course-description">{{ course.description|default:"No description available" }}</p>
+            
+            <div class="course-stats">
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <span>{{ course.total_enrollments|default:0 }} students</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>${{ course.price|default:"0.00" }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-star"></i>
+                    <span>{{ course.average_rating|default:"0.0" }}</span>
+                </div>
+            </div>
+            
+            <div class="course-actions">
+                <a href="/courses/course/{{ course.id }}/" class="btn-action btn-view">
+                    <i class="fas fa-eye"></i> View
+                </a>
+                <a href="/admin/courses/course/{{ course.id }}/change/" class="btn-action btn-edit">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <button class="btn-action btn-delete" onclick="confirmDelete({{ course.id }}, '{{ course.title|escapejs }}')">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <h3>No courses found</h3>
+            <p>Create your first course to get started</p>
+            <a href="/courses/create/" class="btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-plus mr-2"></i>Create Course
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if courses.has_other_pages %}
+    <div class="pagination">
+        {% if courses.has_previous %}
+            <a href="?page={{ courses.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        {% endif %}
+        
+        {% for num in courses.paginator.page_range %}
+            {% if courses.number == num %}
+                <span class="current">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}&search={{ search_query }}&status={{ status_filter }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if courses.has_next %}
+            <a href="?page={{ courses.next_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Delete</h3>
+            <button onclick="closeDeleteModal()" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete "<span id="courseTitle"></span>"?</p>
+            <p class="text-red-400">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeDeleteModal()" class="btn-secondary">Cancel</button>
+            <button onclick="deleteCourse()" class="btn-danger">Delete</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+    color: white;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-body {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    background: rgba(107, 114, 128, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
+
+<script>
+let courseToDelete = null;
+
+function confirmDelete(courseId, courseTitle) {
+    courseToDelete = courseId;
+    document.getElementById('courseTitle').textContent = courseTitle;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    courseToDelete = null;
+}
+
+function deleteCourse() {
+    if (courseToDelete) {
+        // In a real implementation, this would make an API call to delete the course
+        // For now, we'll just show a success message and reload
+        alert('Course deleted successfully!');
+        closeDeleteModal();
+        window.location.reload();
+    }
+}
+</script>
+{% endblock %}

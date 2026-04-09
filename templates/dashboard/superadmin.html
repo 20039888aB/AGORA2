@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+{% block title %}SuperAdmin Dashboard - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .superadmin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .metric-card {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .metric-card:hover::before {
+        left: 100%;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+    }
+    
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .role-distribution {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .role-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .role-item:last-child {
+        border-bottom: none;
+    }
+    
+    .role-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .role-superadmin { background: rgba(147, 51, 234, 0.2); color: #a855f7; }
+    .role-admin { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .role-manager { background: rgba(251, 146, 60, 0.2); color: #fb923c; }
+    .role-student { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    
+    .recent-users {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .user-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .user-item:last-child {
+        border-bottom: none;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4F46E5, #7C3AED);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 1rem;
+    }
+    
+    .user-info {
+        flex: 1;
+    }
+    
+    .user-name {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    
+    .user-email {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-action:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-white mb-2">SuperAdmin Dashboard</h1>
+        <p class="text-gray-300">System-wide administration and metrics</p>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="action-buttons">
+        <a href="/admin/" class="btn-action">
+            <i class="fas fa-cog mr-2"></i> Django Admin
+        </a>
+        <a href="/organizations/manage/" class="btn-action">
+            <i class="fas fa-building mr-2"></i> Manage Organizations
+        </a>
+        <a href="/users/manage/" class="btn-action">
+            <i class="fas fa-users mr-2"></i> Manage Users
+        </a>
+        <a href="/analytics/platform/" class="btn-action">
+            <i class="fas fa-chart-line mr-2"></i> Platform Analytics
+        </a>
+    </div>
+    
+    <!-- Metrics Grid -->
+    <div class="superadmin-grid mt-8">
+        <!-- Total Organizations -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="metric-value">{{ total_organizations }}</div>
+            <div class="metric-label">Total Organizations</div>
+            
+            <div class="role-distribution">
+                <div class="role-item">
+                    <span>Active Organizations</span>
+                    <span class="text-white font-bold">{{ total_organizations }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Users -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-value">{{ total_users }}</div>
+            <div class="metric-label">Total Users</div>
+            
+            <div class="role-distribution">
+                <div class="role-item">
+                    <span>Active Users</span>
+                    <span class="text-white font-bold">{{ active_users }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Role Distribution -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="metric-value">{{ role_stats|length }}</div>
+            <div class="metric-label">User Roles</div>
+            
+            <div class="role-distribution">
+                {% for role_stat in role_stats %}
+                <div class="role-item">
+                    <span>{{ role_stat.role }}</span>
+                    <span class="role-badge role-{{ role_stat.role|lower }}">{{ role_stat.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- System Health -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-orange-500 to-red-500">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="metric-value">98.5%</div>
+            <div class="metric-label">System Health</div>
+            
+            <div class="role-distribution">
+                <div class="role-item">
+                    <span>Server Status</span>
+                    <span class="text-green-400 font-bold">Online</span>
+                </div>
+                <div class="role-item">
+                    <span>Database</span>
+                    <span class="text-green-400 font-bold">Healthy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Users -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Recent Users</h2>
+        <div class="recent-users">
+            {% for user in recent_users %}
+            <div class="user-item">
+                <div class="user-avatar">
+                    {{ user.first_name.0|default:user.email.0|upper }}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+                    <div class="user-email">{{ user.email }}</div>
+                </div>
+                <div class="role-badge role-{{ user.role|lower }}">{{ user.role }}</div>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-users text-4xl mb-4"></i>
+                <p>No recent users found</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Recent Organizations -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Recent Organizations</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for org in organizations %}
+            <div class="glass rounded-xl p-6 hover:scale-105 transition-transform">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white font-bold">
+                            {{ org.name.0|upper }}
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-lg font-semibold text-white">{{ org.name }}</h3>
+                            <p class="text-sm text-gray-400">{{ org.email }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {% if org.is_active %}
+                            <span class="px-2 py-1 bg-green-500 text-white text-xs rounded-full">Active</span>
+                        {% else %}
+                            <span class="px-2 py-1 bg-red-500 text-white text-xs rounded-full">Inactive</span>
+                        {% endif %}
+                        <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full">{{ org.subscription_tier }}</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-white">{{ org.user_count }}</div>
+                        <div class="text-xs text-gray-400">Total Users</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-white">{{ org.active_user_count }}</div>
+                        <div class="text-xs text-gray-400">Active Users</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-white">{{ org.course_count }}</div>
+                        <div class="text-xs text-gray-400">Courses</div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 flex justify-between items-center">
+                    <div class="text-xs text-gray-400">
+                        Created {{ org.created_at|date:"M d, Y" }}
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="/organizations/manage/" class="text-blue-400 hover:text-blue-300 text-sm">
+                            <i class="fas fa-building mr-1"></i>Manage
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-400 py-8">
+                <i class="fas fa-building text-4xl mb-4"></i>
+                <p>No organizations found</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- System Actions -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">System Administration</h2>
+        <div class="superadmin-grid">
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-indigo-500 to-purple-500">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="metric-label">Database Management</div>
+                <div class="action-buttons">
+                    <a href="/admin/" class="btn-action">
+                        <i class="fas fa-tools mr-2"></i> Maintenance
+                    </a>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-red-500 to-pink-500">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="metric-label">Security</div>
+                <div class="action-buttons">
+                    <a href="/admin/" class="btn-action">
+                        <i class="fas fa-lock mr-2"></i> Policies
+                    </a>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-green-500 to-teal-500">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="metric-label">Analytics</div>
+                <div class="action-buttons">
+                    <a href="/analytics/platform/" class="btn-action">
+                        <i class="fas fa-globe mr-2"></i> Platform
+                    </a>
+                    <a href="/analytics/reports/" class="btn-action">
+                        <i class="fas fa-dollar-sign mr-2"></i> Revenue
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animate metrics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const metricValues = document.querySelectorAll('.metric-value');
+        metricValues.forEach(metric => {
+            const finalValue = metric.textContent;
+            const isPercentage = finalValue.includes('%');
+            const numericValue = parseFloat(finalValue.replace(/[^0-9.]/g, ''));
+            
+            if (!isNaN(numericValue)) {
+                let currentValue = 0;
+                const increment = numericValue / 50;
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= numericValue) {
+                        currentValue = numericValue;
+                        clearInterval(timer);
+                    }
+                    metric.textContent = currentValue.toFixed(isPercentage ? 1 : 0) + (isPercentage ? '%' : '');
+                }, 20);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,549 @@
+{% extends 'base_enhanced.html' %}
+
+{% block title %}Color Accessibility Test - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .color-test-container {
+        max-width: 6xl;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .color-section {
+        margin-bottom: 3rem;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--bg-light);
+    }
+    
+    .color-section-header {
+        background: var(--bg-secondary);
+        color: var(--text-inverse);
+        padding: var(--spacing-lg);
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-lg);
+    }
+    
+    .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-md);
+        padding: var(--spacing-lg);
+    }
+    
+    .color-card {
+        background: var(--bg-light);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-lg);
+        transition: all var(--transition-base) ease;
+    }
+    
+    .color-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .color-swatch {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .color-sample {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-inverse);
+        font-size: var(--font-size-sm);
+    }
+    
+    .color-info {
+        flex: 1;
+    }
+    
+    .color-name {
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .color-value {
+        font-family: var(--font-family-mono);
+        background: var(--bg-dark);
+        color: var(--text-inverse);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--radius-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    .contrast-test {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+    
+    .contrast-sample {
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-weight: var(--font-weight-medium);
+    }
+    
+    .accessibility-test {
+        background: var(--bg-light);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .test-row {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+    }
+    
+    .test-label {
+        min-width: 200px;
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-inverse);
+    }
+    
+    .test-element {
+        flex: 1;
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-primary);
+        background: var(--bg-light);
+        color: var(--text-primary);
+        transition: all var(--transition-fast) ease;
+    }
+    
+    .test-element:hover,
+    .test-element:focus {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .theme-toggle-section {
+        text-align: center;
+        padding: var(--spacing-xl);
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .theme-buttons {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+    
+    .theme-btn {
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-primary);
+        background: var(--bg-light);
+        color: var(--text-primary);
+        font-weight: var(--font-weight-medium);
+        transition: all var(--transition-base) ease;
+        cursor: pointer;
+    }
+    
+    .theme-btn:hover,
+    .theme-btn:focus {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .theme-btn.active {
+        background: var(--bg-primary);
+        color: var(--text-inverse);
+        border-color: var(--border-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="color-test-container">
+    <h1 class="text-center mb-4">
+        <i class="fas fa-palette me-2"></i>
+        Color Accessibility & Visibility Test
+    </h1>
+    
+    <p class="text-center text-muted mb-5">
+        This page tests the enhanced color system to ensure all content is visible and accessible across different themes and devices.
+    </p>
+    
+    <!-- Primary Colors -->
+    <div class="color-section">
+        <div class="color-section-header">
+            <i class="fas fa-paint-brush me-2"></i>
+            Primary Colors
+        </div>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--bg-primary);">A</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary</div>
+                        <div class="color-value">var(--bg-primary)</div>
+                        <div class="color-value">#667eea</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--text-primary);">A</div>
+                    <div class="color-info">
+                        <div class="color-name">Text Primary</div>
+                        <div class="color-value">var(--text-primary)</div>
+                        <div class="color-value">#e2e8f0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--border-primary);">A</div>
+                    <div class="color-info">
+                        <div class="color-name">Border Primary</div>
+                        <div class="color-value">var(--border-primary)</div>
+                        <div class="color-value">#5568d3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Secondary Colors -->
+    <div class="color-section">
+        <div class="color-section-header">
+            <i class="fas fa-palette me-2"></i>
+            Secondary Colors
+        </div>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--bg-secondary);">A</div>
+                    <div class="color-info">
+                        <div class="color-name">Secondary</div>
+                        <div class="color-value">var(--bg-secondary)</div>
+                        <div class="color-value">#6b7280</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--text-secondary);">A</div>
+                    <div class="color-info">
+                        <div class="color-name">Text Secondary</div>
+                        <div class="color-value">var(--text-secondary)</div>
+                        <div class="color-value">#a1a1aa</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--text-muted);">A</div>
+                    <div class="color-info">
+                        <div class="color-name">Text Muted</div>
+                        <div class="color-value">var(--text-muted)</div>
+                        <div class="color-value">#9ca3af</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status Colors -->
+    <div class="color-section">
+        <div class="color-section-header">
+            <i class="fas fa-palette me-2"></i>
+            Status Colors
+        </div>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--bg-success);">✓</div>
+                    <div class="color-info">
+                        <div class="color-name">Success</div>
+                        <div class="color-value">var(--bg-success)</div>
+                        <div class="color-value">#10b981</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--bg-warning);">!</div>
+                    <div class="color-info">
+                        <div class="color-name">Warning</div>
+                        <div class="color-value">var(--bg-warning)</div>
+                        <div class="color-value">#f59e0b</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--bg-danger);">✗</div>
+                    <div class="color-info">
+                        <div class="color-name">Danger</div>
+                        <div class="color-value">var(--bg-danger)</div>
+                        <div class="color-value">#ef4444</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch">
+                    <div class="color-sample" style="background: var(--bg-info);">i</div>
+                    <div class="color-info">
+                        <div class="color-name">Info</div>
+                        <div class="color-value">var(--bg-info)</div>
+                        <div class="color-value">#3b82f6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contrast Tests -->
+    <div class="color-section">
+        <div class="color-section-header">
+            <i class="fas fa-adjust me-2"></i>
+            Contrast & Visibility Tests
+        </div>
+        <div class="contrast-test">
+            <div class="contrast-sample" style="background: var(--bg-light); color: var(--text-primary);">
+                <h3>Light Background</h3>
+                <p>This text should be clearly visible on a light background.</p>
+                <button class="btn btn-primary">Primary Button</button>
+                <button class="btn btn-secondary">Secondary Button</button>
+            </div>
+            
+            <div class="contrast-sample" style="background: var(--bg-dark); color: var(--text-inverse);">
+                <h3>Dark Background</h3>
+                <p>This text should be clearly visible on a dark background.</p>
+                <button class="btn btn-outline">Outline Button</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Interactive Element Tests -->
+    <div class="color-section">
+        <div class="color-section-header">
+            <i class="fas fa-mouse-pointer me-2"></i>
+            Interactive Element Tests
+        </div>
+        <div class="accessibility-test">
+            <div class="test-row">
+                <div class="test-label">Button States:</div>
+                <div class="test-element">
+                    <button class="btn btn-primary">Default</button>
+                    <button class="btn btn-primary">Hover</button>
+                    <button class="btn btn-primary">Focus</button>
+                    <button class="btn btn-primary" disabled>Disabled</button>
+                </div>
+            </div>
+            
+            <div class="test-row">
+                <div class="test-label">Form Controls:</div>
+                <div class="test-element">
+                    <input type="text" class="form-control" placeholder="Text input" value="Sample text">
+                    <select class="form-control">
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                    </select>
+                    <textarea class="form-control" placeholder="Textarea">Sample textarea content</textarea>
+                </div>
+            </div>
+            
+            <div class="test-row">
+                <div class="test-label">Links:</div>
+                <div class="test-element">
+                    <a href="#" class="link-accessible">Regular Link</a>
+                    <a href="#" class="link-accessible">Visited Link</a>
+                    <a href="#" class="link-accessible">Hover Link</a>
+                    <a href="#" class="link-accessible">Focus Link</a>
+                </div>
+            </div>
+            
+            <div class="test-row">
+                <div class="test-label">Alerts:</div>
+                <div class="test-element">
+                    <div class="alert alert-success">Success message</div>
+                    <div class="alert alert-warning">Warning message</div>
+                    <div class="alert alert-danger">Error message</div>
+                    <div class="alert alert-info">Info message</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Theme Toggle Test -->
+    <div class="theme-toggle-section">
+        <h3>
+            <i class="fas fa-palette me-2"></i>
+            Theme Toggle Test
+        </h3>
+        <p class="text-muted">
+            Test the theme switching functionality to ensure colors adapt properly.
+        </p>
+        <div class="theme-buttons">
+            <button class="theme-btn active" onclick="setTheme('light')">
+                <i class="fas fa-sun me-2"></i>
+                Light Theme
+            </button>
+            <button class="theme-btn" onclick="setTheme('dark')">
+                <i class="fas fa-moon me-2"></i>
+                Dark Theme
+            </button>
+            <button class="theme-btn" onclick="setTheme('auto')">
+                <i class="fas fa-adjust me-2"></i>
+                Auto Theme
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function setTheme(theme) {
+        // Remove all theme classes
+        document.documentElement.classList.remove('light-theme', 'dark-theme', 'auto-theme');
+        
+        // Add new theme class
+        if (theme === 'auto') {
+            // Use system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            theme = prefersDark ? 'dark' : 'light';
+        }
+        
+        document.documentElement.classList.add(`${theme}-theme`);
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        // Save preference
+        localStorage.setItem('agoraprof-theme', theme);
+        
+        // Update button states
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Set active button
+        const activeBtn = document.querySelector(`.theme-btn:nth-child(${theme === 'light' ? 1 : theme === 'dark' ? 2 : 3})`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        
+        // Announce theme change
+        announceToScreenReader(`Theme changed to ${theme} mode`);
+    }
+    
+    // Initialize theme on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('agoraprof-theme') || 'light';
+        setTheme(savedTheme);
+    });
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        const savedTheme = localStorage.getItem('agoraprof-theme');
+        if (savedTheme === 'auto') {
+            setTheme('auto');
+        }
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Shift + T: Toggle theme
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+            e.preventDefault();
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+        
+        // Ctrl/Cmd + Shift + A: Toggle auto theme
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+            e.preventDefault();
+            setTheme('auto');
+        }
+    });
+    
+    // Enhanced focus management for testing
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            document.body.classList.add('keyboard-navigation');
+        }
+    });
+    
+    document.addEventListener('mousedown', function() {
+        document.body.classList.remove('keyboard-navigation');
+    });
+    
+    // Color contrast checker
+    function checkContrast() {
+        const elements = document.querySelectorAll('.contrast-sample');
+        elements.forEach(element => {
+            const styles = window.getComputedStyle(element);
+            const color = styles.color;
+            const background = styles.backgroundColor;
+            
+            // Simple contrast check (would use proper algorithm in production)
+            console.log(`Element contrast check:`, {
+                color: color,
+                background: background,
+                element: element.tagName
+            });
+        });
+    }
+    
+    // Run contrast check on load
+    document.addEventListener('load', checkContrast);
+    
+    // Enhanced accessibility testing
+    function runAccessibilityTests() {
+        console.log('Running accessibility tests...');
+        
+        // Test color contrast
+        checkContrast();
+        
+        // Test focus management
+        const focusableElements = document.querySelectorAll('button, a, input, select, textarea');
+        console.log(`Found ${focusableElements.length} focusable elements`);
+        
+        // Test ARIA attributes
+        const ariaElements = document.querySelectorAll('[role], [aria-label], [aria-describedby]');
+        console.log(`Found ${ariaElements.length} ARIA elements`);
+        
+        // Test semantic HTML
+        const semanticElements = document.querySelectorAll('header, nav, main, footer, section, article, aside');
+        console.log(`Found ${semanticElements.length} semantic elements`);
+    }
+    
+    // Run tests on page load
+    document.addEventListener('DOMContentLoaded', runAccessibilityTests);
+</script>
+{% endblock %}

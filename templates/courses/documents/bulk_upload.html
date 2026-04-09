@@ -1,0 +1,385 @@
+{% extends "base_enhanced.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .upload-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .upload-area {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-bottom: 2rem;
+    }
+    
+    .upload-area:hover,
+    .upload-area.dragover {
+        border-color: #667eea;
+        background-color: #f9fafb;
+    }
+    
+    .upload-icon {
+        font-size: 3rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+    
+    .upload-text {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .upload-subtext {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+    
+    .file-input {
+        display: none;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #5a67d8;
+    }
+    
+    .btn-success {
+        background: #10b981;
+        color: white;
+    }
+    
+    .btn-success:hover {
+        background: #059669;
+    }
+    
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #4b5563;
+    }
+    
+    .file-list {
+        margin-top: 2rem;
+    }
+    
+    .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .file-name {
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    .file-size {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+    
+    .remove-file {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.75rem;
+    }
+    
+    .remove-file:hover {
+        background: #dc2626;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .instructions {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        color: #0369a1;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    
+    .instructions h4 {
+        margin-bottom: 0.5rem;
+        color: #0c4a6e;
+    }
+    
+    .instructions ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .instructions li {
+        margin-bottom: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="upload-header">
+        <h1 class="text-3xl font-bold mb-2">Bulk Upload Documents</h1>
+        <p class="text-lg opacity-90">{{ course.title }}</p>
+    </div>
+    
+    <!-- Upload Container -->
+    <div class="upload-container">
+        <!-- Instructions -->
+        <div class="instructions">
+            <h4>📋 Upload Instructions</h4>
+            <ul>
+                <li>Select multiple PDF, Word, PowerPoint, or Text files</li>
+                <li>Each file will be created as a separate document</li>
+                <li>Document titles will be automatically generated from filenames</li>
+                <li>Files will be ordered based on upload sequence</li>
+                <li>Maximum file size: 50MB per file</li>
+            </ul>
+        </div>
+        
+        <!-- Upload Form -->
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            
+            <!-- Upload Area -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Drop files here or click to browse</div>
+                <div class="upload-subtext">Support for PDF, Word, PowerPoint, and Text files</div>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('{{ form.files.id_for_label }}').click()">
+                    <i class="fas fa-folder-open"></i>
+                    Choose Files
+                </button>
+            </div>
+            
+            <!-- Hidden File Input -->
+            {{ form.files }}
+            
+            <!-- File List -->
+            <div class="file-list" id="fileList">
+                <!-- Files will be listed here -->
+            </div>
+            
+            <!-- Actions -->
+            <div class="form-actions">
+                <a href="{% url 'course_documents' course.id %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                    <i class="fas fa-upload"></i>
+                    Upload Documents
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('{{ form.files.id_for_label }}');
+    const fileList = document.getElementById('fileList');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    
+    let selectedFiles = [];
+    
+    // Click to upload
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = Array.from(e.dataTransfer.files);
+        handleFiles(files);
+    });
+    
+    // File selection
+    fileInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+    });
+    
+    function handleFiles(files) {
+        const validExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt'];
+        const maxSize = 50 * 1024 * 1024; // 50MB
+        
+        files.forEach(file => {
+            // Check file extension
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(fileExtension)) {
+                showMessage(`File "${file.name}" is not a supported format`, 'error');
+                return;
+            }
+            
+            // Check file size
+            if (file.size > maxSize) {
+                showMessage(`File "${file.name}" is too large (max 50MB)`, 'error');
+                return;
+            }
+            
+            // Check for duplicates
+            if (selectedFiles.some(f => f.name === file.name)) {
+                showMessage(`File "${file.name}" is already selected`, 'error');
+                return;
+            }
+            
+            selectedFiles.push(file);
+        });
+        
+        updateFileList();
+        updateSubmitButton();
+    }
+    
+    function updateFileList() {
+        fileList.innerHTML = '';
+        
+        if (selectedFiles.length === 0) {
+            fileList.innerHTML = '<p class="text-gray-500 text-center">No files selected</p>';
+            return;
+        }
+        
+        selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <i class="fas fa-file"></i>
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                </div>
+                <button type="button" class="remove-file" onclick="removeFile(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            fileList.appendChild(fileItem);
+        });
+    }
+    
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        updateFileList();
+        updateSubmitButton();
+    }
+    
+    function updateSubmitButton() {
+        submitBtn.disabled = selectedFiles.length === 0;
+        if (selectedFiles.length > 0) {
+            submitBtn.innerHTML = `<i class="fas fa-upload"></i> Upload ${selectedFiles.length} Document${selectedFiles.length > 1 ? 's' : ''}`;
+        } else {
+            submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Documents';
+        }
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Form submission
+    uploadForm.addEventListener('submit', function(e) {
+        if (selectedFiles.length === 0) {
+            e.preventDefault();
+            showMessage('Please select at least one file to upload', 'error');
+            return;
+        }
+        
+        // Update the file input with selected files
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+    });
+    
+    // Initialize file list
+    updateFileList();
+});
+</script>
+{% endblock %}

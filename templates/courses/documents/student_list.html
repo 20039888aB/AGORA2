@@ -1,0 +1,315 @@
+{% extends "base_enhanced.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .documents-header {
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-inverse);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .document-card {
+        background: var(--bg-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .document-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+        border-color: var(--border-primary);
+    }
+    
+    .document-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .document-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+    
+    .document-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-doc {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+        cursor: pointer;
+        margin: 0.25rem;
+    }
+    
+    .btn-primary {
+        background: var(--bg-primary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-primary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-success {
+        background: var(--bg-success);
+        color: var(--text-inverse);
+    }
+    
+    .btn-success:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-secondary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+    }
+    
+    .progress-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    
+    .progress-completed {
+        background: var(--bg-success);
+    }
+    
+    .progress-incomplete {
+        background: var(--bg-danger);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--text-inverse);
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="documents-header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">{{ course.title }}</h1>
+                <p class="text-lg opacity-90">Course Materials and Documents</p>
+                
+                <!-- Student Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ total_documents }}</div>
+                        <div class="stat-label">Total Documents</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ required_documents }}</div>
+                        <div class="stat-label">Required Reading</div>
+                    </div>
+                    {% if is_enrolled %}
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <!-- You can add progress tracking here -->
+                            0
+                        </div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documents List -->
+    <div class="documents-list">
+        {% if documents %}
+            {% for document in documents %}
+            <div class="document-card">
+                <div class="document-info">
+                    <div>
+                        <div class="document-title">
+                            {{ document.title }}
+                            {% if document.is_required %}
+                            <span class="ml-2 px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                                <i class="fas fa-star"></i> Required
+                            </span>
+                            {% endif %}
+                            {% if is_enrolled %}
+                            <span class="ml-2 progress-indicator progress-incomplete"></span>
+                            {% endif %}
+                        </div>
+                        {% if document.description %}
+                        <p class="text-gray-400 mb-2">{{ document.description|truncatewords:20 }}</p>
+                        {% endif %}
+                        <div class="document-meta">
+                            <span class="flex items-center gap-1">
+                                {% if document.file_type == 'PDF' %}
+                                <i class="fas fa-file-pdf text-red-400"></i>
+                                {% else %}
+                                <i class="fas fa-file text-blue-400"></i>
+                                {% endif %}
+                                {{ document.file_type }}
+                            </span>
+                            <span><i class="fas fa-database"></i> {{ document.file_size_display }}</span>
+                            <span><i class="fas fa-calendar"></i> {{ document.created_at|date:"M j, Y" }}</span>
+                            {% if document.is_downloadable %}
+                            <span class="text-green-400"><i class="fas fa-download"></i> Downloadable</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="document-actions">
+                        {% if document.file %}
+                        <a href="{{ document.file.url }}" target="_blank" class="btn-doc btn-primary">
+                            <i class="fas fa-eye"></i>
+                            View Online
+                        </a>
+                        {% endif %}
+                        {% if document.is_downloadable and document.file %}
+                        <a href="{{ document.file.url }}" download="{{ document.file.name }}" class="btn-doc btn-success">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </a>
+                        {% endif %}
+                        {% if is_enrolled %}
+                        <button class="btn-doc btn-secondary" onclick="markAsComplete('{{ document.id }}')">
+                            <i class="fas fa-check"></i>
+                            Mark as Read
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
+                <h3 class="text-xl font-semibold mb-2">No Documents Available</h3>
+                <p class="mb-4">This course doesn't have any documents available yet.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Navigation -->
+    <div class="mt-8">
+        <a href="{% url 'content:course_detail' course.id %}" class="btn-doc btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Course
+        </a>
+    </div>
+</div>
+
+<script>
+{% if is_enrolled %}
+function markAsComplete(documentId) {
+    // You can implement AJAX call here to mark document as complete
+    fetch(`/api/documents/${documentId}/complete/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update UI to show completion
+            const indicator = document.querySelector(`[data-document-id="${documentId}"] .progress-indicator`);
+            if (indicator) {
+                indicator.classList.remove('progress-incomplete');
+                indicator.classList.add('progress-completed');
+            }
+            showMessage('Document marked as read!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error marking document as complete:', error);
+        showMessage('Error marking document as complete', 'error');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showMessage(message, type) {
+    // You can implement a toast notification here
+    console.log(message);
+}
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,638 @@
+{% extends "base.html" %}
+{% block title %}Upload Content - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-container {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .upload-header {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    
+    .upload-area {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-bottom: 2rem;
+    }
+    
+    .upload-area:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: #3b82f6;
+    }
+    
+    .upload-area.dragover {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: #3b82f6;
+        transform: scale(1.02);
+    }
+    
+    .upload-icon {
+        font-size: 4rem;
+        color: #3b82f6;
+        margin-bottom: 1rem;
+    }
+    
+    .upload-text {
+        color: white;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .upload-subtext {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .file-input {
+        display: none;
+    }
+    
+    .upload-btn {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .upload-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .file-list {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .file-item {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .file-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    }
+    
+    .file-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .file-icon.pdf { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .file-icon.video { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .file-icon.image { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .file-icon.document { background: rgba(251, 146, 60, 0.2); color: #fb923c; }
+    .file-icon.archive { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+    
+    .file-info {
+        flex: 1;
+    }
+    
+    .file-name {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .file-meta {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+    }
+    
+    .file-progress {
+        width: 200px;
+        margin-right: 1rem;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #06b6d4);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+    
+    .file-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .content-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .content-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+    }
+    
+    .content-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .content-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .content-desc {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .content-stats {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+    }
+    
+    .filter-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-input {
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .filter-select {
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        min-width: 150px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Header -->
+    <div class="upload-header">
+        <h1 class="text-2xl font-bold mb-2">Upload Content</h1>
+        <p class="text-white opacity-90">Upload and manage training materials for your team</p>
+    </div>
+    
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadArea">
+        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+        <div class="upload-text">Drag & Drop Files Here</div>
+        <div class="upload-subtext">or click to browse from your computer</div>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-folder-open mr-2"></i> Choose Files
+        </button>
+        <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi,.mov,.jpg,.jpeg,.png,.gif,.zip,.rar">
+    </div>
+    
+    <!-- File List -->
+    <div class="file-list">
+        <h2 class="text-xl font-semibold text-white mb-4">Upload Queue</h2>
+        <div id="fileQueue">
+            <!-- Files will be added here dynamically -->
+        </div>
+    </div>
+    
+    <!-- Content Types -->
+    <div class="content-grid">
+        <div class="content-card">
+            <div class="content-icon bg-gradient-to-br from-red-500 to-pink-500">
+                <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="content-title">PDF Documents</div>
+            <div class="content-desc">Upload PDF files, presentations, and documents</div>
+            <div class="content-stats">
+                <span>{{ pdf_count|default:0 }} files</span>
+                <span>{{ pdf_size|default:"0 MB" }}</span>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="content-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                <i class="fas fa-video"></i>
+            </div>
+            <div class="content-title">Video Content</div>
+            <div class="content-desc">Upload video lectures, tutorials, and webinars</div>
+            <div class="content-stats">
+                <span>{{ video_count|default:0 }} files</span>
+                <span>{{ video_size|default:"0 MB" }}</span>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="content-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-images"></i>
+            </div>
+            <div class="content-title">Images & Media</div>
+            <div class="content-desc">Upload images, infographics, and media files</div>
+            <div class="content-stats">
+                <span>{{ image_count|default:0 }} files</span>
+                <span>{{ image_size|default:"0 MB" }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Uploads -->
+    <div class="file-list">
+        <h2 class="text-xl font-semibold text-white mb-4">Recent Uploads</h2>
+        
+        <!-- Filters -->
+        <div class="filter-section">
+            <input type="text" id="uploadFilter" class="filter-input" placeholder="Search uploads...">
+            <select id="typeFilter" class="filter-select">
+                <option value="">All Types</option>
+                <option value="pdf">PDF Documents</option>
+                <option value="video">Videos</option>
+                <option value="image">Images</option>
+                <option value="document">Documents</option>
+            </select>
+            <select id="dateFilter" class="filter-select">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
+        </div>
+        
+        <div id="recentUploads">
+            {% for upload in recent_uploads %}
+            <div class="file-item" data-type="{{ upload.file_type|lower }}" data-date="{{ upload.upload_date|date:'Y-m-d' }}">
+                <div class="file-icon {{ upload.file_type|lower }}">
+                    {% if upload.file_type == 'pdf' %}
+                        <i class="fas fa-file-pdf"></i>
+                    {% elif upload.file_type == 'video' %}
+                        <i class="fas fa-video"></i>
+                    {% elif upload.file_type == 'image' %}
+                        <i class="fas fa-image"></i>
+                    {% else %}
+                        <i class="fas fa-file"></i>
+                    {% endif %}
+                </div>
+                <div class="file-info">
+                    <div class="file-name">{{ upload.filename }}</div>
+                    <div class="file-meta">
+                        {{ upload.file_size|default:"Unknown size" }} 
+                        <span class="mx-2">|</span>
+                        {{ upload.upload_date|date:"M d, Y g:i A" }}
+                        <span class="mx-2">|</span>
+                        Uploaded by {{ upload.uploaded_by|default:"You" }}
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="action-btn" onclick="previewFile({{ upload.id }})" title="Preview">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn" onclick="downloadFile({{ upload.id }})" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="action-btn" onclick="shareFile({{ upload.id }})" title="Share">
+                        <i class="fas fa-share"></i>
+                    </button>
+                    <button class="action-btn" onclick="deleteFile({{ upload.id }})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-folder-open text-4xl mb-4"></i>
+                <p>No files uploaded yet</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Upload Stats -->
+    <div class="content-grid">
+        <div class="content-card">
+            <div class="content-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="content-title">Total Uploads</div>
+            <div class="content-desc">All files uploaded to the platform</div>
+            <div class="content-stats">
+                <span>{{ total_files|default:0 }} files</span>
+                <span>{{ total_size|default:"0 MB" }}</span>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="content-icon bg-gradient-to-br from-orange-500 to-red-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="content-title">Team Access</div>
+            <div class="content-desc">Files accessible to team members</div>
+            <div class="content-stats">
+                <span>{{ shared_files|default:0 }} files</span>
+                <span>{{ shared_users|default:0 }} users</span>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="content-icon bg-gradient-to-br from-indigo-500 to-purple-500">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="content-title">Recent Activity</div>
+            <div class="content-desc">Files uploaded in the last 7 days</div>
+            <div class="content-stats">
+                <span>{{ recent_files|default:0 }} files</span>
+                <span>{{ recent_size|default:"0 MB" }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileQueue = document.getElementById('fileQueue');
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+    
+    // Handle files
+    function handleFiles(files) {
+        for (let file of files) {
+            addFileToQueue(file);
+        }
+    }
+    
+    // Add file to queue
+    function addFileToQueue(file) {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        const fileIcon = getFileIcon(file.type);
+        const fileSize = formatFileSize(file.size);
+        
+        fileItem.innerHTML = `
+            <div class="file-icon ${fileIcon.class}">
+                <i class="${fileIcon.icon}"></i>
+            </div>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-meta">${fileSize} | Ready to upload</div>
+            </div>
+            <div class="file-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="file-actions">
+                <button class="action-btn" onclick="uploadFile(this)" title="Upload">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <button class="action-btn" onclick="removeFile(this)" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        fileQueue.appendChild(fileItem);
+    }
+    
+    // Get file icon
+    function getFileIcon(fileType) {
+        if (fileType.includes('pdf')) {
+            return { class: 'pdf', icon: 'fas fa-file-pdf' };
+        } else if (fileType.includes('video')) {
+            return { class: 'video', icon: 'fas fa-video' };
+        } else if (fileType.includes('image')) {
+            return { class: 'image', icon: 'fas fa-image' };
+        } else if (fileType.includes('document') || fileType.includes('word') || fileType.includes('text')) {
+            return { class: 'document', icon: 'fas fa-file-word' };
+        } else if (fileType.includes('zip') || fileType.includes('rar')) {
+            return { class: 'archive', icon: 'fas fa-file-archive' };
+        } else {
+            return { class: 'document', icon: 'fas fa-file' };
+        }
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Upload file
+    window.uploadFile = function(button) {
+        const fileItem = button.closest('.file-item');
+        const progressFill = fileItem.querySelector('.progress-fill');
+        const fileInfo = fileItem.querySelector('.file-meta');
+        
+        // Simulate upload progress
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 30;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                fileInfo.textContent = fileInfo.textContent.replace('Ready to upload', 'Upload complete');
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.disabled = true;
+            }
+            progressFill.style.width = progress + '%';
+        }, 500);
+    };
+    
+    // Remove file
+    window.removeFile = function(button) {
+        const fileItem = button.closest('.file-item');
+        fileItem.remove();
+    };
+    
+    // Filter uploads
+    const uploadFilter = document.getElementById('uploadFilter');
+    const typeFilter = document.getElementById('typeFilter');
+    const dateFilter = document.getElementById('dateFilter');
+    const uploadItems = document.querySelectorAll('#recentUploads .file-item');
+    
+    function applyFilters() {
+        const uploadFilterValue = uploadFilter.value.toLowerCase();
+        const typeFilterValue = typeFilter.value;
+        const dateFilterValue = dateFilter.value;
+        
+        uploadItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const type = item.dataset.type;
+            const date = item.dataset.date;
+            
+            const matchesUpload = !uploadFilterValue || text.includes(uploadFilterValue);
+            const matchesType = !typeFilterValue || type === typeFilterValue;
+            const matchesDate = !dateFilterValue || checkDateFilter(date, dateFilterValue);
+            
+            item.style.display = matchesUpload && matchesType && matchesDate ? '' : 'none';
+        });
+    }
+    
+    function checkDateFilter(itemDate, filter) {
+        const today = new Date();
+        const item = new Date(itemDate);
+        
+        switch(filter) {
+            case 'today':
+                return item.toDateString() === today.toDateString();
+            case 'week':
+                const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                return item >= weekAgo;
+            case 'month':
+                return item.getMonth() === today.getMonth() && item.getFullYear() === today.getFullYear();
+            default:
+                return true;
+        }
+    }
+    
+    uploadFilter.addEventListener('input', applyFilters);
+    typeFilter.addEventListener('change', applyFilters);
+    dateFilter.addEventListener('change', applyFilters);
+    
+    // File actions
+    window.previewFile = function(fileId) {
+        console.log('Preview file:', fileId);
+        // In a real implementation, this would open a preview modal
+    };
+    
+    window.downloadFile = function(fileId) {
+        console.log('Download file:', fileId);
+        // In a real implementation, this would download the file
+    };
+    
+    window.shareFile = function(fileId) {
+        console.log('Share file:', fileId);
+        // In a real implementation, this would open a share modal
+    };
+    
+    window.deleteFile = function(fileId) {
+        if (confirm('Are you sure you want to delete this file?')) {
+            console.log('Delete file:', fileId);
+            // In a real implementation, this would delete the file
+        }
+    };
+});
+</script>
+{% endblock %}

@@ -1,0 +1,342 @@
+﻿{% extends "base.html" %}
+{% block title %}Profile - {{ user.get_full_name|default:user.email }}{% endblock %}
+
+{% block content %}
+<div style="min-height:100vh; background:linear-gradient(135deg, #0f172a, #020617); color:#e5e7eb; font-family: system-ui, -apple-system; position:relative; overflow:hidden;">
+
+    <!-- Animated Particles Background -->
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;">
+        <div style="position:absolute; width:4px; height:4px; background:#6366f1; border-radius:50%; top:15%; left:15%; animation:float 7s ease-in-out infinite; box-shadow:0 0 10px rgba(99,102,241,0.8);"></div>
+        <div style="position:absolute; width:3px; height:3px; background:#8b5cf6; border-radius:50%; top:70%; left:85%; animation:float 9s ease-in-out infinite 1s; box-shadow:0 0 8px rgba(139,92,246,0.8);"></div>
+        <div style="position:absolute; width:5px; height:5px; background:#10b981; border-radius:50%; top:35%; left:55%; animation:float 8s ease-in-out infinite 2s; box-shadow:0 0 12px rgba(16,185,129,0.8);"></div>
+        <div style="position:absolute; width:2px; height:2px; background:#f59e0b; border-radius:50%; top:85%; left:25%; animation:float 10s ease-in-out infinite 3s; box-shadow:0 0 6px rgba(245,158,11,0.8);"></div>
+    </div>
+
+    <div style="max-width:1200px; margin:40px auto 0; padding:20px; position:relative; z-index:10;">
+
+        <!-- PROFILE HEADER CARD -->
+        <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.3); margin-bottom:30px; transition:all 0.3s ease;">
+
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:30px;">
+                
+                <!-- USER INFO -->
+                <div style="display:flex; align-items:center; gap:25px;">
+                    <!-- Avatar -->
+                    <div style="position:relative;">
+                        <div style="width:100px; height:100px; border-radius:50%; overflow:hidden; border:3px solid #6366f1; box-shadow:0 0 20px rgba(99,102,241,0.6); flex-shrink:0;">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}?v={{ user.updated_at|date:'U' }}" style="width:100%; height:100%; object-fit:cover;">
+                            {% else %}
+                                <div style="width:100%; height:100%; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold;">
+                                    {{ user.get_full_name|slice:":1"|default:user.email|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Status Indicator -->
+                        <div style="position:absolute; bottom:5px; right:5px; width:20px; height:20px; background:#10b981; border:3px solid #0f172a; border-radius:50%; box-shadow:0 0 10px rgba(16,185,129,0.8);"></div>
+                    </div>
+
+                    <!-- User Details -->
+                    <div>
+                        <h1 style="margin:0 0 8px 0; font-size:32px; font-weight:700; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3);">{{ user.get_full_name|default:user.email }}</h1>
+                        <p style="margin:0 0 8px 0; color:#94a3b8; font-size:16px;">{{ user.email }}</p>
+                        <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+                            <span style="background:rgba(99,102,241,0.2); color:#6366f1; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid rgba(99,102,241,0.3);">
+                                {{ user.get_role_display }}
+                            </span>
+                            {% if user.organization %}
+                                <span style="background:rgba(16,185,129,0.2); color:#10b981; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid rgba(16,185,129,0.3);">
+                                {{ user.organization.name }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                {% if is_own_profile %}
+                <a href="{% url 'profile_edit' %}" 
+                   style="background:linear-gradient(135deg, #6366f1, #8b5cf6); color:#fff; padding:14px 28px; border-radius:12px; text-decoration:none; font-weight:600; transition:all 0.3s ease; box-shadow:0 0 20px rgba(99,102,241,0.6); display:inline-flex; align-items:center; gap:10px;">
+                    <span style="display:inline-block; width:18px; height:18px;">✏️</span>
+                    Edit Profile
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- STATS GRID -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:25px; margin-bottom:30px;">
+            
+            <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:25px; text-align:center; transition:all 0.3s ease; border:1px solid rgba(99,102,241,0.3); position:relative; overflow:hidden;">
+                <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%); border-radius:50%;"></div>
+                <div style="position:relative; z-index:2;">
+                    <div style="font-size:36px; margin-bottom:8px;">📚</div>
+                    <h2 style="margin:0; font-size:32px; color:#3b82f6; text-shadow:0 0 15px rgba(59,130,246,0.8); font-weight:700;">{{ total_enrollments|default:0 }}</h2>
+                    <p style="color:#94a3b8; margin:8px 0 0; font-weight:500;">Courses Enrolled</p>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:25px; text-align:center; transition:all 0.3s ease; border:1px solid rgba(16,185,129,0.3); position:relative; overflow:hidden;">
+                <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%); border-radius:50%;"></div>
+                <div style="position:relative; z-index:2;">
+                    <div style="font-size:36px; margin-bottom:8px;">🏆</div>
+                    <h2 style="margin:0; font-size:32px; color:#10b981; text-shadow:0 0 15px rgba(16,185,129,0.8); font-weight:700;">{{ total_certificates|default:0 }}</h2>
+                    <p style="color:#94a3b8; margin:8px 0 0; font-weight:500;">Certificates Earned</p>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:25px; text-align:center; transition:all 0.3s ease; border:1px solid rgba(139,92,246,0.3); position:relative; overflow:hidden;">
+                <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%); border-radius:50%;"></div>
+                <div style="position:relative; z-index:2;">
+                    <div style="font-size:36px; margin-bottom:8px;">✅</div>
+                    <h2 style="margin:0; font-size:32px; color:#8b5cf6; text-shadow:0 0 15px rgba(139,92,246,0.8); font-weight:700;">{{ completed_courses|default:0 }}</h2>
+                    <p style="color:#94a3b8; margin:8px 0 0; font-weight:500;">Completed Courses</p>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:25px; text-align:center; transition:all 0.3s ease; border:1px solid rgba(245,158,11,0.3); position:relative; overflow:hidden;">
+                <div style="position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 70%); border-radius:50%;"></div>
+                <div style="position:relative; z-index:2;">
+                    <div style="font-size:36px; margin-bottom:8px;">📝</div>
+                    <h2 style="margin:0; font-size:32px; color:#f59e0b; text-shadow:0 0 15px rgba(245,158,11,0.8); font-weight:700;">{{ completed_assignments|default:0 }}</h2>
+                    <p style="color:#94a3b8; margin:8px 0 0; font-weight:500;">Assignments Done</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MAIN CONTENT GRID -->
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:30px;">
+
+            <!-- LEFT COLUMN - PROFILE DETAILS -->
+            <div style="display:flex; flex-direction:column; gap:30px;">
+
+                <!-- Personal Information -->
+                <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+                    <h3 style="margin:0 0 25px 0; font-size:22px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">👤</span>
+                        Personal Information
+                    </h3>
+
+                    <div style="display:grid; gap:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <span style="color:#94a3b8; font-size:14px; font-weight:500;">Full Name</span>
+                            <strong style="color:#fff; text-shadow:0 0 5px rgba(255,255,255,0.2); font-size:15px;">{{ user.get_full_name|default:"Not set" }}</strong>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <span style="color:#94a3b8; font-size:14px; font-weight:500;">Email Address</span>
+                            <strong style="color:#fff; text-shadow:0 0 5px rgba(255,255,255,0.2); font-size:15px;">{{ user.email }}</strong>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <span style="color:#94a3b8; font-size:14px; font-weight:500;">Phone Number</span>
+                            <strong style="color:#fff; text-shadow:0 0 5px rgba(255,255,255,0.2); font-size:15px;">{{ user.phone|default:"Not set" }}</strong>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <span style="color:#94a3b8; font-size:14px; font-weight:500;">Role</span>
+                            <strong style="color:#fff; text-shadow:0 0 5px rgba(255,255,255,0.2); font-size:15px;">{{ user.get_role_display }}</strong>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0;">
+                            <span style="color:#94a3b8; font-size:14px; font-weight:500;">Member Since</span>
+                            <strong style="color:#fff; text-shadow:0 0 5px rgba(255,255,255,0.2); font-size:15px;">{{ user.date_joined|date:"F d, Y" }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bio Section -->
+                <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+                    <h3 style="margin:0 0 25px 0; font-size:22px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">📝</span>
+                        About Me
+                    </h3>
+                    
+                    {% if user.bio %}
+                        <p style="color:#cbd5e1; line-height:1.7; margin:0; font-size:15px;">{{ user.bio }}</p>
+                    {% else %}
+                        <div style="text-align:center; padding:30px 0;">
+                            <div style="font-size:48px; margin-bottom:15px; opacity:0.5;">📝</div>
+                            <p style="color:#64748b; line-height:1.6; margin:0 0 15px 0;">No bio added yet.</p>
+                            {% if is_own_profile %}
+                            <a href="{% url 'profile_edit' %}" style="color:#6366f1; text-decoration:none; font-size:14px; font-weight:500; display:inline-flex; align-items:center; gap:6px; transition:all 0.3s ease; text-shadow:0 0 8px rgba(99,102,241,0.8);">
+                                <span>Add Bio</span>
+                                <span>→</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN - QUICK ACTIONS -->
+            <div style="display:flex; flex-direction:column; gap:30px;">
+
+                <!-- Quick Actions -->
+                <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+                    <h3 style="margin:0 0 25px 0; font-size:22px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">⚡</span>
+                        Quick Actions
+                    </h3>
+
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        {% if is_own_profile %}
+                        <a href="{% url 'profile_edit' %}" style="text-decoration:none; color:#6366f1; padding:15px; background:rgba(99,102,241,0.1); border-radius:10px; transition:all 0.3s ease; display:flex; align-items:center; gap:12px; border:1px solid rgba(99,102,241,0.2);">
+                            <span style="font-size:20px;">✏️</span>
+                            <div>
+                                <div style="font-weight:600; margin-bottom:2px;">Edit Profile</div>
+                                <div style="font-size:12px; color:#64748b;">Update your personal information</div>
+                            </div>
+                        </a>
+                        {% endif %}
+
+                        <a href="{% url 'content:courses_browse' %}" style="text-decoration:none; color:#10b981; padding:15px; background:rgba(16,185,129,0.1); border-radius:10px; transition:all 0.3s ease; display:flex; align-items:center; gap:12px; border:1px solid rgba(16,185,129,0.2);">
+                            <span style="font-size:20px;">📚</span>
+                            <div>
+                                <div style="font-weight:600; margin-bottom:2px;">Browse Courses</div>
+                                <div style="font-size:12px; color:#64748b;">Discover new learning opportunities</div>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'content:student_certificates' %}" style="text-decoration:none; color:#f59e0b; padding:15px; background:rgba(245,158,11,0.1); border-radius:10px; transition:all 0.3s ease; display:flex; align-items:center; gap:12px; border:1px solid rgba(245,158,11,0.2);">
+                            <span style="font-size:20px;">🏆</span>
+                            <div>
+                                <div style="font-weight:600; margin-bottom:2px;">My Certificates</div>
+                                <div style="font-size:12px; color:#64748b;">View your earned certificates</div>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'content:student_assignments' %}" style="text-decoration:none; color:#8b5cf6; padding:15px; background:rgba(139,92,246,0.1); border-radius:10px; transition:all 0.3s ease; display:flex; align-items:center; gap:12px; border:1px solid rgba(139,92,246,0.2);">
+                            <span style="font-size:20px;">📝</span>
+                            <div>
+                                <div style="font-weight:600; margin-bottom:2px;">Assignments</div>
+                                <div style="font-size:12px; color:#64748b;">Track your assignment progress</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Organization Info -->
+                {% if user.organization %}
+                <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+                    <h3 style="margin:0 0 25px 0; font-size:22px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">🏢</span>
+                        Organization
+                    </h3>
+
+                    <div style="text-align:center;">
+                        <div style="width:60px; height:60px; background:linear-gradient(135deg, #10b981, #059669); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:24px; font-weight:bold; color:white;">
+                            {{ user.organization.name|slice:":1"|upper }}
+                        </div>
+                        <h4 style="margin:0 0 8px 0; color:#fff; font-size:18px; font-weight:600;">{{ user.organization.name }}</h4>
+                        <p style="margin:0; color:#94a3b8; font-size:14px;">{{ user.organization.description|default:"No description available" }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+div[style*="transition:all"]:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+a[style*="transition:all"]:hover {
+    transform: translateX(5px) !important;
+    filter: brightness(1.2);
+}
+
+div[style*="border:1px solid rgba(99,102,241,0.3)"]:hover {
+    border-color: rgba(99,102,241,0.8);
+    box-shadow: 0 0 25px rgba(99,102,241,0.4);
+}
+
+div[style*="border:1px solid rgba(16,185,129,0.3)"]:hover {
+    border-color: rgba(16,185,129,0.8);
+    box-shadow: 0 0 25px rgba(16,185,129,0.4);
+}
+
+div[style*="border:1px solid rgba(139,92,246,0.3)"]:hover {
+    border-color: rgba(139,92,246,0.8);
+    box-shadow: 0 0 25px rgba(139,92,246,0.4);
+}
+
+div[style*="border:1px solid rgba(245,158,11,0.3)"]:hover {
+    border-color: rgba(245,158,11,0.8);
+    box-shadow: 0 0 25px rgba(245,158,11,0.4);
+}
+</style>
+
+{% block footer %}
+<div style="background:#020617; border-top:1px solid rgba(255,255,255,0.1); margin-top:60px; position:relative; z-index:10;">
+    <div style="max-width:1200px; margin:0 auto; padding:40px 20px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:40px;">
+            
+            <!-- About -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">AgoraProf LMS</h4>
+                <p style="margin:0; color:#94a3b8; line-height:1.6; font-size:14px;">
+                    Professional learning management system designed for modern education and training.
+                </p>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">Quick Links</h4>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <a href="{% url 'profile' %}" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">My Profile</a>
+                    <a href="{% url 'content:courses_browse' %}" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Browse Courses</a>
+                    <a href="{% url 'content:student_certificates' %}" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">My Certificates</a>
+                </div>
+            </div>
+            
+            <!-- Support -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">Support</h4>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <a href="#" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Help Center</a>
+                    <a href="#" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Contact Us</a>
+                    <a href="#" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Privacy Policy</a>
+                </div>
+            </div>
+            
+            <!-- Contact -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">Contact Info</h4>
+                <p style="margin:0; color:#94a3b8; line-height:1.6; font-size:14px;">
+                    Email: support@agoraprof.com<br>
+                    Phone: +1 (555) 123-4567
+                </p>
+            </div>
+            
+        </div>
+        
+        <div style="text-align:center; margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
+            <p style="margin:0; color:#64748b; font-size:13px;">
+                © 2024 AgoraProf LMS. All rights reserved.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.footer a:hover {
+    color: #818cf8 !important;
+    text-shadow: 0 0 8px rgba(129,140,248,0.8);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+{% block title %}Course Catalog - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-catalog {
+        padding: 2rem;
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+        min-height: 100vh;
+    }
+    
+    .catalog-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .catalog-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .catalog-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+    }
+    
+    .course-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #10b981;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .course-section {
+        margin-bottom: 3rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .section-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .course-card:hover::before {
+        left: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+    }
+    
+    .course-header {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .course-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .course-info {
+        flex: 1;
+    }
+    
+    .course-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .course-meta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+    }
+    
+    .course-description {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .course-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .course-difficulty {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .difficulty-beginner {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .difficulty-intermediate {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+    }
+    
+    .difficulty-advanced {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .btn-enroll {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-enroll:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-2px);
+    }
+    
+    .btn-continue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-continue:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        transform: translateY(-2px);
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 0.5rem 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="course-catalog">
+    <!-- Header -->
+    <div class="catalog-header">
+        <h1 class="catalog-title">Course Catalog</h1>
+        <p class="catalog-subtitle">Discover and enroll in courses from your organization</p>
+        
+        <!-- Statistics -->
+        <div class="course-stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ enrolled_courses|length }}</div>
+                <div class="stat-label">Enrolled Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ available_courses|length }}</div>
+                <div class="stat-label">Available Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_courses }}</div>
+                <div class="stat-label">Total Courses</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enrolled Courses Section -->
+    {% if enrolled_courses %}
+    <div class="course-section">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                My Enrolled Courses
+            </div>
+        </div>
+        
+        <div class="course-grid">
+            {% for item in enrolled_courses %}
+            <div class="course-card">
+                <div class="course-header">
+                    <div class="course-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">{{ item.course.title }}</h3>
+                        <div class="course-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                {{ item.course.duration_hours }}h
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-signal"></i>
+                                {{ item.course.difficulty|default:"Beginner" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="course-description">{{ item.course.short_description|default:"No description available" }}</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ item.progress|default:0 }}%"></div>
+                </div>
+                <div class="progress-text">Progress: {{ item.progress|default:0 }}%</div>
+                
+                <div class="course-footer">
+                    <span class="course-difficulty difficulty-{{ item.course.difficulty|lower|default:'beginner' }}">
+                        {{ item.course.difficulty|default:"Beginner" }}
+                    </span>
+                    <a href="/content/course/{{ item.course.id }}/" class="btn-continue">
+                        <i class="fas fa-play"></i>
+                        Continue Learning
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Available Courses Section -->
+    {% if available_courses %}
+    <div class="course-section">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                Available Courses for Enrollment
+            </div>
+        </div>
+        
+        {% if available_courses %}
+        <div class="course-grid">
+            {% for course in available_courses %}
+            <div class="course-card">
+                <div class="course-header">
+                    <div class="course-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">{{ course.title }}</h3>
+                        <div class="course-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                {{ course.duration_hours }}h
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-signal"></i>
+                                {{ course.difficulty|default:"Beginner" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="course-description">{{ course.short_description|default:"No description available" }}</p>
+                
+                <div class="course-footer">
+                    <span class="course-difficulty difficulty-{{ course.difficulty|lower|default:'beginner' }}">
+                        {{ course.difficulty|default:"Beginner" }}
+                    </span>
+                    <form action="/content/enroll/{{ course.id }}/" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-enroll">
+                            <i class="fas fa-plus"></i>
+                            Enroll Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3>No Courses Available</h3>
+            <p>There are no courses available from your organization at the moment.</p>
+            <p>Please check back later or contact your administrator.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

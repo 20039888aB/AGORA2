@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+{% block title %}FAQ - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .faq-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .faq-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+    }
+    
+    .faq-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .faq-category {
+        margin-bottom: 3rem;
+    }
+    
+    .faq-category-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+    }
+    
+    .faq-category-title i {
+        margin-right: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .faq-item {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover {
+        border-color: rgba(102, 126, 234, 0.3);
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+    }
+    
+    .faq-question {
+        padding: 1.5rem 2rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-question:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .faq-question h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: white;
+        margin: 0;
+    }
+    
+    .faq-icon {
+        color: #667eea;
+        transition: transform 0.3s ease;
+        font-size: 1.25rem;
+    }
+    
+    .faq-icon.active {
+        transform: rotate(180deg);
+    }
+    
+    .faq-answer {
+        padding: 0 2rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        color: #d1d5db;
+        line-height: 1.6;
+    }
+    
+    .faq-answer.active {
+        padding: 0 2rem 1.5rem;
+        max-height: 500px;
+    }
+    
+    .faq-answer p {
+        margin-bottom: 1rem;
+    }
+    
+    .faq-answer p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .faq-answer ul {
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .faq-answer li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .search-section {
+        padding: 60px 0;
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 1rem 3rem 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    
+    .search-icon {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .contact-section {
+        padding: 80px 0;
+        text-align: center;
+    }
+    
+    .contact-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 3rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .contact-methods {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .contact-method {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-method:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .contact-method i {
+        font-size: 1.25rem;
+        color: #667eea;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- FAQ Hero Section -->
+<section class="faq-hero">
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="text-center text-white">
+            <h1 class="text-5xl font-bold mb-6">Frequently Asked Questions</h1>
+            <p class="text-xl max-w-3xl mx-auto opacity-90">
+                Find answers to common questions about AgoraProf LMS. Can't find what you're looking for? Feel free to contact our support team.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="search-section">
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search for answers..." id="faqSearch">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+</section>
+
+<!-- FAQ Content Section -->
+<section class="py-20 px-6">
+    <div class="faq-container">
+        
+        <!-- Getting Started Category -->
+        <div class="faq-category">
+            <h2 class="faq-category-title">
+                <i class="fas fa-rocket"></i>
+                Getting Started
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How do I sign up for AgoraProf?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Getting started with AgoraProf is simple:</p>
+                    <ul>
+                        <li>Visit our signup page and choose your plan</li>
+                        <li>Fill in your organization details</li>
+                        <li>Complete the payment process (if applicable)</li>
+                        <li>Access your dashboard and start creating courses</li>
+                    </ul>
+                    <p>We also offer a 14-day free trial for Professional and Enterprise plans.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What do I need to get started?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>To get started with AgoraProf, you'll need:</p>
+                    <ul>
+                        <li>A modern web browser (Chrome, Firefox, Safari, Edge)</li>
+                        <li>Stable internet connection</li>
+                        <li>Your organization's basic information</li>
+                        <li>Course content you want to upload (optional)</li>
+                    </ul>
+                    <p>That's it! No software installation required - everything runs in the cloud.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I import existing courses?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! AgoraProf supports importing courses from various formats:</p>
+                    <ul>
+                        <li>SCORM compliant packages</li>
+                        <li>Video files (MP4, WebM)</li>
+                        <li>PDF documents</li>
+                        <li>PowerPoint presentations</li>
+                        <li>Common image formats</li>
+                    </ul>
+                    <p>Our migration team can also help with large-scale course transfers.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features & Functionality Category -->
+        <div class="faq-category">
+            <h2 class="faq-category-title">
+                <i class="fas fa-cogs"></i>
+                Features & Functionality
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What types of content can I create?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>AgoraProf supports a wide variety of content types:</p>
+                    <ul>
+                        <li>Video lessons and lectures</li>
+                        <li>Interactive quizzes and assessments</li>
+                        <li>Assignments and projects</li>
+                        <li>Discussion forums and chat</li>
+                        <li>Live streaming sessions</li>
+                        <li>Downloadable resources</li>
+                        <li>SCORM packages</li>
+                    </ul>
+                    <p>All content can be organized into modules and learning paths.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Does AgoraProf support mobile learning?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Absolutely! AgoraProf is fully mobile-responsive and offers:</p>
+                    <ul>
+                        <li>Native iOS and Android apps</li>
+                        <li>Progressive Web App (PWA) support</li>
+                        <li>Offline mode for downloaded content</li>
+                        <li>Push notifications for course updates</li>
+                        <li>Mobile-optimized interface</li>
+                    </ul>
+                    <p>Learners can access courses anytime, anywhere, on any device.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I customize the platform?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! Customization options vary by plan:</p>
+                    <ul>
+                        <li><strong>All plans:</strong> Basic branding options</li>
+                        <li><strong>Professional:</strong> Advanced customization</li>
+                        <li><strong>Enterprise:</strong> Full white-label solution</li>
+                        <li><strong>Custom:</strong> Complete platform customization</li>
+                    </ul>
+                    <p>Customization includes logos, colors, domains, and even custom features.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pricing & Billing Category -->
+        <div class="faq-category">
+            <h2 class="faq-category-title">
+                <i class="fas fa-dollar-sign"></i>
+                Pricing & Billing
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>How does pricing work?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Our pricing is based on two main factors:</p>
+                    <ul>
+                        <li><strong>Number of users:</strong> More users = higher tier plan</li>
+                        <li><strong>Features needed:</strong> Advanced features require higher tiers</li>
+                    </ul>
+                    <p>All plans include core features like course creation, user management, and basic analytics. Higher tiers add advanced features like API access, custom branding, and priority support.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Can I change my plan anytime?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! You can upgrade or downgrade your plan at any time:</p>
+                    <ul>
+                        <li><strong>Upgrades:</strong> Take effect immediately with prorated billing</li>
+                        <li><strong>Downgrades:</strong> Take effect at next billing cycle</li>
+                        <li><strong>Cancellations:</strong> No long-term commitments on monthly plans</li>
+                    </ul>
+                    <p>We'll always notify you before any billing changes.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Do you offer discounts?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! We offer several discount options:</p>
+                    <ul>
+                        <li><strong>Annual billing:</strong> Save 20% compared to monthly</li>
+                        <li><strong>Non-profits:</strong> Special pricing for educational institutions</li>
+                        <li><strong>Volume discounts:</strong> For large organizations</li>
+                        <li><strong>Custom quotes:</strong> For enterprise needs</li>
+                    </ul>
+                    <p>Contact our sales team to learn more about available discounts.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technical Support Category -->
+        <div class="faq-category">
+            <h2 class="faq-category-title">
+                <i class="fas fa-headset"></i>
+                Technical Support
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What kind of support do you offer?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Support levels vary by plan:</p>
+                    <ul>
+                        <li><strong>Starter:</strong> Email support during business hours</li>
+                        <li><strong>Professional:</strong> Priority email and chat support</li>
+                        <li><strong>Enterprise:</strong> 24/7 phone, email, and chat support</li>
+                        <li><strong>Custom:</strong> Dedicated account manager and SLA</li>
+                    </ul>
+                    <p>All plans have access to our comprehensive knowledge base and documentation.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>Is my data secure?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Absolutely! Security is our top priority:</p>
+                    <ul>
+                        <li>256-bit SSL encryption for all data</li>
+                        <li>SOC 2 Type II certified data centers</li>
+                        <li>Regular security audits and penetration testing</li>
+                        <li>GDPR and CCPA compliant</li>
+                        <li>Automatic daily backups with point-in-time recovery</li>
+                    </ul>
+                    <p>We never share your data with third parties without your explicit consent.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <h3>What about integrations?</h3>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>AgoraProf integrates with popular business tools:</p>
+                    <ul>
+                        <li>HR systems (Workday, BambooHR)</li>
+                        <li>CRM platforms (Salesforce, HubSpot)</li>
+                        <li>Communication tools (Slack, Microsoft Teams)</li>
+                        <li>Video conferencing (Zoom, Teams)</li>
+                        <li>Productivity suites (Google Workspace, Office 365)</li>
+                    </ul>
+                    <p>Enterprise plans also include custom API integrations.</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="contact-card">
+        <h2 class="text-3xl font-bold mb-4">Still Have Questions?</h2>
+        <p class="text-gray-300 mb-6">
+            Can't find the answer you're looking for? Our support team is here to help!
+        </p>
+        <div class="contact-methods">
+            <a href="mailto:support@agoraprof.com" class="contact-method">
+                <i class="fas fa-envelope"></i>
+                <span>Email Support</span>
+            </a>
+            <a href="tel:+1-800-AGORA" class="contact-method">
+                <i class="fas fa-phone"></i>
+                <span>Call Us</span>
+            </a>
+            <a href="/contact/" class="contact-method">
+                <i class="fas fa-calendar"></i>
+                <span>Schedule Demo</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFAQ(element) {
+    const answer = element.nextElementSibling;
+    const icon = element.querySelector('.faq-icon');
+    
+    // Close other FAQs in the same category
+    const category = element.closest('.faq-category');
+    category.querySelectorAll('.faq-answer.active').forEach(item => {
+        if (item !== answer) {
+            item.classList.remove('active');
+            item.previousElementSibling.querySelector('.faq-icon').classList.remove('active');
+        }
+    });
+    
+    // Toggle current FAQ
+    answer.classList.toggle('active');
+    icon.classList.toggle('active');
+}
+
+// Search functionality
+document.getElementById('faqSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('h3').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+        
+        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Show/hide categories based on visible items
+    document.querySelectorAll('.faq-category').forEach(category => {
+        const visibleItems = category.querySelectorAll('.faq-item[style="display: block;"]');
+        if (visibleItems.length === 0 && searchTerm !== '') {
+            category.style.display = 'none';
+        } else {
+            category.style.display = 'block';
+        }
+    });
+});
+</script>
+{% endblock %}

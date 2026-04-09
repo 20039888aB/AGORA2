@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Create Course - AgoraProf{% endblock %}
+
+{% block extra_css %}
+<style>
+.alert {
+    border: 1px solid transparent;
+    background-color: #f8f9fa;
+    animation: slideIn 0.3s ease-out;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pt-24 px-6 pb-8">
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+        <div class="container mx-auto px-4 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    <i class="fas fa-plus-circle mr-3"></i>
+                    Create New Course
+                </h1>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Design and launch your training program
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Creation Form -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-8">
+                    <form class="space-y-6" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Messages Display -->
+                        {% if messages %}
+                        <div class="mb-6">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} flex items-center p-4 rounded-lg mb-4" role="alert">
+                                {% if message.tags == 'success' %}
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
+                                    </div>
+                                    <div class="text-green-700 font-medium">{{ message }}</div>
+                                {% elif message.tags == 'error' %}
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+                                    </div>
+                                    <div class="text-red-700 font-medium">{{ message }}</div>
+                                {% elif message.tags == 'warning' %}
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3"></i>
+                                    </div>
+                                    <div class="text-yellow-700 font-medium">{{ message }}</div>
+                                {% else %}
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-info-circle text-blue-500 text-xl mr-3"></i>
+                                    </div>
+                                    <div class="text-blue-700 font-medium">{{ message }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <!-- Basic Information -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-info-circle mr-3 text-blue-600"></i>
+                                Basic Information
+                            </h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Course Title *</label>
+                                    <input type="text" name="title" required class="form-input" placeholder="Enter course title">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                                    <select name="category" required class="form-select">
+                                        <option value="">Select a category</option>
+                                        <option value="technical">Technical Skills</option>
+                                        <option value="sales">Sales & Marketing</option>
+                                        <option value="compliance">Compliance</option>
+                                        <option value="management">Management</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Difficulty Level *</label>
+                                    <select name="difficulty" required class="form-select">
+                                        <option value="">Select difficulty</option>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Duration (hours) *</label>
+                                    <input type="number" name="duration" required min="0.5" step="0.5" class="form-input" placeholder="e.g., 3.5">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Max Students *</label>
+                                    <input type="number" name="max_students" required min="1" class="form-input" placeholder="e.g., 50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course Description -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-align-left mr-3 text-blue-600"></i>
+                                Course Description
+                            </h2>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Short Description *</label>
+                                <textarea name="short_description" required rows="2" class="form-textarea" placeholder="Brief overview of the course"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Description *</label>
+                                <textarea name="full_description" required rows="6" class="form-textarea" placeholder="Detailed course description and learning objectives"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Course Documents (PDF Upload) -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-file-pdf mr-3 text-red-600"></i>
+                                Course Documents (PDF)
+                            </h2>
+                            <div class="space-y-4">
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                                    <input type="file" id="course_documents" name="course_documents" multiple accept=".pdf" class="hidden">
+                                    <div class="document-upload-area">
+                                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-600 mb-2">Click to upload PDF documents</p>
+                                        <p class="text-xs text-gray-500 mb-4">Multiple PDF files allowed (Max 10MB per file)</p>
+                                        <button type="button" onclick="document.getElementById('course_documents').click()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            <i class="fas fa-folder-open mr-2"></i>Select PDF Files
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="uploaded-documents" class="space-y-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Learning Objectives -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-bullseye mr-3 text-blue-600"></i>
+                                Learning Objectives
+                            </h2>
+                            <div id="learning-objectives" class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <input type="text" name="objective_1" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Learning objective 1">
+                                    <button type="button" onclick="removeObjective(1)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" onclick="addObjective()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Learning Objective
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-4">
+                            <button type="button" onclick="saveDraft()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-save mr-2"></i>
+                                Save as Draft
+                            </button>
+                            <button type="button" onclick="previewCourse()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-eye mr-2"></i>
+                                Preview Course
+                            </button>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-rocket mr-2"></i>
+                                Publish Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// PDF Upload Handler
+document.getElementById('course_documents').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    const uploadedDocs = document.getElementById('uploaded-documents');
+    
+    files.forEach((file, index) => {
+        // Validate file type
+        if (file.type !== 'application/pdf') {
+            alert(`${file.name} is not a PDF file. Please upload only PDF documents.`);
+            return;
+        }
+        
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+            alert(`${file.name} exceeds the 10MB size limit.`);
+            return;
+        }
+        
+        // Create file display item
+        const fileItem = document.createElement('div');
+        fileItem.className = 'flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200';
+        fileItem.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                <div>
+                    <p class="font-medium text-gray-900">${file.name}</p>
+                    <p class="text-sm text-gray-500">${formatFileSize(file.size)}</p>
+                </div>
+            </div>
+            <button type="button" onclick="removeDocument(this)" class="text-red-500 hover:text-red-700">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        uploadedDocs.appendChild(fileItem);
+    });
+});
+
+function removeDocument(button) {
+    button.parentElement.remove();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function addObjective() {
+    const container = document.getElementById('learning-objectives');
+    const objectiveCount = container.children.length;
+    const newObjective = document.createElement('div');
+    newObjective.className = 'flex items-center gap-4';
+    newObjective.innerHTML = `
+        <input type="text" name="objective_${objectiveCount + 1}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Learning objective ${objectiveCount + 1}">
+        <button type="button" onclick="removeObjective(${objectiveCount + 1})" class="text-red-500 hover:text-red-700">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(newObjective);
+}
+
+function removeObjective(id) {
+    const container = document.getElementById('learning-objectives');
+    const objectives = container.children;
+    for (let i = 0; i < objectives.length; i++) {
+        const input = objectives[i].querySelector('input');
+        if (input && input.name === `objective_${id}`) {
+            objectives[i].remove();
+            break;
+        }
+    }
+}
+
+function saveDraft() {
+    // Add form data to hidden input and submit
+    const form = document.querySelector('form');
+    const formData = new FormData(form);
+    formData.append('save_as', 'draft');
+    
+    // Submit via AJAX or form submission
+    form.submit();
+}
+
+function previewCourse() {
+    // Open preview modal or new tab
+    const form = document.querySelector('form');
+    const formData = new FormData(form);
+    
+    // Create preview window or modal
+    console.log('Preview course...');
+    alert('Preview functionality would be implemented here');
+}
+
+// Auto-hide success messages after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    const successAlerts = document.querySelectorAll('.alert-success');
+    successAlerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
+        }, 5000); // Hide after 5 seconds
+    });
+});
+
+// Form validation before submission
+function validateCourseForm() {
+    const form = document.querySelector('form');
+    const title = form.querySelector('input[name="title"]').value.trim();
+    const description = form.querySelector('textarea[name="full_description"]').value.trim();
+    const category = form.querySelector('select[name="category"]').value;
+    const difficulty = form.querySelector('select[name="difficulty"]').value;
+    const duration = form.querySelector('input[name="duration"]').value;
+    const maxStudents = form.querySelector('input[name="max_students"]').value;
+    
+    // Clear previous error messages
+    const existingErrors = form.querySelectorAll('.field-error');
+    existingErrors.forEach(error => error.remove());
+    
+    let isValid = true;
+    
+    // Validate title
+    if (!title) {
+        showFieldError('title', 'Course title is required.');
+        isValid = false;
+    }
+    
+    // Validate description
+    if (!description) {
+        showFieldError('full_description', 'Course description is required.');
+        isValid = false;
+    }
+    
+    // Validate category
+    if (!category) {
+        showFieldError('category', 'Please select a category.');
+        isValid = false;
+    }
+    
+    // Validate difficulty
+    if (!difficulty) {
+        showFieldError('difficulty', 'Please select a difficulty level.');
+        isValid = false;
+    }
+    
+    // Validate duration
+    if (!duration || parseFloat(duration) <= 0) {
+        showFieldError('duration', 'Duration must be greater than 0.');
+        isValid = false;
+    }
+    
+    // Validate max students
+    if (!maxStudents || parseInt(maxStudents) <= 0) {
+        showFieldError('max_students', 'Max students must be greater than 0.');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function showFieldError(fieldName, message) {
+    const field = document.querySelector(`[name="${fieldName}"]`);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error text-red-500 text-sm mt-1';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+    field.classList.add('border-red-500');
+}
+
+// Add form submission validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!validateCourseForm()) {
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}
+</div>

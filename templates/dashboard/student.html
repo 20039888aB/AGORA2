@@ -1,0 +1,629 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .student-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .learning-card {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .learning-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .learning-card:hover::before {
+        left: 100%;
+    }
+    
+    .learning-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
+    }
+    
+    .learning-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .learning-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .learning-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .student-header {
+        background: linear-gradient(135deg, #22c55e, #10b981);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .student-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .student-info {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .student-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .student-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .action-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .action-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .action-text {
+        flex: 1;
+    }
+    
+    .action-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .action-desc {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .course-list {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .course-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .course-item:last-child {
+        border-bottom: none;
+    }
+    
+    .course-thumbnail {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #22c55e, #10b981);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 1rem;
+    }
+    
+    .course-info {
+        flex: 1;
+    }
+    
+    .course-title {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    
+    .course-meta {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #22c55e, #10b981);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+    
+    .certificate-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .certificate-item:last-child {
+        border-bottom: none;
+    }
+    
+    .certificate-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f59e0b, #f97316);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+    
+    .certificate-info {
+        flex: 1;
+    }
+    
+    .certificate-title {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    
+    .certificate-date {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+    }
+    
+    .achievement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .achievement-badge {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .achievement-badge:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .achievement-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .achievement-name {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Student Header -->
+    <div class="student-header">
+        <div class="student-info">
+            <h1 class="student-title">My Learning Journey</h1>
+            <p class="student-subtitle">Track your progress and achieve your goals</p>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="/content/student-courses/" class="action-btn">
+            <div class="action-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="action-text">
+                <div class="action-title">Browse All Courses</div>
+                <div class="action-desc">View complete course catalog</div>
+            </div>
+        </a>
+        
+        <a href="/content/browse/" class="action-btn">
+            <div class="action-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="action-text">
+                <div class="action-title">Quick Browse</div>
+                <div class="action-desc">Discover new content</div>
+            </div>
+        </a>
+        
+        <a href="/learning/continue/" class="action-btn">
+            <div class="action-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-play"></i>
+            </div>
+            <div class="action-text">
+                <div class="action-title">Continue Learning</div>
+                <div class="action-desc">Resume your progress</div>
+            </div>
+        </a>
+        
+        <a href="/achievements/" class="action-btn">
+            <div class="action-icon bg-gradient-to-br from-orange-500 to-red-500">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="action-text">
+                <div class="action-title">Achievements</div>
+                <div class="action-desc">View your badges</div>
+            </div>
+        </a>
+        
+        <a href="{% url 'profile' %}" class="action-btn">
+            <div class="action-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="action-text">
+                <div class="action-title">My Profile</div>
+                <div class="action-desc">Update your info</div>
+            </div>
+        </a>
+    </div>
+    
+    <!-- Learning Metrics -->
+    <div class="student-grid mt-8">
+        <!-- Total Enrollments -->
+        <div class="learning-card">
+            <div class="learning-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="learning-value">{{ total_enrollments }}</div>
+            <div class="learning-label">Enrolled Courses</div>
+            
+            <div class="mt-4">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">In Progress</span>
+                    <span class="text-blue-400 font-bold">{{ active_enrollments }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Certificates -->
+        <div class="learning-card">
+            <div class="learning-icon bg-gradient-to-br from-orange-500 to-red-500">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <div class="learning-value">{{ total_certificates }}</div>
+            <div class="learning-label">Certificates Earned</div>
+            
+            <div class="mt-4">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">This Month</span>
+                    <span class="text-green-400 font-bold">{{ certificates_this_month|default:0 }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assignments -->
+        <div class="learning-card">
+            <div class="learning-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="learning-value">{{ completed_assignments }}/{{ total_assignments }}</div>
+            <div class="learning-label">Assignments</div>
+            
+            <div class="mt-4">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Completion Rate</span>
+                    <span class="text-green-400 font-bold">
+                        {% if total_assignments > 0 %}
+                            {% widthratio completed_assignments total_assignments 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Learning Streak -->
+        <div class="learning-card">
+            <div class="learning-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                <i class="fas fa-fire"></i>
+            </div>
+            <div class="learning-value">{{ day_streak|default:0 }}</div>
+            <div class="learning-label">Day Streak</div>
+            
+            <div class="mt-4">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Total Hours</span>
+                    <span class="text-blue-400 font-bold">{{ learning_hours|default:0 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Courses -->
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">My Courses</h2>
+            <a href="/content/student-courses/" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-plus mr-2"></i> Browse More
+            </a>
+        </div>
+        <div class="course-list">
+            {% for enrollment in enrollments %}
+            <div class="course-item">
+                <div class="course-thumbnail">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="course-info">
+                    <div class="course-title">{{ enrollment.course.title }}</div>
+                    <div class="course-meta">
+                        {{ enrollment.course.category.name|default:"General" }} • 
+                        {{ enrollment.course.duration_hours }}h • 
+                        Progress: {{ enrollment.progress_percentage|default:0 }}%
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ enrollment.progress_percentage|default:0 }}%"></div>
+                    </div>
+                </div>
+                <a href="/content/course/{{ enrollment.course.id }}/" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Continue
+                </a>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-graduation-cap text-4xl mb-4"></i>
+                <p>No courses enrolled yet</p>
+                <a href="/content/student-courses/" class="text-green-400 hover:text-green-300 mt-4 inline-block">
+                    <i class="fas fa-search mr-2"></i> Browse Available Courses
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Available Courses for Enrollment -->
+    {% if available_courses %}
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">Available Courses</h2>
+            <a href="/content/browse/" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-search mr-2"></i> Browse All
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for course in available_courses %}
+            <div class="learning-card">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-book text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">{{ course.title }}</h3>
+                        <p class="text-gray-400 text-sm">{{ course.category.name|default:"General" }}</p>
+                    </div>
+                </div>
+                <p class="text-gray-300 text-sm mb-4">{{ course.short_description|default:"No description available"|truncatewords:15 }}</p>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="text-sm text-gray-400">
+                        <i class="fas fa-clock mr-1"></i>{{ course.duration_hours }}h
+                    </div>
+                    <div class="text-sm text-gray-400">
+                        <i class="fas fa-signal mr-1"></i>{{ course.difficulty|default:"Beginner" }}
+                    </div>
+                </div>
+                <form action="/content/enroll/{{ course.id }}/" method="POST" class="mt-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i> Enroll Now
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Recent Certificates -->
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">Recent Certificates</h2>
+            <a href="/certificates/my/" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-eye mr-2"></i> View All
+            </a>
+        </div>
+        <div class="course-list">
+            {% for certificate in certificates %}
+            <div class="certificate-item">
+                <div class="certificate-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="certificate-info">
+                    <div class="certificate-title">{{ certificate.course.title }}</div>
+                    <div class="certificate-date">
+                        Issued on {{ certificate.issued_at|date:"M d, Y" }}
+                    </div>
+                </div>
+                <a href="/content/course/{{ certificate.course.id }}/certificate/" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-download mr-2"></i> Download
+                </a>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-certificate text-4xl mb-4"></i>
+                <p>No certificates earned yet</p>
+                <p class="text-sm mt-2">Complete courses to earn certificates</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Achievements -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Recent Achievements</h2>
+        <div class="achievement-grid">
+            {% for achievement in achievements %}
+            <div class="achievement-badge">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-name">{{ achievement }}</div>
+            </div>
+            {% empty %}
+            <div class="achievement-badge">
+                <div class="achievement-icon">📌</div>
+                <div class="achievement-name">No achievements yet</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Learning Path -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Recommended Learning Path</h2>
+        <div class="learning-card">
+            <div class="learning-icon bg-gradient-to-br from-indigo-500 to-purple-500">
+                <i class="fas fa-route"></i>
+            </div>
+            <div class="learning-label">Recommended Courses</div>
+            <div class="mt-4">
+                <div class="space-y-2">
+                    {% for course in recommended_courses %}
+                    <div class="flex items-center text-sm">
+                        <i class="fas fa-play-circle text-blue-400 mr-2"></i>
+                        <span class="text-gray-300">{{ course.title }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="flex items-center text-sm">
+                        <i class="fas fa-info-circle text-gray-400 mr-2"></i>
+                        <span class="text-gray-500">No recommendations available yet.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animate metrics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const learningValues = document.querySelectorAll('.learning-value');
+        learningValues.forEach(metric => {
+            const finalValue = metric.textContent;
+            const hasSlash = finalValue.includes('/');
+            
+            if (!hasSlash) {
+                const numericValue = parseInt(finalValue);
+                if (!isNaN(numericValue)) {
+                    let currentValue = 0;
+                    const increment = numericValue / 50;
+                    const timer = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= numericValue) {
+                            currentValue = numericValue;
+                            clearInterval(timer);
+                        }
+                        metric.textContent = currentValue;
+                    }, 20);
+                }
+            }
+        });
+        
+        // Animate progress bars
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

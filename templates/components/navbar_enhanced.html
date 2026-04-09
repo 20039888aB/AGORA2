@@ -1,0 +1,561 @@
+{% load static %}
+<!-- Enhanced Navigation Bar with High Visibility -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary" role="navigation" aria-label="Main navigation">
+    <div class="container">
+        <!-- Brand/Logo -->
+        <a class="navbar-brand" href="{% url 'dashboard' %}" aria-label="AgoraProf Home">
+            <img src="{% static 'images/logo.png' %}" alt="AgoraProf Logo" class="me-2" style="width: 24px; height: 24px; object-fit: contain;">
+            <span class="brand-text">AgoraProf</span>
+        </a>
+        
+        <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Navigation Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}" 
+                       aria-current="{% if request.resolver_match.url_name == 'dashboard' %}page{% else %}false{% endif %}">
+                        <i class="fas fa-tachometer-alt me-1"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                
+                <!-- Original Courses -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="coursesDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="coursesMenu">
+                        <i class="fas fa-book me-1"></i>
+                        <span class="nav-text">Courses</span>
+                        <i class="fas fa-chevron-down ms-1 dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="coursesDropdown" role="menu">
+                        <li><a class="dropdown-item" href="{% url 'content:courses_list' %}" role="menuitem">
+                            <i class="fas fa-list me-2"></i>Course List
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'content:course_create' %}" role="menuitem">
+                            <i class="fas fa-plus me-2"></i>Create Course
+                        </a></li>
+                        {% if request.user.is_manager_or_above %}
+                        <li><hr class="dropdown-divider" role="separator"></li>
+                        <li><a class="dropdown-item" href="{% url 'content:courses_browse' %}" role="menuitem">
+                            <i class="fas fa-search me-2"></i>Browse Courses
+                        </a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+                
+                <!-- Enhanced Courses -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="enhancedDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="enhancedMenu">
+                        <i class="fas fa-rocket me-1"></i>
+                        <span class="nav-text">Enhanced</span>
+                        <i class="fas fa-chevron-down ms-1 dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="enhancedDropdown" role="menu">
+                        <li><a class="dropdown-item" href="/enhanced/courses/" role="menuitem">
+                            <i class="fas fa-list me-2"></i>Enhanced Courses
+                        </a></li>
+                        <li><a class="dropdown-item" href="/enhanced/courses/create/" role="menuitem">
+                            <i class="fas fa-plus me-2"></i>Create Enhanced Course
+                        </a></li>
+                        {% if request.user.is_manager_or_above %}
+                        <li><hr class="dropdown-divider" role="separator"></li>
+                        <li><a class="dropdown-item" href="/enhanced/api/documentation" role="menuitem">
+                            <i class="fas fa-code me-2"></i>API Documentation
+                        </a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+                
+                <!-- Learning -->
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="learningDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="learningMenu">
+                        <i class="fas fa-graduation-cap me-1"></i>
+                        <span class="nav-text">Learning</span>
+                        <i class="fas fa-chevron-down ms-1 dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="learningDropdown" role="menu">
+                        <li><a class="dropdown-item" href="{% url 'dashboard' %}" role="menuitem">
+                            <i class="fas fa-tachometer-alt me-2"></i>Learning Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'content:student_course_browse' %}" role="menuitem">
+                            <i class="fas fa-book-open me-2"></i>My Courses
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'content:student_certificates' %}" role="menuitem">
+                            <i class="fas fa-certificate me-2"></i>My Certificates
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'content:learning_paths' %}" role="menuitem">
+                            <i class="fas fa-chart-line me-2"></i>My Progress
+                        </a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                
+                <!-- Organizations -->
+                {% if request.user.is_admin_or_above %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="orgDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="orgMenu">
+                        <i class="fas fa-building me-1"></i>
+                        <span class="nav-text">Organization</span>
+                        <i class="fas fa-chevron-down ms-1 dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="orgDropdown" role="menu">
+                        <li><a class="dropdown-item" href="{% url 'organizations_manage' %}" role="menuitem">
+                            <i class="fas fa-building me-2"></i>Organization Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'users_manage' %}" role="menuitem">
+                            <i class="fas fa-users me-2"></i>Members
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'departments_manage' %}" role="menuitem">
+                            <i class="fas fa-sitemap me-2"></i>Departments
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'settings' %}" role="menuitem">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                
+                <!-- Analytics -->
+                {% if request.user.is_admin_or_above %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="analyticsMenu">
+                        <i class="fas fa-chart-bar me-1"></i>
+                        <span class="nav-text">Analytics</span>
+                        <i class="fas fa-chevron-down ms-1 dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="analyticsDropdown" role="menu">
+                        <li><a class="dropdown-item" href="{% url 'analytics_platform' %}" role="menuitem">
+                            <i class="fas fa-chart-line me-2"></i>Analytics Dashboard
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'analytics_organization' %}" role="menuitem">
+                            <i class="fas fa-book me-2"></i>Course Analytics
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'analytics_team' %}" role="menuitem">
+                            <i class="fas fa-users me-2"></i>User Analytics
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'reports_root' %}" role="menuitem">
+                            <i class="fas fa-file-alt me-2"></i>Reports
+                        </a></li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Right Side Navigation -->
+            <ul class="navbar-nav">
+                <!-- Notifications -->
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="notificationMenu">
+                        <i class="fas fa-bell me-1"></i>
+                        <span class="notification-badge badge bg-danger">3</span>
+                        <span class="d-none d-lg-inline">Notifications</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" role="menu">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li><a class="dropdown-item" href="#" role="menuitem">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            New course available: "Introduction to Python"
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" role="menuitem">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Assignment graded: "Python Basics"
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" role="menuitem">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            Deadline approaching: "Advanced Python"
+                        </a></li>
+                        <li><hr class="dropdown-divider" role="separator"></li>
+                        <li><a class="dropdown-item text-center" href="{% url 'settings' %}" role="menuitem">
+                            <i class="fas fa-cog me-2"></i>Notification Settings
+                        </a></li>
+                    </ul>
+                </li>
+                {% endif %}
+                
+                <!-- User Menu -->
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-controls="userMenu">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span class="d-none d-md-inline">{{ request.user.email|truncatechars:15 }}</span>
+                        <i class="fas fa-chevron-down ms-1 dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" role="menu">
+                        <li><h6 class="dropdown-header">
+                            <i class="fas fa-user me-2"></i>{{ request.user.get_full_name|default:request.user.email }}
+                        </h6></li>
+                        <li><hr class="dropdown-divider" role="separator"></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' %}" role="menuitem">
+                            <i class="fas fa-user me-2"></i>Profile
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'settings' %}" role="menuitem">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'achievements' %}" role="menuitem">
+                            <i class="fas fa-trophy me-2"></i>Achievements
+                        </a></li>
+                        <li><hr class="dropdown-divider" role="separator"></li>
+                        <li><a class="dropdown-item" href="{% url 'faq' %}" role="menuitem">
+                            <i class="fas fa-question-circle me-2"></i>Help Center
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'features' %}" role="menuitem">
+                            <i class="fas fa-book me-2"></i>Documentation
+                        </a></li>
+                        <li><hr class="dropdown-divider" role="separator"></li>
+                        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}" role="menuitem">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <!-- Login/Register -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}" aria-label="Login to AgoraProf">
+                        <i class="fas fa-sign-in-alt me-1"></i>
+                        <span class="nav-text">Login</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'signup' %}" aria-label="Sign up for AgoraProf">
+                        <i class="fas fa-user-plus me-1"></i>
+                        <span class="nav-text">Sign Up</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Enhanced Navigation Styles -->
+<style>
+/* Enhanced Navigation with High Visibility */
+.navbar {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    border-bottom: 2px solid var(--border-primary);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    transition: all var(--transition-base) ease;
+}
+
+.navbar-brand {
+    color: var(--text-inverse);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    text-decoration: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast) ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.brand-text {
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.5px;
+}
+
+.nav-link {
+    color: var(--text-inverse);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast) ease;
+    position: relative;
+    font-weight: var(--font-weight-medium);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-inverse);
+}
+
+.nav-link[aria-current="page"] {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: var(--font-weight-semibold);
+}
+
+.nav-text {
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+}
+
+.dropdown-toggle {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle:focus {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.dropdown-icon {
+    transition: transform var(--transition-fast) ease;
+}
+
+.dropdown-toggle[aria-expanded="true"] .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    background: var(--bg-light);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
+    min-width: 220px;
+    margin-top: var(--spacing-xs);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast) ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: var(--font-weight-normal);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: var(--bg-primary);
+    color: var(--text-inverse);
+    transform: translateX(2px);
+}
+
+.dropdown-header {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.dropdown-divider {
+    border-color: var(--border-light);
+    margin: var(--spacing-xs) 0;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: var(--font-size-xs);
+    padding: 2px 6px;
+    border-radius: var(--radius-xl);
+    font-weight: var(--font-weight-bold);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.navbar-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+}
+
+.navbar-toggler:hover,
+.navbar-toggler:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar-toggler-icon {
+    background: var(--text-inverse);
+    height: 2px;
+    width: 25px;
+    position: relative;
+    transition: all var(--transition-fast) ease;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    background: var(--text-inverse);
+    content: '';
+    height: 2px;
+    position: absolute;
+    width: 25px;
+    transition: all var(--transition-fast) ease;
+}
+
+.navbar-toggler-icon::before {
+    top: -8px;
+}
+
+.navbar-toggler-icon::after {
+    bottom: -8px;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+    background: transparent;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+    top: 0;
+    transform: rotate(45deg);
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+    bottom: 0;
+    transform: rotate(-45deg);
+}
+
+/* Enhanced Mobile Navigation */
+@media (max-width: 992px) {
+    .navbar-nav {
+        background: var(--bg-light);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        margin-top: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+    
+    .nav-item {
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .nav-link {
+        color: var(--text-primary);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-sm);
+    }
+    
+    .nav-link:hover,
+    .nav-link:focus {
+        background: var(--bg-primary);
+        color: var(--text-inverse);
+    }
+    
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        margin-top: 0;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+    }
+    
+    .dropdown-item {
+        color: var(--text-primary);
+        padding: var(--spacing-md);
+    }
+    
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background: var(--bg-secondary);
+        color: var(--text-inverse);
+        transform: none;
+    }
+}
+
+/* Enhanced Accessibility */
+@media (prefers-contrast: high) {
+    .navbar {
+        border-bottom-width: 3px;
+    }
+    
+    .nav-link {
+        border: 1px solid transparent;
+    }
+    
+    .nav-link:hover,
+    .nav-link:focus {
+        border-color: var(--text-inverse);
+    }
+}
+
+/* Enhanced Dark Mode */
+[data-theme="dark"] .dropdown-menu {
+    background: var(--bg-dark);
+    border-color: var(--border-dark);
+}
+
+[data-theme="dark"] .nav-item {
+    background: var(--bg-dark);
+    border-radius: var(--radius-sm);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+    background: var(--bg-primary);
+    color: var(--text-inverse);
+}
+
+/* Enhanced Focus States */
+.nav-link:focus-visible {
+    outline: 2px solid var(--text-inverse);
+    outline-offset: 2px;
+}
+
+.dropdown-item:focus-visible {
+    outline: 2px solid var(--border-primary);
+    outline-offset: 2px;
+}
+
+/* Enhanced Animation Performance */
+.navbar,
+.nav-link,
+.dropdown-menu,
+.dropdown-item {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Enhanced Touch Targets */
+@media (hover: none) and (pointer: coarse) {
+    .nav-link,
+    .dropdown-item {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    
+    .navbar-toggler {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+</style>

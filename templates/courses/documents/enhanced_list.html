@@ -1,0 +1,420 @@
+{% extends "base_enhanced.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .documents-header {
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-inverse);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .document-card {
+        background: var(--bg-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .document-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    
+    .document-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .document-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        flex: 1;
+    }
+    
+    .document-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.5rem;
+    }
+    
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-pdf {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .badge-required {
+        background: #059669;
+        color: white;
+    }
+    
+    .badge-public {
+        background: #7c3aed;
+        color: white;
+    }
+    
+    .badge-version {
+        background: #6366f1;
+        color: white;
+    }
+    
+    .document-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: hsl(var(--light-hue), var(--light-saturation), 98%);
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+    }
+    
+    .meta-label {
+        font-weight: 500;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+    
+    .meta-value {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+    
+    .document-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+    }
+    
+    .btn-doc {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: var(--bg-primary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-primary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-secondary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-success {
+        background: var(--bg-success);
+        color: var(--text-inverse);
+    }
+    
+    .btn-success:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-danger {
+        background: var(--bg-danger);
+        color: var(--text-inverse);
+    }
+    
+    .btn-danger:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-warning {
+        background: var(--bg-warning);
+        color: var(--text-inverse);
+    }
+    
+    .btn-warning:hover {
+        filter: brightness(0.94);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6b7280;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #9ca3af;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: hsl(var(--light-hue), var(--light-saturation), 98%);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="documents-header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">{{ course.title }}</h1>
+                <p class="text-lg opacity-90">Enhanced Document Management with PDF Support</p>
+            </div>
+            <div class="flex gap-2">
+                {% if user.is_superadmin or user.is_manager_or_above and course.organization_id == user.organization_id %}
+                <a href="{% url 'add_course_document' course.id %}" class="btn-doc btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Document
+                </a>
+                <a href="{% url 'bulk_upload_documents' course.id %}" class="btn-doc btn-success">
+                    <i class="fas fa-upload"></i>
+                    Bulk Upload
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ documents.count }}</div>
+            <div class="stat-label">Total Documents</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ pdf_documents_count|default:0 }}</div>
+            <div class="stat-label">PDF Documents</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ required_documents_count|default:0 }}</div>
+            <div class="stat-label">Required</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ public_documents_count|default:0 }}</div>
+            <div class="stat-label">Public</div>
+        </div>
+    </div>
+    
+    <!-- Documents List -->
+    <div class="documents-list">
+        {% if documents %}
+            {% for document in documents %}
+            <div class="document-card">
+                <div class="document-header">
+                    <div class="document-title">{{ document.title }}</div>
+                    <div class="document-badges">
+                        {% if document.is_pdf %}
+                        <span class="badge badge-pdf">PDF</span>
+                        {% endif %}
+                        {% if document.is_required %}
+                        <span class="badge badge-required">Required</span>
+                        {% endif %}
+                        {% if document.is_public %}
+                        <span class="badge badge-public">Public</span>
+                        {% endif %}
+                        <span class="badge badge-version">v{{ document.version }}</span>
+                    </div>
+                </div>
+                
+                {% if document.description %}
+                <p class="text-gray-600 mb-4">{{ document.description|truncatewords:30 }}</p>
+                {% endif %}
+                
+                <div class="document-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-file"></i>
+                        <span class="meta-label">Type:</span>
+                        <span class="meta-value">{{ document.get_file_type_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-database"></i>
+                        <span class="meta-label">Size:</span>
+                        <span class="meta-value">{{ document.file_size_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-folder"></i>
+                        <span class="meta-label">Category:</span>
+                        <span class="meta-value">{{ document.get_category_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-lock"></i>
+                        <span class="meta-label">Access:</span>
+                        <span class="meta-value">{{ document.get_access_level_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span class="meta-label">Published:</span>
+                        <span class="meta-value">{{ document.published_at|date:"M j, Y"|default:"Not set" }}</span>
+                    </div>
+                    {% if document.file_hash %}
+                    <div class="meta-item">
+                        <i class="fas fa-fingerprint"></i>
+                        <span class="meta-label">Hash:</span>
+                        <span class="meta-value" style="font-family: monospace; font-size: 0.75rem;">{{ document.file_hash|slice:":8" }}...</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="document-actions">
+                    {% if document.file %}
+                    <a href="{{ document.file.url }}" target="_blank" class="btn-doc btn-secondary">
+                        <i class="fas fa-eye"></i>
+                        View
+                    </a>
+                    {% if document.is_downloadable %}
+                    <a href="{{ document.get_download_url }}" class="btn-doc btn-primary">
+                        <i class="fas fa-download"></i>
+                        Download
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                    {% if user.is_superadmin or user.is_manager_or_above and course.organization_id == user.organization_id %}
+                    <a href="{% url 'edit_course_document' course.id document.id %}" class="btn-doc btn-warning">
+                        <i class="fas fa-edit"></i>
+                        Edit
+                    </a>
+                    <a href="{% url 'delete_course_document' course.id document.id %}" class="btn-doc btn-danger">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-file-pdf"></i>
+                <h3 class="text-xl font-semibold mb-2">No Documents Yet</h3>
+                <p>This course doesn't have any documents yet. Add your first PDF document to get started.</p>
+                {% if user.is_superadmin or user.is_manager_or_above and course.organization_id == user.organization_id %}
+                <a href="{% url 'add_course_document' course.id %}" class="btn-doc btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Document
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Navigation -->
+    <div class="mt-8">
+        <a href="{% url 'content:course_detail' course.id %}" class="btn-doc btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Course
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add interactive features for document management
+    const documents = document.querySelectorAll('.document-card');
+    
+    documents.forEach(doc => {
+        doc.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+        
+        doc.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+    });
+    
+    // File drag and drop for bulk upload
+    const dropZone = document.querySelector('.drop-zone');
+    if (dropZone) {
+        setupDragAndDrop(dropZone);
+    }
+});
+
+function setupDragAndDrop(zone) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    zone.addEventListener('drop', handleDrop);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            // Handle file upload
+            console.log('Files dropped:', files);
+            // Add your upload logic here
+        }
+    }
+}
+</script>
+{% endblock %}

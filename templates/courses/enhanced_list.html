@@ -1,0 +1,441 @@
+{% extends 'base_enhanced.html' %}
+
+{% block title %}All Courses - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .courses-container {
+        max-width: 7xl;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-inverse);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: var(--bg-light);
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .filters-section {
+        background: var(--bg-light);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .filters-grid {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1rem;
+        align-items: end;
+    }
+    
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .course-card {
+        background: var(--bg-light);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .course-image {
+        height: 200px;
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-inverse);
+        font-size: 3rem;
+    }
+    
+    .course-content {
+        padding: 1.5rem;
+    }
+    
+    .course-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .course-description {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .course-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        background: #f3f4f6;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: #4b5563;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .status-draft {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    
+    .status-published {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .status-archived {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+    
+    .course-actions {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .btn-primary {
+        background: var(--bg-primary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-primary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-secondary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-success {
+        background: var(--bg-success);
+        color: var(--text-inverse);
+    }
+    
+    .btn-success:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-danger {
+        background: var(--bg-danger);
+        color: var(--text-inverse);
+    }
+    
+    .btn-danger:hover {
+        filter: brightness(0.94);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-description {
+        color: #6b7280;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="courses-container">
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="text-3xl font-bold mb-2">Course Management</h1>
+        <p class="text-lg opacity-90">Manage and organize your organization's learning content</p>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_courses }}</div>
+            <div class="stat-label">Total Courses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ published_courses }}</div>
+            <div class="stat-label">Published</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ draft_courses }}</div>
+            <div class="stat-label">Draft</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ courses|length }}</div>
+            <div class="stat-label">Active</div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters-section">
+        <form method="GET" class="filters-grid">
+            <div>
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                <input type="text" name="search" id="search" value="{{ request.GET.search }}" 
+                       class="form-control" placeholder="Search courses...">
+            </div>
+            
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">All Status</option>
+                    <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>Draft</option>
+                    <option value="published" {% if request.GET.status == 'published' %}selected{% endif %}>Published</option>
+                    <option value="archived" {% if request.GET.status == 'archived' %}selected{% endif %}>Archived</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter"></i>
+                Apply Filters
+            </button>
+        </form>
+    </div>
+    
+    <!-- Courses Grid -->
+    <div class="courses-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            <!-- Course Image/Thumbnail -->
+            <div class="course-image">
+                {% if course.course_file %}
+                    <i class="fas fa-file-pdf"></i>
+                {% else %}
+                    <i class="fas fa-graduation-cap"></i>
+                {% endif %}
+            </div>
+            
+            <!-- Course Content -->
+            <div class="course-content">
+                <h3 class="course-title">{{ course.title }}</h3>
+                
+                <p class="course-description">
+                    {{ course.short_description|default:course.description|truncatewords:15 }}
+                </p>
+                
+                <!-- Course Metadata -->
+                <div class="course-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-signal"></i>
+                        {{ course.get_difficulty_display }}
+                    </div>
+                    
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ course.duration_hours }}h
+                    </div>
+                    
+                    <div class="meta-item">
+                        <i class="fas fa-users"></i>
+                        {{ course.max_students }}
+                    </div>
+                    
+                    <div class="status-badge status-{{ course.status|lower }}">
+                        {{ course.get_status_display }}
+                    </div>
+                </div>
+                
+                <!-- Course Actions -->
+                <div class="course-actions">
+                    <a href="{% url 'content:enhanced_course_detail' course.id %}" class="btn btn-primary">
+                        <i class="fas fa-eye"></i>
+                        View
+                    </a>
+                    
+                    {% if user.is_superadmin or user.is_manager_or_above and course.organization_id == user.organization_id %}
+                    <a href="{% url 'content:enhanced_course_edit' course.id %}" class="btn btn-secondary">
+                        <i class="fas fa-edit"></i>
+                        Edit
+                    </a>
+                    {% endif %}
+                    
+                    {% if user.is_superadmin or user.is_manager_or_above and course.organization_id == user.organization_id %}
+                    <a href="{% url 'content:enhanced_course_delete' course.id %}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3 class="empty-title">No courses found</h3>
+            <p class="empty-description">
+                {% if request.GET.search or request.GET.status %}
+                    Try adjusting your filters or search terms.
+                {% else %}
+                    Start by creating your first course.
+                {% endif %}
+            </p>
+            {% if user.is_manager_or_above %}
+            <a href="{% url 'content:enhanced_course_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Create Your First Course
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Create Course Button (always visible) -->
+    {% if user.is_manager_or_above %}
+    <div class="text-center mt-8">
+        <a href="{% url 'content:enhanced_course_create' %}" class="btn btn-success" style="font-size: 1rem; padding: 0.75rem 2rem;">
+            <i class="fas fa-plus"></i>
+            Create New Course
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add interactive features
+    const searchInput = document.getElementById('search');
+    const statusSelect = document.getElementById('status');
+    
+    // Auto-search functionality (debounced)
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            // Submit form automatically after typing stops
+            if (searchInput.value.length > 2 || searchInput.value.length === 0) {
+                searchInput.form.submit();
+            }
+        }, 500);
+    });
+    
+    // Status change immediate submit
+    statusSelect.addEventListener('change', function() {
+        statusSelect.form.submit();
+    });
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + K for new course
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            window.location.href = '{% url "content:enhanced_course_create" %}';
+        }
+        
+        // Ctrl/Cmd + / for search focus
+        if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

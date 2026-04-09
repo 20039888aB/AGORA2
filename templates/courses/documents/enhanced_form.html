@@ -1,0 +1,572 @@
+{% extends "base_enhanced.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .form-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .form-file {
+        padding: 0.5rem;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .form-file:hover {
+        border-color: #667eea;
+        background: #f3f4f6;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 12 4 4-4'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+    
+    .file-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .file-icon {
+        font-size: 2rem;
+        color: #667eea;
+    }
+    
+    .file-details {
+        flex: 1;
+    }
+    
+    .file-name {
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+    
+    .file-meta {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #5a67d8;
+    }
+    
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #4b5563;
+    }
+    
+    .error-list {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .error-list ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .help-text {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: #667eea;
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="form-header">
+        <h1 class="text-3xl font-bold mb-2">{{ action }} Document</h1>
+        <p class="text-lg opacity-90">{{ course.title }}</p>
+    </div>
+    
+    <!-- Form -->
+    <div class="form-container">
+        {% if form.non_field_errors %}
+            <div class="error-list">
+                <strong>Please correct the following errors:</strong>
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data" id="documentForm">
+            {% csrf_token %}
+            
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3 class="form-section-title">Basic Information</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            Document Title <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.category.id_for_label }}" class="form-label">
+                            Category
+                        </label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-red-500 text-sm mt-1">
+                            {% for error in form.description.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="help-text">
+                        Provide a detailed description of the document content and purpose
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Upload -->
+            <div class="form-section">
+                <h3 class="form-section-title">File Upload</h3>
+                
+                <div class="form-group">
+                    <label for="{{ form.file.id_for_label }}" class="form-label">
+                        Document File {% if not document %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    <div class="form-file" id="fileDropZone">
+                        <input type="file" name="{{ form.file.name }}" id="{{ form.file.id_for_label }}" 
+                               class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+                        <div class="file-info">
+                            <i class="fas fa-cloud-upload-alt file-icon"></i>
+                            <div class="file-details">
+                                <div class="file-name" id="fileName">
+                                    {% if document %}
+                                        {{ document.file.name }}
+                                    {% else %}
+                                        Click to browse or drag and drop files here
+                                    {% endif %}
+                                </div>
+                                <div class="file-meta" id="fileMeta">
+                                    {% if document %}
+                                        Size: {{ document.file_size_display }} | 
+                                        Type: {{ document.get_file_type_display }}
+                                    {% else %}
+                                        Supported formats: PDF, Word, PowerPoint, Text (Max 50MB)
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.file.errors %}
+                        <div class="text-red-500 text-sm mt-1">
+                            {% for error in form.file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="help-text">
+                        Upload PDF, Word, PowerPoint, or Text files. Maximum file size is 50MB.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Document Settings -->
+            <div class="form-section">
+                <h3 class="form-section-title">Document Settings</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.order.id_for_label }}" class="form-label">
+                            Order in Course
+                        </label>
+                        {{ form.order }}
+                        {% if form.order.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.order.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="help-text">
+                            The order in which this document will appear in the course
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.file_type.id_for_label }}" class="form-label">
+                            File Type
+                        </label>
+                        {{ form.file_type }}
+                        {% if form.file_type.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.file_type.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Access Control -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.access_level.id_for_label }}" class="form-label">
+                            Access Level
+                        </label>
+                        {{ form.access_level }}
+                        {% if form.access_level.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.access_level.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="help-text">
+                            Control who can access this document
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.published_at.id_for_label }}" class="form-label">
+                            Publish Date
+                        </label>
+                        {{ form.published_at }}
+                        {% if form.published_at.errors %}
+                            <div class="text-red-500 text-sm mt-1">
+                                {% for error in form.published_at.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="help-text">
+                            When this document becomes available to students (leave blank for immediate)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Permissions -->
+                <div class="checkbox-group">
+                    {{ form.is_required }}
+                    <label for="{{ form.is_required.id_for_label }}" class="form-label mb-0">
+                        This document is required for course completion
+                    </label>
+                </div>
+                
+                <div class="checkbox-group">
+                    {{ form.is_downloadable }}
+                    <label for="{{ form.is_downloadable.id_for_label }}" class="form-label mb-0">
+                        Allow students to download this document
+                    </label>
+                </div>
+                
+                <div class="checkbox-group">
+                    {{ form.is_printable }}
+                    <label for="{{ form.is_printable.id_for_label }}" class="form-label mb-0">
+                        Allow students to print this document
+                    </label>
+                </div>
+                
+                <div class="checkbox-group">
+                    {{ form.is_public }}
+                    <label for="{{ form.is_public.id_for_label }}" class="form-label mb-0">
+                        Make this document publicly accessible (no enrollment required)
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="form-actions">
+                <a href="{% url 'course_documents' course.id %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i>
+                    {{ action }} Document
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('{{ form.file.id_for_label }}');
+    const fileDropZone = document.getElementById('fileDropZone');
+    const fileName = document.getElementById('fileName');
+    const fileMeta = document.getElementById('fileMeta');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        handleFileSelect(e.target.files[0]);
+    });
+    
+    // Drag and drop handlers
+    fileDropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileDropZone.style.borderColor = '#667eea';
+        fileDropZone.style.background = '#f3f4f6';
+    });
+    
+    fileDropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fileDropZone.style.borderColor = '#d1d5db';
+        fileDropZone.style.background = '#f9fafb';
+    });
+    
+    fileDropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileDropZone.style.borderColor = '#d1d5db';
+        fileDropZone.style.background = '#f9fafb';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    // Click to browse
+    fileDropZone.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    function handleFileSelect(file) {
+        if (file) {
+            fileName.textContent = file.name;
+            fileMeta.textContent = `Size: ${formatFileSize(file.size)} | Type: ${getFileType(file.name)}`;
+            
+            // Show upload progress
+            showUploadProgress();
+        }
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function getFileType(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const types = {
+            'pdf': 'PDF',
+            'doc': 'Word',
+            'docx': 'Word',
+            'ppt': 'PowerPoint',
+            'pptx': 'PowerPoint',
+            'txt': 'Text'
+        };
+        return types[ext] || 'Unknown';
+    }
+    
+    function showUploadProgress() {
+        // Add upload progress indicator
+        const progressHtml = `
+            <div class="progress-bar">
+                <div class="progress-fill" id="uploadProgress"></div>
+            </div>
+        `;
+        
+        const existingProgress = fileDropZone.querySelector('.progress-bar');
+        if (!existingProgress) {
+            fileDropZone.insertAdjacentHTML('beforeend', progressHtml);
+        }
+    }
+    
+    // Form submission
+    document.getElementById('documentForm').addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        
+        // Simulate upload progress
+        const progress = document.getElementById('uploadProgress');
+        if (progress) {
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 10;
+                progress.style.width = width + '%';
+                if (width >= 100) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+    });
+});
+</script>
+{% endblock %}

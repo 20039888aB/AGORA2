@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+{% block title %}Manage Organizations - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .org-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .org-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .org-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .org-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .org-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .org-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .org-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .org-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .org-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .org-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .org-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+    
+    .org-tier {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .org-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .org-stat {
+        text-align: center;
+    }
+    
+    .org-stat-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .org-stat-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .org-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .btn-org {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .btn-org:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+    
+    .btn-org.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+    }
+    
+    .btn-org.danger {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-org.danger:hover {
+        background: rgba(239, 68, 68, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Organizations Header -->
+    <div class="org-header">
+        <div class="org-content">
+            <h1 class="org-title">Manage Organizations</h1>
+            <p class="org-subtitle">Oversee and manage all organizations in the platform</p>
+            
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.total_orgs }}</div>
+                    <div class="stat-label">Total Organizations</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.total_users }}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.active_orgs }}</div>
+                    <div class="stat-label">Active Organizations</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-to-br from-orange-500 to-red-500">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value">{{ stats.pending_orgs }}</div>
+                    <div class="stat-label">Pending Approval</div>
+                </div>
+            </div>
+            
+            <div class="mt-4 flex gap-4">
+                <a href="{% url 'organizations_create' %}" class="btn-org primary">
+                    <i class="fas fa-plus"></i>
+                    Create New Organization
+                </a>
+                <button onclick="refreshOrgs()" class="btn-org">
+                    <i class="fas fa-sync"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Organizations List -->
+    <div class="org-grid">
+        {% for org in organizations %}
+        <div class="org-card">
+            <div class="org-card-header">
+                <div class="org-avatar">{{ org.name|slice:":2"|upper }}</div>
+                <div>
+                    <div class="org-name">{{ org.name }}</div>
+                    <div class="org-tier">{{ org.tier }}</div>
+                    {% if not org.is_active %}
+                        <div class="text-yellow-400 text-sm mt-1">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>Inactive
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="org-stats">
+                <div class="org-stat">
+                    <div class="org-stat-value">{{ org.user_count }}</div>
+                    <div class="org-stat-label">Active Users</div>
+                </div>
+                <div class="org-stat">
+                    <div class="org-stat-value">{{ org.course_count }}</div>
+                    <div class="org-stat-label">Courses</div>
+                </div>
+                <div class="org-stat">
+                    <div class="org-stat-value">{{ org.completion_rate }}%</div>
+                    <div class="org-stat-label">Completion</div>
+                </div>
+            </div>
+            
+            <div class="org-actions">
+                <a href="{% url 'organizations_detail' org.id %}" class="btn-org">
+                    <i class="fas fa-eye"></i>
+                    View
+                </a>
+                <a href="{% url 'organizations_edit' org.id %}" class="btn-org">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </a>
+                {% if org.is_active %}
+                    <a href="#" onclick="toggleOrgStatus({{ org.id }}, false)" class="btn-org danger">
+                        <i class="fas fa-ban"></i>
+                        Suspend
+                    </a>
+                {% else %}
+                    <a href="#" onclick="toggleOrgStatus({{ org.id }}, true)" class="btn-org primary">
+                        <i class="fas fa-check"></i>
+                        Activate
+                    </a>
+                {% endif %}
+                <a href="#" onclick="deleteOrg({{ org.id }}, '{{ org.name }}')" class="btn-org danger">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <div class="text-gray-400 text-lg mb-4">
+                <i class="fas fa-building text-6xl mb-4"></i>
+                <p>No organizations found</p>
+            </div>
+            <a href="{% url 'organizations_create' %}" class="btn-org primary">
+                <i class="fas fa-plus"></i>
+                Create First Organization
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Refresh organizations list
+function refreshOrgs() {
+    location.reload();
+}
+
+// Toggle organization status (activate/suspend)
+function toggleOrgStatus(orgId, activate) {
+    const action = activate ? 'activate' : 'suspend';
+    const message = activate ? 
+        'Are you sure you want to activate this organization?' : 
+        'Are you sure you want to suspend this organization?';
+    
+    if (confirm(message)) {
+        fetch(`/api/organizations/${orgId}/toggle-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ is_active: activate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showMessage(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('An error occurred. Please try again.', 'error');
+        });
+    }
+}
+
+// Delete organization
+function deleteOrg(orgId, orgName) {
+    if (confirm(`Are you sure you want to delete "${orgName}"? This action cannot be undone.`)) {
+        if (confirm(`Type "DELETE" to confirm deletion of "${orgName}":`)) {
+            const confirmation = prompt('Type DELETE to confirm:');
+            if (confirmation === 'DELETE') {
+                fetch(`/api/organizations/${orgId}/delete/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        }
+    }
+}
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Show message (using Django messages)
+function showMessage(message, type) {
+    // Create a temporary message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    messageDiv.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+            ${message}
+        </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Remove message after 5 seconds
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 5000);
+}
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    // Only refresh if page is visible
+    if (!document.hidden) {
+        console.log('Auto-refreshing organizations...');
+        // location.reload();
+    }
+}, 30000);
+</script>
+{% endblock %}

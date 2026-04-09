@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+{% block title %}My Certificates - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .certificates-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .certificates-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .certificates-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .certificates-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .certificates-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+    
+    .certificates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .certificate-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+    
+    .certificate-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .certificate-card:hover::before {
+        left: 100%;
+    }
+    
+    .certificate-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+    }
+    
+    .certificate-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .certificate-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .certificate-course {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .certificate-date {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .certificate-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-view {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+    
+    .btn-view:hover {
+        background: rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-download {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .btn-download:hover {
+        background: rgba(34, 197, 94, 0.3);
+    }
+    
+    .btn-share {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+    }
+    
+    .btn-share:hover {
+        background: rgba(251, 191, 36, 0.3);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 3rem;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination a:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .pagination .current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="certificates-container">
+    <!-- Header -->
+    <div class="certificates-header">
+        <h1 class="certificates-title">My Certificates</h1>
+        <p class="certificates-subtitle">Your achievements and accomplishments</p>
+    </div>
+    
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_certificates }}</div>
+            <div class="stat-label">Total Certificates</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ issued_certificates }}</div>
+            <div class="stat-label">Issued</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ pending_certificates }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ revoked_certificates }}</div>
+            <div class="stat-label">Revoked</div>
+        </div>
+    </div>
+    
+    <!-- Certificates Grid -->
+    <div class="certificates-grid">
+        {% for certificate in certificates %}
+        <div class="certificate-card">
+            <div class="certificate-icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <h3 class="certificate-title">{{ certificate.title|default:certificate.course.title }}</h3>
+            <p class="certificate-course">{{ certificate.course.title }}</p>
+            <p class="certificate-date">Issued on {{ certificate.created_at|date:"F d, Y" }}</p>
+            
+            <div class="certificate-actions">
+                <a href="#" class="btn-action btn-view" onclick="viewCertificate({{ certificate.id }})">
+                    <i class="fas fa-eye"></i> View
+                </a>
+                {% if certificate.status == 'ISSUED' %}
+                <a href="#" class="btn-action btn-download" onclick="downloadCertificate({{ certificate.id }})">
+                    <i class="fas fa-download"></i> Download
+                </a>
+                <a href="#" class="btn-action btn-share" onclick="shareCertificate({{ certificate.id }})">
+                    <i class="fas fa-share"></i> Share
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <h3>No certificates yet</h3>
+            <p>Complete courses to earn certificates</p>
+            <a href="/courses/browse/" class="btn-action btn-view" style="margin-top: 1rem;">
+                <i class="fas fa-search"></i> Browse Courses
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if certificates.has_other_pages %}
+    <div class="pagination">
+        {% if certificates.has_previous %}
+            <a href="?page={{ certificates.previous_page_number }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        {% endif %}
+        
+        {% for num in certificates.paginator.page_range %}
+            {% if certificates.number == num %}
+                <span class="current">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if certificates.has_next %}
+            <a href="?page={{ certificates.next_page_number }}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function viewCertificate(certificateId) {
+    // In a real implementation, this would show the certificate details
+    alert(`Viewing certificate ${certificateId}`);
+}
+
+function downloadCertificate(certificateId) {
+    // In a real implementation, this would download the certificate PDF
+    alert(`Downloading certificate ${certificateId}`);
+}
+
+function shareCertificate(certificateId) {
+    // In a real implementation, this would show sharing options
+    alert(`Sharing certificate ${certificateId}`);
+}
+</script>
+{% endblock %}

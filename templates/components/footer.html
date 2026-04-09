@@ -1,0 +1,224 @@
+{% load static %}
+<footer class="glass mt-20">
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+            
+            <!-- Company Column -->
+            <div class="lg:col-span-2">
+                <div class="flex items-center space-x-3 mb-4">
+                    <img src="{% static 'images/logo.png' %}" alt="AgoraProf Logo" class="w-12 h-12 object-contain rounded-lg">
+                    <div class="text-2xl font-bold gradient-text">
+                        AgoraProf
+                    </div>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-md">
+                    Empowering organizations through smart learning management. Train, track, and transform your workforce with enterprise-grade LMS.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors">
+                        <i class="fab fa-facebook-f text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors">
+                        <i class="fab fa-twitter text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors">
+                        <i class="fab fa-linkedin-in text-white"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors">
+                        <i class="fab fa-github text-white"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Product Column -->
+            <div>
+                <h3 class="text-white font-semibold mb-4">Product</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="/features/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-star mr-2 text-xs"></i> Features
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pricing/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-dollar-sign mr-2 text-xs"></i> Pricing
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/integrations/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-plug mr-2 text-xs"></i> Integrations
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/api/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-code mr-2 text-xs"></i> API
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/changelog/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-history mr-2 text-xs"></i> Changelog
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Company Column -->
+            <div>
+                <h3 class="text-white font-semibold mb-4">Company</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="/about/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-info-circle mr-2 text-xs"></i> About Us
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/careers/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-briefcase mr-2 text-xs"></i> Careers
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/blog/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-blog mr-2 text-xs"></i> Blog
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/press/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-newspaper mr-2 text-xs"></i> Press
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/partners/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-handshake mr-2 text-xs"></i> Partners
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Support Column -->
+            <div>
+                <h3 class="text-white font-semibold mb-4">Support</h3>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="/help/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-life-ring mr-2 text-xs"></i> Help Center
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/contact/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-envelope mr-2 text-xs"></i> Contact
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/status/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-heartbeat mr-2 text-xs"></i> System Status
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/docs/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-book mr-2 text-xs"></i> Documentation
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/community/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-users mr-2 text-xs"></i> Community
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+        
+        <!-- Legal Links -->
+        <div class="border-t border-white/10 mt-12 pt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                    © 2024 AgoraProf LMS. All rights reserved.
+                </div>
+                <div class="flex space-x-6 text-sm">
+                    <a href="/privacy/" class="text-gray-400 hover:text-white transition-colors">
+                        Privacy Policy
+                    </a>
+                    <a href="/terms/" class="text-gray-400 hover:text-white transition-colors">
+                        Terms of Service
+                    </a>
+                    <a href="/cookies/" class="text-gray-400 hover:text-white transition-colors">
+                        Cookie Policy
+                    </a>
+                    <a href="/gdpr/" class="text-gray-400 hover:text-white transition-colors">
+                        GDPR
+                    </a>
+                    <a href="/sla/" class="text-gray-400 hover:text-white transition-colors">
+                        SLA
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trust Badges -->
+        <div class="border-t border-white/10 mt-8 pt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-6 mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-shield-alt text-green-400"></i>
+                        <span class="text-gray-400 text-sm">SOC 2 Compliant</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-lock text-green-400"></i>
+                        <span class="text-gray-400 text-sm">GDPR Ready</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-certificate text-green-400"></i>
+                        <span class="text-gray-400 text-sm">ISO 27001</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <img src="https://img.shields.io/badge/Payment-Stripe-blue" alt="Stripe">
+                    <img src="https://img.shields.io/badge/Hosting-AWS-orange" alt="AWS">
+                    <img src="https://img.shields.io/badge/Status-Operational-green" alt="Status">
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Back to Top Button -->
+<button id="backToTop" class="fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg opacity-0 invisible transition-all duration-300 hover:scale-110 z-40">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+    // Back to top button
+    const backToTopBtn = document.getElementById('backToTop');
+    
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.remove('opacity-0', 'invisible');
+            backToTopBtn.classList.add('opacity-100', 'visible');
+        } else {
+            backToTopBtn.classList.add('opacity-0', 'invisible');
+            backToTopBtn.classList.remove('opacity-100', 'visible');
+        }
+    });
+    
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Footer newsletter subscription (if implemented)
+    function subscribeNewsletter(email) {
+        // Newsletter subscription logic
+        showToast('Successfully subscribed to newsletter!', 'success');
+    }
+    
+    // Footer link tracking
+    document.querySelectorAll('footer a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Track footer link clicks for analytics
+            const linkText = this.textContent.trim();
+            console.log('Footer link clicked:', linkText);
+        });
+    });
+</script>

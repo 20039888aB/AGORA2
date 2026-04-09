@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+{% block title %}Team Performance - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .performance-container {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .performance-header {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    
+    .performance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+    }
+    
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .performance-table {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .performance-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .performance-table th {
+        background: rgba(59, 130, 246, 0.2);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    .performance-table td {
+        padding: 1rem;
+        color: white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .performance-table tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .performance-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .badge-excellent { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .badge-good { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .badge-average { background: rgba(251, 146, 60, 0.2); color: #fb923c; }
+    .badge-poor { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-excellent { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .progress-good { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+    .progress-average { background: linear-gradient(90deg, #fb923c, #f59e0b); }
+    .progress-poor { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    
+    .filter-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .filter-input {
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .filter-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .filter-select {
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        min-width: 150px;
+    }
+    
+    .chart-container {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .trend-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    .trend-up { color: #22c55e; }
+    .trend-down { color: #ef4444; }
+    .trend-neutral { color: #6b7280; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Header -->
+    <div class="performance-header">
+        <h1 class="text-2xl font-bold mb-2">Team Performance Review</h1>
+        <p class="text-white opacity-90">Monitor and analyze your team's learning progress and achievements</p>
+    </div>
+    
+    <!-- Performance Metrics -->
+    <div class="performance-grid">
+        <!-- Overall Completion Rate -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="metric-value">{{ overall_completion_rate|default:0 }}%</div>
+            <div class="metric-label">Overall Completion Rate</div>
+            <div class="mt-4">
+                <div class="trend-indicator trend-up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>{{ completion_trend|default:0 }}% from last month</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Average Score -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="metric-value">{{ average_score|default:0 }}%</div>
+            <div class="metric-label">Average Score</div>
+            <div class="mt-4">
+                <div class="trend-indicator trend-up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>{{ score_trend|default:0 }}% improvement</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Learners -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-value">{{ active_learners|default:0 }}</div>
+            <div class="metric-label">Active Learners</div>
+            <div class="mt-4">
+                <div class="trend-indicator trend-neutral">
+                    <i class="fas fa-minus"></i>
+                    <span>{{ active_trend|default:0 }}% change</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Certifications Earned -->
+        <div class="metric-card">
+            <div class="metric-icon bg-gradient-to-br from-orange-500 to-red-500">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="metric-value">{{ certificates_earned|default:0 }}</div>
+            <div class="metric-label">Certifications Earned</div>
+            <div class="mt-4">
+                <div class="trend-indicator trend-up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>{{ certificate_trend|default:0 }}% increase</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filter-section">
+        <input type="text" id="memberFilter" class="filter-input" placeholder="Search team members...">
+        <select id="performanceFilter" class="filter-select">
+            <option value="">All Performance Levels</option>
+            <option value="excellent">Excellent (90%+)</option>
+            <option value="good">Good (70-89%)</option>
+            <option value="average">Average (50-69%)</option>
+            <option value="poor">Poor (<50%)</option>
+        </select>
+        <select id="timeFilter" class="filter-select">
+            <option value="30">Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+            <option value="180">Last 6 Months</option>
+            <option value="365">Last Year</option>
+        </select>
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+            <i class="fas fa-filter mr-2"></i> Apply Filters
+        </button>
+    </div>
+    
+    <!-- Performance Chart -->
+    <div class="chart-container">
+        <h3 class="chart-title">Team Performance Trend</h3>
+        <canvas id="performanceChart" width="400" height="200"></canvas>
+    </div>
+    
+    <!-- Team Performance Table -->
+    <div class="performance-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Team Member</th>
+                    <th>Role</th>
+                    <th>Completed Courses</th>
+                    <th>Average Score</th>
+                    <th>Performance</th>
+                    <th>Last Activity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="performanceTableBody">
+                {% for member in team_performance %}
+                <tr data-performance="{{ member.performance_level|lower }}">
+                    <td>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                {{ member.first_name.0|default:member.email.0|upper }}
+                            </div>
+                            <div>
+                                <div class="font-semibold">{{ member.first_name }} {{ member.last_name }}</div>
+                                <div class="text-sm text-gray-400">{{ member.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded">{{ member.role }}</span>
+                    </td>
+                    <td>{{ member.completed_courses|default:0 }}</td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <span>{{ member.average_score|default:0 }}%</span>
+                            <div class="w-20">
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-{{ member.performance_level|lower }}" style="width: {{ member.average_score|default:0 }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="performance-badge badge-{{ member.performance_level|lower }}">
+                            {{ member.get_performance_display|default:member.performance_level|title }}
+                        </span>
+                    </td>
+                    <td>{{ member.last_activity|date:"M d, Y"|default:"Never" }}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="text-blue-400 hover:text-blue-300" onclick="viewDetails({{ member.id }})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="text-green-400 hover:text-green-300" onclick="sendFeedback({{ member.id }})">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="text-orange-400 hover:text-orange-300" onclick="assignCourse({{ member.id }})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-gray-400 py-8">
+                        <i class="fas fa-users text-4xl mb-4"></i>
+                        <p>No team performance data available</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Top Performers -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Top Performers</h2>
+        <div class="performance-grid">
+            {% for performer in top_performers %}
+            <div class="metric-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
+                        {{ performer.first_name.0|default:performer.email.0|upper }}
+                    </div>
+                    <div>
+                        <div class="font-semibold text-white">{{ performer.first_name }} {{ performer.last_name }}</div>
+                        <div class="text-sm text-gray-400">{{ performer.role }}</div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Courses Completed</span>
+                        <span class="text-green-400 font-bold">{{ performer.completed_courses|default:0 }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Average Score</span>
+                        <span class="text-blue-400 font-bold">{{ performer.average_score|default:0 }}%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Certificates</span>
+                        <span class="text-orange-400 font-bold">{{ performer.certificates|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-400 py-8">
+                <i class="fas fa-trophy text-4xl mb-4"></i>
+                <p>No top performers data available</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Performance Insights -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Performance Insights</h2>
+        <div class="performance-grid">
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="metric-label">Most Active Day</div>
+                <div class="text-xl font-bold text-white mt-2">{{ most_active_day|default:"Monday" }}</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="metric-label">Peak Learning Time</div>
+                <div class="text-xl font-bold text-white mt-2">{{ peak_time|default:"2:00 PM - 4:00 PM" }}</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="metric-label">Popular Course Category</div>
+                <div class="text-xl font-bold text-white mt-2">{{ popular_category|default:"Technical Skills" }}</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon bg-gradient-to-br from-orange-500 to-red-500">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="metric-label">Needs Attention</div>
+                <div class="text-xl font-bold text-white mt-2">{{ needs_attention|default:0 }} members</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const memberFilter = document.getElementById('memberFilter');
+    const performanceFilter = document.getElementById('performanceFilter');
+    const timeFilter = document.getElementById('timeFilter');
+    const tableRows = document.querySelectorAll('#performanceTableBody tr');
+    
+    function applyFilters() {
+        const memberFilterValue = memberFilter.value.toLowerCase();
+        const performanceFilterValue = performanceFilter.value;
+        
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const performanceLevel = row.dataset.performance;
+            
+            const matchesMember = !memberFilterValue || text.includes(memberFilterValue);
+            const matchesPerformance = !performanceFilterValue || performanceLevel === performanceFilterValue;
+            
+            row.style.display = matchesMember && matchesPerformance ? '' : 'none';
+        });
+    }
+    
+    memberFilter.addEventListener('input', applyFilters);
+    performanceFilter.addEventListener('change', applyFilters);
+    
+    // Simple chart visualization
+    const canvas = document.getElementById('performanceChart');
+    const ctx = canvas.getContext('2d');
+    
+    // Draw a simple line chart
+    const data = [65, 72, 68, 75, 82, 79, 85, 88, 92, 87, 90, 93];
+    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const width = canvas.width;
+    const height = canvas.height;
+    const padding = 40;
+    const graphWidth = width - padding * 2;
+    const graphHeight = height - padding * 2;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+    
+    // Draw axes
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.lineTo(width - padding, height - padding);
+    ctx.stroke();
+    
+    // Draw data points and lines
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    
+    data.forEach((value, index) => {
+        const x = padding + (index / (data.length - 1)) * graphWidth;
+        const y = height - padding - (value / 100) * graphHeight;
+        
+        if (index === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+    
+    ctx.stroke();
+    
+    // Draw data points
+    data.forEach((value, index) => {
+        const x = padding + (index / (data.length - 1)) * graphWidth;
+        const y = height - padding - (value / 100) * graphHeight;
+        
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+    
+    // Draw labels
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.font = '12px sans-serif';
+    
+    labels.forEach((label, index) => {
+        const x = padding + (index / (labels.length - 1)) * graphWidth;
+        ctx.fillText(label, x - 15, height - padding + 20);
+    });
+});
+
+// Action functions
+function viewDetails(memberId) {
+    console.log('View details for member:', memberId);
+    // In a real implementation, this would navigate to a detailed view
+}
+
+function sendFeedback(memberId) {
+    console.log('Send feedback to member:', memberId);
+    // In a real implementation, this would open a feedback modal
+}
+
+function assignCourse(memberId) {
+    console.log('Assign course to member:', memberId);
+    // In a real implementation, this would navigate to course assignment
+}
+</script>
+{% endblock %}

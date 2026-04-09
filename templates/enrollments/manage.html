@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+{% block title %}Manage Enrollments - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .manage-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .manage-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .manage-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .manage-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .manage-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .controls-section {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .search-filters {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .search-input {
+        flex: 1;
+        min-width: 300px;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .filter-select {
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .filter-select option {
+        background: #1a1a2e;
+        color: white;
+    }
+    
+    .enrollments-table {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table th {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        text-align: left;
+        color: white;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .table td {
+        padding: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .table tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .user-name {
+        font-weight: 500;
+        color: white;
+    }
+    
+    .user-email {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .course-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .course-title {
+        font-weight: 500;
+        color: white;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-active {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .status-completed {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+    
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .status-suspended {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+    }
+    
+    .progress-bar {
+        width: 100px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-view {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+    
+    .btn-view:hover {
+        background: rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-edit {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .btn-edit:hover {
+        background: rgba(34, 197, 94, 0.3);
+    }
+    
+    .btn-suspend {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+    }
+    
+    .btn-suspend:hover {
+        background: rgba(251, 191, 36, 0.3);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination a:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .pagination .current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="manage-container">
+    <!-- Header -->
+    <div class="manage-header">
+        <h1 class="manage-title">Manage Enrollments</h1>
+        <p class="manage-subtitle">Monitor and manage student course enrollments</p>
+    </div>
+    
+    <!-- Controls -->
+    <div class="controls-section">
+        <div class="search-filters">
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Search by student email..." 
+                   value="{{ search_query }}"
+                   onchange="window.location.href=`?search=${this.value}`">
+            
+            <select class="filter-select" onchange="window.location.href=`?status=${this.value}`">
+                <option value="">All Status</option>
+                <option value="ACTIVE" {% if status_filter == 'ACTIVE' %}selected{% endif %}>Active</option>
+                <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                <option value="SUSPENDED" {% if status_filter == 'SUSPENDED' %}selected{% endif %}>Suspended</option>
+            </select>
+            
+            <button class="btn-primary" onclick="exportEnrollments()">
+                <i class="fas fa-download mr-2"></i>Export
+            </button>
+        </div>
+    </div>
+    
+    <!-- Enrollments Table -->
+    <div class="enrollments-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Enrolled Date</th>
+                    <th>Completed Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in enrollments %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                {{ enrollment.user.first_name.0|default:enrollment.user.email.0|upper }}
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name">{{ enrollment.user.get_full_name|default:enrollment.user.email }}</div>
+                                <div class="user-email">{{ enrollment.user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="course-info">
+                            <i class="fas fa-book"></i>
+                            <span class="course-title">{{ enrollment.course.title }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ enrollment.status|lower }}">
+                            {{ enrollment.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ enrollment.progress_percentage|default:0 }}%"></div>
+                        </div>
+                        <span style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); margin-left: 0.5rem;">
+                            {{ enrollment.progress_percentage|default:0 }}%
+                        </span>
+                    </td>
+                    <td>{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                    <td>
+                        {% if enrollment.completed_at %}
+                            {{ enrollment.completed_at|date:"M d, Y" }}
+                        {% else %}
+                            <span style="color: rgba(255, 255, 255, 0.4);">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="/profile/" class="btn-action btn-view">
+                                <i class="fas fa-user"></i> View
+                            </a>
+                            <a href="/courses/course/{{ enrollment.course.id }}/" class="btn-action btn-view">
+                                <i class="fas fa-book"></i> Course
+                            </a>
+                            {% if enrollment.status == 'ACTIVE' %}
+                            <button class="btn-action btn-suspend" onclick="toggleEnrollmentStatus({{ enrollment.id }}, 'SUSPENDED')">
+                                <i class="fas fa-pause"></i> Suspend
+                            </button>
+                            {% elif enrollment.status == 'SUSPENDED' %}
+                            <button class="btn-action btn-edit" onclick="toggleEnrollmentStatus({{ enrollment.id }}, 'ACTIVE')">
+                                <i class="fas fa-play"></i> Activate
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h3>No enrollments found</h3>
+                            <p>Students haven't enrolled in any courses yet</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if enrollments.has_other_pages %}
+    <div class="pagination">
+        {% if enrollments.has_previous %}
+            <a href="?page={{ enrollments.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        {% endif %}
+        
+        {% for num in enrollments.paginator.page_range %}
+            {% if enrollments.number == num %}
+                <span class="current">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}&search={{ search_query }}&status={{ status_filter }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if enrollments.has_next %}
+            <a href="?page={{ enrollments.next_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleEnrollmentStatus(enrollmentId, newStatus) {
+    // In a real implementation, this would make an API call
+    const statusText = newStatus === 'ACTIVE' ? 'activated' : 'suspended';
+    if (confirm(`Are you sure you want to ${statusText} this enrollment?`)) {
+        // API call would go here
+        alert(`Enrollment ${statusText} successfully!`);
+        window.location.reload();
+    }
+}
+
+function exportEnrollments() {
+    // In a real implementation, this would generate and download a CSV/Excel file
+    alert('Export feature coming soon!');
+}
+</script>
+{% endblock %}

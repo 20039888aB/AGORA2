@@ -1,0 +1,312 @@
+{% extends "base_enhanced.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .documents-header {
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-inverse);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .document-card {
+        background: var(--bg-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .document-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+        border-color: var(--border-primary);
+    }
+    
+    .document-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .document-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .document-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+    
+    .document-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-doc {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+        cursor: pointer;
+        margin: 0.25rem;
+    }
+    
+    .btn-primary {
+        background: var(--bg-primary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-primary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-inverse);
+    }
+    
+    .btn-secondary:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-danger {
+        background: var(--bg-danger);
+        color: var(--text-inverse);
+    }
+    
+    .btn-danger:hover {
+        filter: brightness(0.94);
+    }
+    
+    .btn-success {
+        background: var(--bg-success);
+        color: var(--text-inverse);
+    }
+    
+    .btn-success:hover {
+        filter: brightness(0.94);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header with Statistics -->
+    <div class="documents-header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">{{ course.title }}</h1>
+                <p class="text-lg opacity-90">Manage course documents and materials</p>
+                
+                <!-- Admin Statistics -->
+                <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur">
+                        <div class="text-2xl font-bold">{{ total_documents }}</div>
+                        <div class="text-sm opacity-90">Total Documents</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur">
+                        <div class="text-2xl font-bold">{{ required_documents }}</div>
+                        <div class="text-sm opacity-90">Required</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur">
+                        <div class="text-2xl font-bold">{{ pdf_documents }}</div>
+                        <div class="text-sm opacity-90">PDF Files</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur">
+                        <div class="text-2xl font-bold">{{ total_size|filesizeformat }}</div>
+                        <div class="text-sm opacity-90">Total Size</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                {% if can_reorder %}
+                <a href="{% url 'reorder_documents' course.id %}" class="btn-doc btn-secondary">
+                    <i class="fas fa-sort"></i>
+                    Reorder
+                </a>
+                {% endif %}
+                {% if can_add_document %}
+                <a href="{% url 'add_course_document' course.id %}" class="btn-doc btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Document
+                </a>
+                {% endif %}
+                {% if can_bulk_upload %}
+                <a href="{% url 'bulk_upload_documents' course.id %}" class="btn-doc btn-success">
+                    <i class="fas fa-upload"></i>
+                    Bulk Upload
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documents List -->
+    <div class="documents-list">
+        {% if documents %}
+            {% for document in documents %}
+            <div class="document-card" data-document-id="{{ document.id }}">
+                <div class="document-info">
+                    <div>
+                        <div class="document-title">
+                            {{ document.title }}
+                            {% if document.is_required %}
+                            <span class="ml-2 px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                                <i class="fas fa-star"></i> Required
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if document.description %}
+                        <p class="text-gray-400 mb-2">{{ document.description|truncatewords:20 }}</p>
+                        {% endif %}
+                        <div class="document-meta">
+                            <span class="flex items-center gap-1">
+                                {% if document.file_type == 'PDF' %}
+                                <i class="fas fa-file-pdf text-red-400"></i>
+                                {% else %}
+                                <i class="fas fa-file text-blue-400"></i>
+                                {% endif %}
+                                {{ document.file_type }}
+                            </span>
+                            <span><i class="fas fa-database"></i> {{ document.file_size_display }}</span>
+                            <span><i class="fas fa-sort-numeric-up"></i> Order {{ document.order }}</span>
+                            <span><i class="fas fa-calendar"></i> {{ document.created_at|date:"M j, Y" }}</span>
+                            {% if document.is_downloadable %}
+                            <span class="text-green-400"><i class="fas fa-download"></i> Downloadable</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="document-actions">
+                        {% if document.file %}
+                        <a href="{{ document.file.url }}" target="_blank" class="btn-doc btn-secondary">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </a>
+                        {% endif %}
+                        {% if document.is_downloadable and document.file %}
+                        <a href="{{ document.file.url }}" download="{{ document.file.name }}" class="btn-doc btn-success">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </a>
+                        {% endif %}
+                        {% if can_manage_documents %}
+                        <a href="{% url 'edit_course_document' course.id document.id %}" class="btn-doc btn-primary">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </a>
+                        <a href="{% url 'delete_course_document' course.id document.id %}" class="btn-doc btn-danger">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
+                <h3 class="text-xl font-semibold mb-2">No Documents Yet</h3>
+                <p class="mb-4">This course doesn't have any documents yet. Add your first document to get started.</p>
+                {% if can_add_document %}
+                <a href="{% url 'add_course_document' course.id %}" class="btn-doc btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Document
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Navigation -->
+    <div class="mt-8">
+        <a href="{% url 'content:course_detail' course.id %}" class="btn-doc btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Course
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add drag and drop functionality for reordering documents
+document.addEventListener('DOMContentLoaded', function() {
+    const documentsList = document.querySelector('.documents-list');
+    if (documentsList) {
+        new Sortable(documentsList, {
+            animation: 150,
+            handle: '.document-card',
+            onEnd: function(evt) {
+                updateDocumentOrder();
+            }
+        });
+    }
+});
+
+function updateDocumentOrder() {
+    const documents = document.querySelectorAll('.document-card');
+    const orders = [];
+    
+    documents.forEach((doc, index) => {
+        const docId = doc.dataset.documentId;
+        orders.push(`${docId}:${index + 1}`);
+    });
+    
+    fetch(`/courses/{{ course.id }}/documents/reorder/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: `document_orders=${orders.join(',')}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('Document order updated successfully', 'success');
+        } else {
+            showMessage(data.error || 'Error updating document order', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Error updating document order', 'error');
+    });
+}
+</script>
+{% endblock %}

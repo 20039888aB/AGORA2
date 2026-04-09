@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+{% block title %}Assign Training - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assign-container {
+        background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .assign-header {
+        background: linear-gradient(135deg, #fb923c, #f59e0b);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    
+    .assign-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .assign-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .assign-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .member-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .member-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+    }
+    
+    .member-card.selected {
+        background: rgba(251, 146, 60, 0.2);
+        border-color: #fb923c;
+    }
+    
+    .course-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .course-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+    }
+    
+    .course-card.selected {
+        background: rgba(251, 146, 60, 0.2);
+        border-color: #fb923c;
+    }
+    
+    .assign-btn {
+        background: linear-gradient(135deg, #fb923c, #f59e0b);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .assign-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(251, 146, 60, 0.3);
+    }
+    
+    .assign-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .checkbox-wrapper input[type="checkbox"] {
+        margin-right: 0.5rem;
+        width: 18px;
+        height: 18px;
+    }
+    
+    .checkbox-wrapper label {
+        color: white;
+        cursor: pointer;
+    }
+    
+    .filter-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .filter-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .selected-count {
+        background: rgba(251, 146, 60, 0.2);
+        color: #fb923c;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Header -->
+    <div class="assign-header">
+        <h1 class="text-2xl font-bold mb-2">Assign Training</h1>
+        <p class="text-white opacity-90">Select team members and courses to assign training</p>
+    </div>
+    
+    <!-- Assignment Grid -->
+    <div class="assign-grid">
+        <!-- Team Members Section -->
+        <div class="assign-section">
+            <h2 class="assign-title">Select Team Members</h2>
+            
+            <!-- Filter -->
+            <div class="filter-section">
+                <input type="text" id="memberFilter" class="filter-input" placeholder="Search team members...">
+                <select id="roleFilter" class="filter-input">
+                    <option value="">All Roles</option>
+                    <option value="STUDENT">Students</option>
+                    <option value="MANAGER">Managers</option>
+                </select>
+            </div>
+            
+            <!-- Selected Count -->
+            <div class="selected-count">
+                Selected: <span id="selectedMembersCount">0</span> members
+            </div>
+            
+            <!-- Members List -->
+            <div id="membersList">
+                {% for member in team_members %}
+                <div class="member-card" data-member-id="{{ member.id }}">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="member_{{ member.id }}" value="{{ member.id }}" class="member-checkbox">
+                        <label for="member_{{ member.id }}">
+                            <strong>{{ member.first_name }} {{ member.last_name }}</strong>
+                            <span class="text-gray-400">({{ member.email }})</span>
+                            <span class="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded">{{ member.role }}</span>
+                        </label>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-gray-400 py-8">
+                    <i class="fas fa-users text-4xl mb-4"></i>
+                    <p>No team members found</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Courses Section -->
+        <div class="assign-section">
+            <h2 class="assign-title">Select Courses</h2>
+            
+            <!-- Filter -->
+            <div class="filter-section">
+                <input type="text" id="courseFilter" class="filter-input" placeholder="Search courses...">
+                <select id="difficultyFilter" class="filter-input">
+                    <option value="">All Levels</option>
+                    <option value="BEGINNER">Beginner</option>
+                    <option value="INTERMEDIATE">Intermediate</option>
+                    <option value="ADVANCED">Advanced</option>
+                </select>
+            </div>
+            
+            <!-- Selected Count -->
+            <div class="selected-count">
+                Selected: <span id="selectedCoursesCount">0</span> courses
+            </div>
+            
+            <!-- Courses List -->
+            <div id="coursesList">
+                {% for course in available_courses %}
+                <div class="course-card" data-course-id="{{ course.id }}">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="course_{{ course.id }}" value="{{ course.id }}" class="course-checkbox">
+                        <label for="course_{{ course.id }}">
+                            <strong>{{ course.title }}</strong>
+                            <span class="text-gray-400 block text-sm">{{ course.description|truncatechars:50 }}</span>
+                            <span class="mt-1 inline-block px-2 py-1 bg-green-500 text-white text-xs rounded">{{ course.get_difficulty_display }}</span>
+                            <span class="mt-1 ml-1 inline-block px-2 py-1 bg-blue-500 text-white text-xs rounded">{{ course.get_status_display }}</span>
+                        </label>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-gray-400 py-8">
+                    <i class="fas fa-book text-4xl mb-4"></i>
+                    <p>No courses available</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assignment Options -->
+    <div class="assign-section">
+        <h2 class="assign-title">Assignment Options</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-white mb-2">Due Date (Optional)</label>
+                <input type="date" id="dueDate" class="filter-input">
+            </div>
+            <div>
+                <label class="block text-white mb-2">Priority</label>
+                <select id="priority" class="filter-input">
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM" selected>Medium</option>
+                    <option value="HIGH">High</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-4">
+            <label class="block text-white mb-2">Additional Instructions</label>
+            <textarea id="instructions" class="filter-input" rows="3" placeholder="Add any special instructions for the team..."></textarea>
+        </div>
+    </div>
+    
+    <!-- Assign Button -->
+    <div class="mt-6">
+        <button id="assignBtn" class="assign-btn" disabled>
+            <i class="fas fa-user-plus mr-2"></i> Assign Training
+        </button>
+    </div>
+    
+    <!-- Recent Assignments -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-4">Recent Assignments</h2>
+        <div class="assign-section">
+            {% for assignment in recent_assignments %}
+            <div class="member-card">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <strong>{{ assignment.course.title }}</strong>
+                        <span class="text-gray-400 block text-sm">
+                            Assigned to {{ assignment.member_count }} members on {{ assignment.created_at|date:"M d, Y" }}
+                        </span>
+                    </div>
+                    <span class="px-2 py-1 bg-{{ assignment.priority_color }}-500 text-white text-xs rounded">
+                        {{ assignment.get_priority_display }}
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-history text-4xl mb-4"></i>
+                <p>No recent assignments</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+    const courseCheckboxes = document.querySelectorAll('.course-checkbox');
+    const assignBtn = document.getElementById('assignBtn');
+    const selectedMembersCount = document.getElementById('selectedMembersCount');
+    const selectedCoursesCount = document.getElementById('selectedCoursesCount');
+    
+    function updateCounts() {
+        const selectedMembers = document.querySelectorAll('.member-checkbox:checked').length;
+        const selectedCourses = document.querySelectorAll('.course-checkbox:checked').length;
+        
+        selectedMembersCount.textContent = selectedMembers;
+        selectedCoursesCount.textContent = selectedCourses;
+        
+        // Enable assign button only if both members and courses are selected
+        assignBtn.disabled = selectedMembers === 0 || selectedCourses === 0;
+    }
+    
+    // Update counts when checkboxes change
+    memberCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateCounts);
+    });
+    
+    courseCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateCounts);
+    });
+    
+    // Handle member card selection
+    memberCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const memberCard = this.closest('.member-card');
+            if (this.checked) {
+                memberCard.classList.add('selected');
+            } else {
+                memberCard.classList.remove('selected');
+            }
+        });
+    });
+    
+    // Handle course card selection
+    courseCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const courseCard = this.closest('.course-card');
+            if (this.checked) {
+                courseCard.classList.add('selected');
+            } else {
+                courseCard.classList.remove('selected');
+            }
+        });
+    });
+    
+    // Filter members
+    document.getElementById('memberFilter').addEventListener('input', function() {
+        const filter = this.value.toLowerCase();
+        const memberCards = document.querySelectorAll('.member-card');
+        
+        memberCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(filter) ? 'block' : 'none';
+        });
+    });
+    
+    // Filter courses
+    document.getElementById('courseFilter').addEventListener('input', function() {
+        const filter = this.value.toLowerCase();
+        const courseCards = document.querySelectorAll('.course-card');
+        
+        courseCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(filter) ? 'block' : 'none';
+        });
+    });
+    
+    // Role filter
+    document.getElementById('roleFilter').addEventListener('change', function() {
+        const filter = this.value;
+        const memberCards = document.querySelectorAll('.member-card');
+        
+        memberCards.forEach(card => {
+            if (filter === '') {
+                card.style.display = 'block';
+            } else {
+                const roleSpan = card.querySelector('.bg-blue-500');
+                if (roleSpan && roleSpan.textContent === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+    });
+    
+    // Difficulty filter
+    document.getElementById('difficultyFilter').addEventListener('change', function() {
+        const filter = this.value;
+        const courseCards = document.querySelectorAll('.course-card');
+        
+        courseCards.forEach(card => {
+            if (filter === '') {
+                card.style.display = 'block';
+            } else {
+                const difficultySpan = card.querySelector('.bg-green-500');
+                if (difficultySpan && difficultySpan.textContent === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+    });
+    
+    // Handle assignment submission
+    assignBtn.addEventListener('click', function() {
+        const selectedMembers = Array.from(document.querySelectorAll('.member-checkbox:checked')).map(cb => cb.value);
+        const selectedCourses = Array.from(document.querySelectorAll('.course-checkbox:checked')).map(cb => cb.value);
+        const dueDate = document.getElementById('dueDate').value;
+        const priority = document.getElementById('priority').value;
+        const instructions = document.getElementById('instructions').value;
+        
+        // Here you would typically send this data to the backend
+        console.log('Assigning training:', {
+            members: selectedMembers,
+            courses: selectedCourses,
+            dueDate: dueDate,
+            priority: priority,
+            instructions: instructions
+        });
+        
+        // Show success message
+        alert(`Training assigned successfully to ${selectedMembers.length} member(s) for ${selectedCourses.length} course(s)!`);
+        
+        // Reset form
+        memberCheckboxes.forEach(cb => {
+            cb.checked = false;
+            cb.closest('.member-card').classList.remove('selected');
+        });
+        
+        courseCheckboxes.forEach(cb => {
+            cb.checked = false;
+            cb.closest('.course-card').classList.remove('selected');
+        });
+        
+        document.getElementById('dueDate').value = '';
+        document.getElementById('priority').value = 'MEDIUM';
+        document.getElementById('instructions').value = '';
+        
+        updateCounts();
+    });
+});
+</script>
+{% endblock %}

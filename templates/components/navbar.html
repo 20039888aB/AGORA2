@@ -1,0 +1,266 @@
+{% load static %}
+<nav class="fixed top-0 left-0 w-full z-50 glass px-6 py-4 transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        
+        <!-- LOGO -->
+        <div class="flex items-center space-x-3">
+            <img src="{% static 'images/logo.png' %}" alt="AgoraProf Logo" class="w-12 h-12 object-contain rounded-lg">
+            <div class="text-2xl font-bold gradient-text glow">
+                AgoraProf
+            </div>
+        </div>
+        
+        <!-- DESKTOP NAVIGATION -->
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="/" class="text-gray-300 hover:text-white transition-colors duration-200 relative group">
+                Home
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="/about/" class="text-gray-300 hover:text-white transition-colors duration-200 relative group">
+                About
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="/features/" class="text-gray-300 hover:text-white transition-colors duration-200 relative group">
+                Features
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="/pricing/" class="text-gray-300 hover:text-white transition-colors duration-200 relative group">
+                Pricing
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a href="/faq/" class="text-gray-300 hover:text-white transition-colors duration-200 relative group">
+                FAQ
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+            </a>
+        </div>
+        
+        <!-- SEARCH BAR -->
+        <div class="hidden lg:flex items-center">
+            <div class="relative">
+                <input type="text" 
+                       placeholder="Search courses..." 
+                       class="search-input w-64 px-4 py-2 pl-10 rounded-lg placeholder-gray-400 focus:outline-none">
+                <i class="fas fa-search search-icon absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- AUTH BUTTONS -->
+        <div class="flex items-center space-x-3">
+            {% if user.is_authenticated %}
+                <!-- User Menu -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10 transition-all duration-200">
+                        <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-semibold">
+                                {{ user.first_name.0|default:user.email.0|upper }}
+                            </span>
+                        </div>
+                        <span class="hidden md:block text-sm">{{ user.first_name|default:user.email|truncatechars:15 }}</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-2 w-48 glass-dark opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                        <div class="py-2">
+                            <a href="/dashboard/" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                            </a>
+                            <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                                <i class="fas fa-user mr-2"></i> Profile
+                            </a>
+                            {% if user.role == 'ADMIN' or user.role == 'SUPERADMIN' %}
+                                <a href="/admin/" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                                    <i class="fas fa-cog mr-2"></i> Admin Panel
+                                </a>
+                            {% endif %}
+                            <hr class="my-2 border-white/10">
+                            <a href="/logout/" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <a href="/login/" class="btn-secondary">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+                </a>
+                <a href="/signup/" class="btn-primary">
+                    <i class="fas fa-user-plus mr-2"></i> Sign Up
+                </a>
+            {% endif %}
+        </div>
+        
+        <!-- MOBILE MENU BUTTON -->
+        <button class="md:hidden text-white" id="mobile-menu-btn">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+    
+    <!-- MOBILE MENU -->
+    <div class="md:hidden hidden glass-dark mt-4 mx-4 rounded-lg" id="mobile-menu">
+        <div class="py-4 space-y-3">
+            <!-- Mobile Search Bar -->
+            <div class="px-4">
+                <div class="relative">
+                    <input type="text" 
+                           placeholder="Search courses..." 
+                           class="search-input w-full px-4 py-2 pl-10 rounded-lg placeholder-gray-400 focus:outline-none">
+                    <i class="fas fa-search search-icon absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <a href="/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="/about/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                <i class="fas fa-info-circle mr-2"></i> About
+            </a>
+            <a href="/features/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                <i class="fas fa-star mr-2"></i> Features
+            </a>
+            <a href="/pricing/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                <i class="fas fa-dollar-sign mr-2"></i> Pricing
+            </a>
+            <a href="/faq/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                <i class="fas fa-question-circle mr-2"></i> FAQ
+            </a>
+            
+            {% if not user.is_authenticated %}
+                <hr class="my-3 border-white/10">
+                <a href="/login/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+                </a>
+                <a href="/signup/" class="block px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <i class="fas fa-user-plus mr-2"></i> Sign Up
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Navbar scroll effect */
+    #navbar.scrolled {
+        background: rgba(11, 15, 26, 0.95);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Mobile menu animation */
+    #mobile-menu {
+        animation: slideDown 0.3s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Enhanced input field styling */
+    .search-input {
+        background: rgba(17, 24, 39, 0.9) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(55, 65, 81, 0.8) !important;
+        color: #ffffff !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .search-input:focus {
+        background: rgba(17, 24, 39, 0.95) !important;
+        border-color: rgba(99, 102, 241, 0.7) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3) !important;
+        transform: translateY(-1px) !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    
+    .search-input::placeholder {
+        color: rgba(209, 213, 219, 0.9) !important;
+        font-weight: 400 !important;
+        opacity: 1 !important;
+    }
+    
+    /* Search icon animation */
+    .search-icon {
+        transition: color 0.3s ease;
+        color: rgba(209, 213, 219, 0.8) !important;
+    }
+    
+    .search-input:focus + .search-icon {
+        color: rgba(99, 102, 241, 0.9) !important;
+    }
+    
+    /* Additional text enhancement */
+    .search-input:valid {
+        color: #ffffff !important;
+    }
+    
+    .search-input:focus:valid {
+        color: #ffffff !important;
+    }
+</style>
+
+<script>
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+        
+        // Toggle icon
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const navbar = document.getElementById('navbar');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        
+        if (!navbar.contains(event.target) && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            const icon = mobileMenuBtn.querySelector('i');
+            icon.classList.add('fa-bars');
+            icon.classList.remove('fa-times');
+        }
+    });
+    
+    // Search functionality
+    function handleSearch(event) {
+        const searchTerm = event.target.value.trim();
+        
+        if (event.key === 'Enter' && searchTerm) {
+            // Redirect to courses page with search query
+            window.location.href = `/courses/?search=${encodeURIComponent(searchTerm)}`;
+        }
+    }
+    
+    // Add search event listeners to all search inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInputs = document.querySelectorAll('.search-input');
+        searchInputs.forEach(input => {
+            input.addEventListener('keypress', handleSearch);
+        });
+        
+        // Highlight active page
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('nav a[href]');
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('text-white');
+                link.classList.remove('text-gray-300');
+            }
+        });
+    });
+</script>

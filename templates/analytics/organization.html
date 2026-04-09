@@ -1,0 +1,488 @@
+{% extends "base.html" %}
+{% block title %}Organization Analytics - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analytics-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .analytics-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .analytics-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .analytics-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .analytics-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .analytics-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    .org-selector {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .org-select {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    
+    .org-select option {
+        background: #1e293b;
+        color: white;
+    }
+    
+    .org-select:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .stat-card:hover::before {
+        left: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1rem;
+    }
+    
+    .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .stat-change.positive {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .stat-change.negative {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .charts-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .chart-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .chart-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .chart-container {
+        height: 300px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+    }
+    
+    .team-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 3rem;
+    }
+    
+    .team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .team-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .team-member {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .team-member:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .member-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .member-info {
+        flex: 1;
+    }
+    
+    .member-name {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .member-role {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .member-stats {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .member-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .charts-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .analytics-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-container pt-24 pb-8">
+    <!-- Analytics Header -->
+    <div class="analytics-header">
+        <div class="analytics-content">
+            <h1 class="analytics-title">Organization Analytics</h1>
+            <p class="analytics-subtitle">Detailed insights into your organization's performance</p>
+            
+            <div class="org-selector">
+                <select class="org-select" id="orgSelect" onchange="loadOrganizationData()">
+                    <option value="">Select an organization...</option>
+                    {% for org in organizations %}
+                    <option value="{{ org.id }}" {% if selected_org and selected_org.id == org.id %}selected{% endif %}>
+                        {{ org.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    {% if selected_org %}
+    <!-- Organization Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon bg-gradient-to-br from-blue-500 to-cyan-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">{{ org_stats.total_users }}</div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>+{{ org_stats.user_growth }}% this month</span>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon bg-gradient-to-br from-green-500 to-emerald-500">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stat-value">{{ org_stats.active_courses }}</div>
+            <div class="stat-label">Active Courses</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>+{{ org_stats.course_growth }}% this month</span>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon bg-gradient-to-br from-purple-500 to-pink-500">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <div class="stat-value">{{ org_stats.certificates_issued }}</div>
+            <div class="stat-label">Certificates Issued</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>+{{ org_stats.certificate_growth }}% this month</span>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon bg-gradient-to-br from-orange-500 to-red-500">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-value">{{ org_stats.completion_rate }}%</div>
+            <div class="stat-label">Completion Rate</div>
+            <div class="stat-change {% if org_stats.completion_trend > 0 %}positive{% else %}negative{% endif %}">
+                <i class="fas fa-arrow-{% if org_stats.completion_trend > 0 %}up{% else %}down{% endif %}"></i>
+                <span>{{ org_stats.completion_trend|floatformat:1 }}% from last month</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Enrollment Trends</h3>
+            </div>
+            <div class="chart-container">
+                <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <div>Enrollment trends chart for {{ selected_org.name }}</div>
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Course Performance</h3>
+            </div>
+            <div class="chart-container">
+                <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <div>Course performance chart for {{ selected_org.name }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Performers -->
+    <div class="team-section">
+        <div class="team-header">
+            <h3 class="team-title">Top Performers</h3>
+        </div>
+        <div class="team-grid">
+            {% for member in top_performers %}
+            <div class="team-member">
+                <div class="member-avatar">
+                    {{ member.name.0|upper }}
+                </div>
+                <div class="member-info">
+                    <div class="member-name">{{ member.name }}</div>
+                    <div class="member-role">{{ member.role }}</div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>{{ member.courses_completed }}</span>
+                        </div>
+                        <div class="member-stat">
+                            <i class="fas fa-certificate"></i>
+                            <span>{{ member.certificates }}</span>
+                        </div>
+                        <div class="member-stat">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ member.hours_completed }}h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>No performance data yet</h3>
+                <p>Top performers will appear here as users complete courses.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- No Organization Selected -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-building"></i>
+        </div>
+        <h3>Select an Organization</h3>
+        <p>Choose an organization from the dropdown above to view detailed analytics.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function loadOrganizationData() {
+    const select = document.getElementById('orgSelect');
+    const orgId = select.value;
+    
+    if (orgId) {
+        // Redirect to the organization analytics page
+        window.location.href = `/analytics/organization/?org_id=${orgId}`;
+    } else {
+        // Redirect back to the base page
+        window.location.href = '/analytics/organization/';
+    }
+}
+
+// Auto-refresh data every 30 seconds
+setInterval(() => {
+    const orgId = document.getElementById('orgSelect').value;
+    if (orgId) {
+        // This would typically make an API call to refresh data
+        console.log('Refreshing organization data...');
+    }
+}, 30000);
+</script>
+{% endblock %}

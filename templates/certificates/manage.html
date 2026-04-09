@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+{% block title %}Manage Certificates - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .certificates-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .certificates-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .certificates-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .certificates-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .certificates-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .certificates-table-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .search-filter {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .search-input {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.4);
+        color: white;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.3s ease;
+        width: 250px;
+    }
+    
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .search-input:focus {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .filter-select {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.4);
+        color: white;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-select option {
+        background: #1a1a1a;
+        color: white;
+    }
+    
+    .certificates-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .certificates-table th {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        font-weight: 600;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .certificates-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .certificates-table tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .certificate-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .certificate-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    
+    .certificate-details {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .certificate-name {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+    
+    .certificate-course {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 0.25rem;
+    }
+    
+    .certificate-date {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-issued {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+    
+    .status-pending {
+        background: rgba(251, 146, 60, 0.2);
+        color: #fb923c;
+    }
+    
+    .status-revoked {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .action-btn {
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+    }
+    
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+    
+    .page-btn {
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+    }
+    
+    .page-btn.active,
+    .page-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .search-filter {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .search-input,
+        .filter-select {
+            width: 100%;
+        }
+        
+        .certificates-table {
+            font-size: 0.85rem;
+        }
+        
+        .certificate-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .certificates-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <!-- Certificates Header -->
+    <div class="certificates-header">
+        <div class="certificates-content">
+            <h1 class="certificates-title">Manage Certificates</h1>
+            <p class="certificates-subtitle">Oversee and manage all certificates in the platform</p>
+            
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total_certificates }}</div>
+                    <div class="stat-label">Total Certificates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.issued_this_month }}</div>
+                    <div class="stat-label">Issued This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.pending_review }}</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.revoked_certificates }}</div>
+                    <div class="stat-label">Revoked</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Certificates Table -->
+    <div class="certificates-table-section">
+        <div class="section-header">
+            <h3 class="section-title">All Certificates</h3>
+            <div class="search-filter">
+                <input type="text" class="search-input" placeholder="Search certificates..." id="searchInput" onkeyup="searchCertificates()">
+                <select class="filter-select" id="statusFilter" onchange="filterCertificates()">
+                    <option value="">All Status</option>
+                    <option value="issued">Issued</option>
+                    <option value="pending">Pending</option>
+                    <option value="revoked">Revoked</option>
+                </select>
+            </div>
+        </div>
+        
+        <table class="certificates-table">
+            <thead>
+                <tr>
+                    <th>Certificate</th>
+                    <th>Recipient</th>
+                    <th>Course</th>
+                    <th>Issue Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="certificatesTableBody">
+                {% for certificate in certificates %}
+                <tr>
+                    <td>
+                        <div class="certificate-info">
+                            <div class="certificate-avatar">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="certificate-details">
+                                <div class="certificate-name">{{ certificate.title }}</div>
+                                <div class="certificate-course">{{ certificate.course.name }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="certificate-details">
+                            <div class="certificate-name">{{ certificate.user.get_full_name|default:certificate.user.email }}</div>
+                            <div class="certificate-date">{{ certificate.issued_date|date:"M d, Y" }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="certificate-course">{{ certificate.course.name }}</div>
+                    </td>
+                    <td>
+                        <div class="certificate-date">{{ certificate.issued_date|date:"M d, Y" }}</div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ certificate.status }}">
+                            {{ certificate.status|title }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="action-btn" onclick="viewCertificate({{ certificate.id }})" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if certificate.status == 'issued' %}
+                            <button class="action-btn" onclick="downloadCertificate({{ certificate.id }})" title="Download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            {% endif %}
+                            {% if certificate.status == 'pending' %}
+                            <button class="action-btn" onclick="approveCertificate({{ certificate.id }})" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn" onclick="revokeCertificate({{ certificate.id }})" title="Revoke">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3>No certificates found</h3>
+                            <p>Start issuing certificates to students for their achievements</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        {% if certificates.has_other_pages %}
+        <div class="pagination">
+            {% if certificates.has_previous %}
+                <button class="page-btn" onclick="changePage({{ certificates.previous_page_number }})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            {% endif %}
+            
+            {% for num in certificates.paginator.page_range %}
+                {% if certificates.number == num %}
+                    <button class="page-btn active">{{ num }}</button>
+                {% elif num > certificates.number|add:'-3' and num < certificates.number|add:'3' %}
+                    <button class="page-btn" onclick="changePage({{ num }})">{{ num }}</button>
+                {% endif %}
+            {% endfor %}
+            
+            {% if certificates.has_next %}
+                <button class="page-btn" onclick="changePage({{ certificates.next_page_number }})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function searchCertificates() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#certificatesTableBody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+function filterCertificates() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#certificatesTableBody tr');
+    
+    rows.forEach(row => {
+        if (statusFilter === '') {
+            row.style.display = '';
+        } else {
+            const status = row.querySelector('.status-badge').textContent.toLowerCase();
+            row.style.display = status.includes(statusFilter) ? '' : 'none';
+        }
+    });
+}
+
+function viewCertificate(certificateId) {
+    // View certificate details
+    alert(`Viewing certificate ${certificateId}`);
+}
+
+function downloadCertificate(certificateId) {
+    // Download certificate
+    alert(`Downloading certificate ${certificateId}`);
+}
+
+function approveCertificate(certificateId) {
+    if (confirm('Are you sure you want to approve this certificate?')) {
+        // Approve certificate
+        alert(`Approved certificate ${certificateId}`);
+        location.reload();
+    }
+}
+
+function revokeCertificate(certificateId) {
+    if (confirm('Are you sure you want to revoke this certificate?')) {
+        // Revoke certificate
+        alert(`Revoked certificate ${certificateId}`);
+        location.reload();
+    }
+}
+
+function changePage(pageNumber) {
+    window.location.href = `?page=${pageNumber}`;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+<!-- Quick Navigation Sidebar -->
+<div class="sidebar fixed left-0 top-20 h-[calc(100%-5rem)] w-64 bg-gray-900 text-white p-6 transform -translate-x-full transition-transform duration-300 z-40" id="sidebar">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-xl font-bold">Quick Navigation</h2>
+        <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <nav class="space-y-2">
+        <!-- Dashboard -->
+        <a href="/dashboard/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-tachometer-alt w-5"></i>
+            <span>Dashboard</span>
+        </a>
+        
+        <!-- Courses -->
+        {% if user.is_admin_or_above %}
+        <a href="/courses/list/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-book w-5"></i>
+            <span>Courses</span>
+        </a>
+        {% else %}
+        <a href="/courses/browse/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-book w-5"></i>
+            <span>Courses</span>
+        </a>
+        {% endif %}
+        
+        <!-- Enrollments -->
+        {% if user.is_admin_or_above %}
+        <a href="/enrollments/manage/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-user-graduate w-5"></i>
+            <span>Enrollments</span>
+        </a>
+        {% endif %}
+        
+        <!-- Assignments -->
+        {% if user.is_admin_or_above %}
+        <a href="/assignments/manage/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-tasks w-5"></i>
+            <span>Assignments</span>
+        </a>
+        {% else %}
+        <a href="/assignments/my/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-tasks w-5"></i>
+            <span>Assignments</span>
+        </a>
+        {% endif %}
+        
+        <!-- Certificates -->
+        {% if user.is_admin_or_above %}
+        <a href="/certificates/manage/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-certificate w-5"></i>
+            <span>Certificates</span>
+        </a>
+        {% else %}
+        <a href="/certificates/my/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-certificate w-5"></i>
+            <span>Certificates</span>
+        </a>
+        {% endif %}
+        
+        <!-- Admin Panel -->
+        {% if user.is_admin_or_above %}
+        <a href="/admin/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-cog w-5"></i>
+            <span>Admin Panel</span>
+        </a>
+        {% endif %}
+        
+        <!-- Profile -->
+        <a href="{% url 'profile' %}" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-user w-5"></i>
+            <span>Profile</span>
+        </a>
+        
+        <!-- Settings -->
+        <a href="{% url 'settings' %}" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <i class="fas fa-cog w-5"></i>
+            <span>Settings</span>
+        </a>
+        
+        <!-- Logout -->
+        <a href="/logout/" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg hover:bg-red-600 transition-colors text-red-400">
+            <i class="fas fa-sign-out-alt w-5"></i>
+            <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Sidebar Toggle Button -->
+<button onclick="toggleSidebar()" class="fixed left-4 top-20 z-50 bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-blue-700 transition-colors" id="sidebar-toggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<style>
+.sidebar {
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-item {
+    border-left: 3px solid transparent;
+}
+
+.sidebar-item:hover {
+    border-left-color: #3b82f6;
+}
+
+.sidebar-item.active {
+    background-color: #1f2937;
+    border-left-color: #3b82f6;
+}
+
+#sidebar-toggle {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #sidebar-toggle {
+        display: block;
+    }
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+</style>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// Close sidebar when clicking outside
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebar-toggle');
+    
+    if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+        sidebar.classList.remove('open');
+    }
+});
+
+// Set active navigation item
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    
+    sidebarItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href === currentPath || currentPath.startsWith(href + '/')) {
+            item.classList.add('active');
+        }
+    });
+});
+</script>

@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Agora Prof{% endblock %}
+
+{% block extra_css %}
+<style>
+.achievement-card {
+    background: linear-gradient(135deg, var(--card) 0%, var(--muted) 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.achievement-badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.achievement-locked .achievement-badge {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    opacity: 0.6;
+}
+
+.achievement-progress {
+    height: 8px;
+    background: var(--muted);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.achievement-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    transition: width 0.3s ease;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            🏆 My Achievements
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+            Track your learning progress and earn badges as you complete courses
+        </p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid mb-8">
+        <div class="stat-card">
+            <div class="stat-value">{{ achievements_total }}</div>
+            <div class="stat-label">Total Achievements</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ unlocked_badges }}</div>
+            <div class="stat-label">Unlocked Badges</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ completed_courses }}</div>
+            <div class="stat-label">Courses Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ learning_hours|floatformat:0 }}</div>
+            <div class="stat-label">Learning Hours</div>
+        </div>
+    </div>
+
+    <!-- Achievements Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for achievement in achievements %}
+        <div class="achievement-card {% if not achievement.is_unlocked %}achievement-locked opacity-75{% endif %}">
+            <div class="achievement-badge">{{ achievement.icon }}</div>
+            <h3 class="text-xl font-semibold mb-2">{{ achievement.name }}</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-3">{{ achievement.description }}</p>
+
+            {% if achievement.is_unlocked %}
+            <div class="flex items-center text-green-600 dark:text-green-400">
+                <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-semibold">Unlocked</span>
+            </div>
+            {% else %}
+            <div class="achievement-progress">
+                <div class="achievement-progress-bar" style="width: {{ achievement.progress }}%"></div>
+            </div>
+            <div class="text-sm text-gray-500 mt-2">{{ achievement.current|floatformat:0 }}/{{ achievement.target|floatformat:0 }}</div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <div class="text-6xl mb-4">🎯</div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Start Your Learning Journey</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Complete your first course to unlock achievements.</p>
+            <a href="{% url 'student_course_browse' %}" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                Browse Courses
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target.querySelector('.achievement-progress-bar');
+                if (progressBar) {
+                    const width = progressBar.style.width;
+                    progressBar.style.width = '0%';
+                    setTimeout(() => {
+                        progressBar.style.width = width;
+                    }, 100);
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.achievement-card').forEach(card => {
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

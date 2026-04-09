@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - {{ user.get_full_name|default:user.email }}{% endblock %}
+
+{% block content %}
+<div style="min-height:100vh; background:linear-gradient(135deg, #0f172a, #020617); color:#e5e7eb; font-family: system-ui, -apple-system; position:relative; overflow:hidden;">
+
+    <!-- Animated Particles Background -->
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;">
+        <div style="position:absolute; width:4px; height:4px; background:#6366f1; border-radius:50%; top:15%; left:15%; animation:float 7s ease-in-out infinite; box-shadow:0 0 10px rgba(99,102,241,0.8);"></div>
+        <div style="position:absolute; width:3px; height:3px; background:#8b5cf6; border-radius:50%; top:70%; left:85%; animation:float 9s ease-in-out infinite 1s; box-shadow:0 0 8px rgba(139,92,246,0.8);"></div>
+        <div style="position:absolute; width:5px; height:5px; background:#10b981; border-radius:50%; top:35%; left:55%; animation:float 8s ease-in-out infinite 2s; box-shadow:0 0 12px rgba(16,185,129,0.8);"></div>
+        <div style="position:absolute; width:2px; height:2px; background:#f59e0b; border-radius:50%; top:85%; left:25%; animation:float 10s ease-in-out infinite 3s; box-shadow:0 0 6px rgba(245,158,11,0.8);"></div>
+    </div>
+
+    <div style="max-width:900px; margin:40px auto 0; padding:20px; position:relative; z-index:10;">
+
+        <!-- PAGE HEADER -->
+        <div style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:30px; box-shadow:0 15px 35px rgba(0,0,0,0.3); margin-bottom:30px; transition:all 0.3s ease;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+                <div>
+                    <h1 style="margin:0 0 8px 0; font-size:32px; font-weight:700; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3);">Edit Profile</h1>
+                    <p style="margin:0; color:#94a3b8; font-size:16px;">Update your personal information and preferences</p>
+                </div>
+                <a href="{% url 'content:profile_detail' %}" 
+                   style="color:#6366f1; text-decoration:none; font-weight:500; display:flex; align-items:center; gap:8px; transition:all 0.3s ease; padding:12px 20px; border-radius:10px; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3);">
+                    <span style="display:inline-block;">←</span>
+                    Back to Profile
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background:{% if message.tags == 'error' %}rgba(220,38,38,0.1); color:#dc2626; border:1px solid rgba(220,38,38,0.3){% elif message.tags == 'success' %}rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.3){% endif %}; padding:16px 20px; border-radius:12px; margin-bottom:20px; backdrop-filter:blur(10px); display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:20px;">{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% endif %}</span>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" style="background:rgba(255,255,255,0.05); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:40px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+            {% csrf_token %}
+
+            <!-- PROFILE PICTURE SECTION -->
+            <div style="margin-bottom:40px; padding-bottom:40px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <h3 style="margin:0 0 25px 0; font-size:24px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:28px;">📷</span>
+                    Profile Picture
+                </h3>
+                
+                <div style="display:flex; align-items:center; gap:30px; flex-wrap:wrap;">
+                    <!-- Current Avatar -->
+                    <div style="text-align:center;">
+                        <div style="width:120px; height:120px; border-radius:50%; overflow:hidden; border:3px solid #6366f1; box-shadow:0 0 20px rgba(99,102,241,0.6); margin-bottom:15px; position:relative;">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}?v={{ user.updated_at|date:'U' }}" style="width:100%; height:100%; object-fit:cover;">
+                            {% else %}
+                                <div style="width:100%; height:100%; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; display:flex; align-items:center; justify-content:center; font-size:42px; font-weight:bold;">
+                                    {{ user.get_full_name|slice:":1"|default:user.email|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <p style="margin:0; color:#94a3b8; font-size:14px; font-weight:500;">Current Photo</p>
+                    </div>
+
+                    <!-- Upload Section -->
+                    <div style="flex:1;">
+                        <input type="file" id="avatar" name="avatar" accept="image/*" style="display:none;" onchange="previewImage(this)">
+                        <label for="avatar" 
+                               style="display:inline-block; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:#fff; padding:14px 28px; border-radius:12px; cursor:pointer; text-decoration:none; font-weight:600; transition:all 0.3s ease; box-shadow:0 0 20px rgba(99,102,241,0.6); display:inline-flex; align-items:center; gap:10px;">
+                            <span style="display:inline-block; width:20px; height:20px;">📷</span>
+                            Choose New Photo
+                        </label>
+                        <p style="margin:10px 0 0; color:#64748b; font-size:14px;">PNG, JPG or GIF (max 5MB) • Recommended: 400x400px</p>
+                        <div id="preview" style="margin-top:15px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERSONAL INFORMATION SECTION -->
+            <div style="margin-bottom:40px;">
+                <h3 style="margin:0 0 25px 0; font-size:24px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:28px;">👤</span>
+                    Personal Information
+                </h3>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px;">
+                    <div>
+                        <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">First Name</label>
+                        <input type="text" name="first_name" value="{{ user.first_name }}" 
+                               style="width:100%; padding:14px 18px; border:2px solid rgba(255,255,255,0.2); border-radius:12px; font-size:15px; transition:all 0.3s ease; background:rgba(30,41,59,0.9); color:#fff;"
+                               placeholder="Enter your first name">
+                    </div>
+                    
+                    <div>
+                        <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Last Name</label>
+                        <input type="text" name="last_name" value="{{ user.last_name }}" 
+                               style="width:100%; padding:14px 18px; border:2px solid rgba(255,255,255,0.2); border-radius:12px; font-size:15px; transition:all 0.3s ease; background:rgba(30,41,59,0.9); color:#fff;"
+                               placeholder="Enter your last name">
+                    </div>
+                </div>
+
+                <div style="margin-top:25px;">
+                    <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Email Address</label>
+                    <input type="email" name="email" value="{{ user.email }}" 
+                           style="width:100%; padding:14px 18px; border:2px solid rgba(255,255,255,0.2); border-radius:12px; font-size:15px; transition:all 0.3s ease; background:rgba(30,41,59,0.9); color:#fff;"
+                           placeholder="Enter your email address" required>
+                </div>
+
+                <div style="margin-top:25px;">
+                    <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Phone Number</label>
+                    <input type="tel" name="phone" value="{{ user.phone }}" 
+                           style="width:100%; padding:14px 18px; border:2px solid rgba(255,255,255,0.2); border-radius:12px; font-size:15px; transition:all 0.3s ease; background:rgba(30,41,59,0.9); color:#fff;"
+                           placeholder="Enter your phone number">
+                </div>
+
+                <div style="margin-top:25px;">
+                    <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Bio</label>
+                    <textarea name="bio" rows="4" 
+                              style="width:100%; padding:14px 18px; border:2px solid rgba(255,255,255,0.2); border-radius:12px; font-size:15px; resize:vertical; transition:all 0.3s ease; background:rgba(30,41,59,0.9); color:#fff;"
+                              placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
+                    <p style="margin:8px 0 0; color:#64748b; font-size:13px;">Brief description about yourself (max 500 characters)</p>
+                </div>
+            </div>
+
+            <!-- ACCOUNT INFORMATION SECTION (READ-ONLY) -->
+            <div style="margin-bottom:40px; padding-bottom:40px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <h3 style="margin:0 0 25px 0; font-size:24px; font-weight:600; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.3); display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:28px;">⚙️</span>
+                    Account Information
+                </h3>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px;">
+                    <div>
+                        <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Role</label>
+                        <div style="padding:14px 18px; background:rgba(30,41,59,0.8); border:2px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; font-size:15px;">
+                            {{ user.get_role_display }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Organization</label>
+                        <div style="padding:14px 18px; background:rgba(30,41,59,0.8); border:2px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; font-size:15px;">
+                            {% if user.organization %}{{ user.organization.name }}{% else %}None{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-top:25px;">
+                    <div>
+                        <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Member Since</label>
+                        <div style="padding:14px 18px; background:rgba(30,41,59,0.8); border:2px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; font-size:15px;">
+                            {{ user.date_joined|date:"F d, Y" }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label style="display:block; margin-bottom:10px; color:#e5e7eb; font-weight:600; font-size:15px;">Account Status</label>
+                        <div style="padding:14px 18px; background:rgba(30,41,59,0.8); border:2px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; font-size:15px;">
+                            <span style="display:inline-flex; align-items:center; gap:8px;">
+                                <span style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px rgba(16,185,129,0.8);"></span>
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div style="display:flex; gap:20px; justify-content:flex-end; flex-wrap:wrap;">
+                <a href="{% url 'content:profile_detail' %}" 
+                   style="padding:14px 28px; background:rgba(255,255,255,0.05); color:#94a3b8; text-decoration:none; border-radius:12px; border:2px solid rgba(255,255,255,0.2); font-weight:600; transition:all 0.3s ease; display:inline-flex; align-items:center; gap:8px;">
+                    <span style="display:inline-block; width:18px; height:18px;">❌</span>
+                    Cancel
+                </a>
+                <button type="submit" 
+                        style="padding:14px 28px; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:#fff; border:none; border-radius:12px; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 0 20px rgba(99,102,241,0.6); display:inline-flex; align-items:center; gap:8px;">
+                    <span style="display:inline-block; width:18px; height:18px;">💾</span>
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+function previewImage(input) {
+    const preview = document.getElementById('preview');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Check file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            preview.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px; margin-top:10px; padding:12px; background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.3); border-radius:8px; color:#dc2626;">
+                    <span style="font-size:18px;">⚠️</span>
+                    <span style="font-size:13px;">File too large. Please choose an image under 5MB.</span>
+                </div>
+            `;
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div style="display:flex; align-items:center; gap:15px; margin-top:15px; padding:15px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px;">
+                    <img src="${e.target.result}" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid #10b981; box-shadow:0 0 15px rgba(16,185,129,0.6);">
+                    <div>
+                        <div style="color:#10b981; font-weight:600; margin-bottom:4px;">✓ Image Selected</div>
+                        <div style="color:#64748b; font-size:13px;">${file.name}</div>
+                        <div style="color:#64748b; font-size:12px;">Size: ${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                    </div>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '';
+    }
+}
+
+// Add interactive effects
+document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.style.borderColor = '#6366f1';
+        this.style.boxShadow = '0 0 15px rgba(99,102,241,0.3)';
+        this.style.outline = 'none';
+    });
+    
+    input.addEventListener('blur', function() {
+        this.style.borderColor = 'rgba(255,255,255,0.2)';
+        this.style.boxShadow = 'none';
+    });
+});
+
+document.querySelectorAll('button, a[style*="background"]').forEach(element => {
+    element.addEventListener('mouseenter', function() {
+        if (this.style.background && this.style.background.includes('6366f1')) {
+            this.style.transform = 'translateY(-3px) scale(1.02)';
+            this.style.boxShadow = '0 0 25px rgba(99,102,241,0.8)';
+        } else if (this.style.background && this.style.background.includes('rgba(255,255,255,0.05)')) {
+            this.style.background = 'rgba(255,255,255,0.1)';
+            this.style.transform = 'translateY(-2px)';
+        }
+    });
+    
+    element.addEventListener('mouseleave', function() {
+        if (this.style.background && this.style.background.includes('rgba(255,255,255,0.1)')) {
+            this.style.background = 'rgba(255,255,255,0.05)';
+            this.style.transform = 'translateY(0)';
+        } else {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = '0 0 20px rgba(99,102,241,0.6)';
+        }
+    });
+});
+
+// Label hover effect
+document.querySelector('label[for="avatar"]').addEventListener('mouseenter', function() {
+    this.style.transform = 'translateY(-2px) scale(1.05)';
+    this.style.boxShadow = '0 0 25px rgba(99,102,241,0.8)';
+});
+
+document.querySelector('label[for="avatar"]').addEventListener('mouseleave', function() {
+    this.style.transform = 'translateY(0) scale(1)';
+    this.style.boxShadow = '0 0 20px rgba(99,102,241,0.6)';
+});
+</script>
+
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+div[style*="transition:all"]:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+a[style*="transition:all"]:hover {
+    color: #818cf8 !important;
+    text-shadow: 0 0 10px rgba(129,140,248,0.8);
+    transform: translateX(5px);
+}
+
+/* Improved placeholder visibility */
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+textarea::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1 !important;
+}
+
+/* Focus states for better visibility */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
+    background: rgba(30,41,59,1) !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 15px rgba(99,102,241,0.3) !important;
+}
+</style>
+
+{% block footer %}
+<div style="background:#020617; border-top:1px solid rgba(255,255,255,0.1); margin-top:60px; position:relative; z-index:10;">
+    <div style="max-width:1200px; margin:0 auto; padding:40px 20px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:40px;">
+            
+            <!-- About -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">AgoraProf LMS</h4>
+                <p style="margin:0; color:#94a3b8; line-height:1.6; font-size:14px;">
+                    Professional learning management system designed for modern education and training.
+                </p>
+            </div>
+            
+            <!-- Quick Links -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">Quick Links</h4>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <a href="{% url 'content:profile_detail' %}" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">My Profile</a>
+                    <a href="{% url 'content:courses_browse' %}" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Browse Courses</a>
+                    <a href="{% url 'content:student_certificates' %}" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">My Certificates</a>
+                </div>
+            </div>
+            
+            <!-- Support -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">Support</h4>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <a href="#" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Help Center</a>
+                    <a href="#" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Contact Us</a>
+                    <a href="#" style="color:#6366f1; text-decoration:none; font-size:14px; transition:all 0.3s ease;">Privacy Policy</a>
+                </div>
+            </div>
+            
+            <!-- Contact -->
+            <div>
+                <h4 style="margin:0 0 15px 0; color:#fff; font-size:18px; font-weight:600; text-shadow:0 0 10px rgba(255,255,255,0.3);">Contact Info</h4>
+                <p style="margin:0; color:#94a3b8; line-height:1.6; font-size:14px;">
+                    Email: support@agoraprof.com<br>
+                    Phone: +1 (555) 123-4567
+                </p>
+            </div>
+            
+        </div>
+        
+        <div style="text-align:center; margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
+            <p style="margin:0; color:#64748b; font-size:13px;">
+                © 2024 AgoraProf LMS. All rights reserved.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.footer a:hover {
+    color: #818cf8 !important;
+    text-shadow: 0 0 8px rgba(129,140,248,0.8);
+}
+</style>
+{% endblock %}
+
+{% endblock %}

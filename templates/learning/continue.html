@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}Continue Learning - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .learning-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .continue-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .continue-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .continue-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .continue-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .learning-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .learning-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .learning-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+    
+    .learning-card:hover::before {
+        left: 100%;
+    }
+    
+    .learning-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+    }
+    
+    .learning-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .learning-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1rem;
+    }
+    
+    .learning-description {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+    
+    .learning-action {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .learning-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="learning-container">
+    <!-- Header -->
+    <div class="continue-header">
+        <h1 class="continue-title">Continue Learning</h1>
+        <p class="continue-subtitle">Pick up where you left off</p>
+    </div>
+    
+    <!-- Learning Options -->
+    <div class="learning-grid">
+        <!-- Browse Courses -->
+        <div class="learning-card">
+            <div class="learning-icon">
+                <i class="fas fa-book text-white"></i>
+            </div>
+            <h3 class="learning-title">Browse Courses</h3>
+            <p class="learning-description">
+                Discover new courses and expand your knowledge. Explore our catalog of available courses.
+            </p>
+            <a href="/courses/browse/" class="learning-action">
+                <i class="fas fa-search mr-2"></i>Browse Courses
+            </a>
+        </div>
+        
+        <!-- My Dashboard -->
+        <div class="learning-card">
+            <div class="learning-icon">
+                <i class="fas fa-tachometer-alt text-white"></i>
+            </div>
+            <h3 class="learning-title">My Dashboard</h3>
+            <p class="learning-description">
+                View your enrolled courses, track progress, and manage your learning journey.
+            </p>
+            <a href="/accounts/dashboard/student/" class="learning-action">
+                <i class="fas fa-home mr-2"></i>Go to Dashboard
+            </a>
+        </div>
+        
+        <!-- My Certificates -->
+        <div class="learning-card">
+            <div class="learning-icon">
+                <i class="fas fa-certificate text-white"></i>
+            </div>
+            <h3 class="learning-title">My Certificates</h3>
+            <p class="learning-description">
+                View your earned certificates and share your achievements with employers.
+            </p>
+            <a href="/certificates/my/" class="learning-action">
+                <i class="fas fa-award mr-2"></i>View Certificates
+            </a>
+        </div>
+        
+        <!-- Assignments -->
+        <div class="learning-card">
+            <div class="learning-icon">
+                <i class="fas fa-tasks text-white"></i>
+            </div>
+            <h3 class="learning-title">Assignments</h3>
+            <p class="learning-description">
+                Complete assignments and submit your work for evaluation and feedback.
+            </p>
+            <a href="/assignments/my/" class="learning-action">
+                <i class="fas fa-clipboard-check mr-2"></i>View Assignments
+            </a>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="mt-12 text-center">
+        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 max-w-2xl mx-auto">
+            <h3 class="text-2xl font-bold text-white mb-6">Quick Learning Stats</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-400 mb-2">
+                        <i class="fas fa-book-open mr-2"></i>Active
+                    </div>
+                    <div class="text-gray-300">Continue Learning</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-400 mb-2">
+                        <i class="fas fa-trophy mr-2"></i>Achieve
+                    </div>
+                    <div class="text-gray-300">Earn Certificates</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-400 mb-2">
+                        <i class="fas fa-chart-line mr-2"></i>Progress
+                    </div>
+                    <div class="text-gray-300">Track Growth</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

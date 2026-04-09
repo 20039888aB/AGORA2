@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+{% block title %}Features - AgoraProf LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .features-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .features-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+    }
+    
+    .feature-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2.5rem;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .category-section {
+        padding: 80px 0;
+    }
+    
+    .category-section:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .integration-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .integration-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(79, 70, 229, 0.3);
+    }
+    
+    .integration-logo {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Features Hero Section -->
+<section class="features-hero">
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="text-center text-white">
+            <h1 class="text-5xl font-bold mb-6">Powerful Features</h1>
+            <p class="text-xl max-w-3xl mx-auto opacity-90">
+                Everything you need to create, deliver, and manage exceptional learning experiences in one comprehensive platform.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Core Features Section -->
+<section class="category-section">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Core Learning Features</h2>
+            <p class="text-xl text-gray-300">Essential tools for modern learning management</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Course Management</h3>
+                <p class="text-gray-300 mb-4">Create and manage engaging courses with multimedia content, assignments, and interactive assessments.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Rich content editor</li>
+                    <li>• Video & audio support</li>
+                    <li>• Interactive quizzes</li>
+                    <li>• Assignment tracking</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">User Management</h3>
+                <p class="text-gray-300 mb-4">Comprehensive user roles and permissions to match your organizational structure.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Role-based access</li>
+                    <li>• Bulk user import</li>
+                    <li>• Organization hierarchy</li>
+                    <li>• Custom permissions</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Analytics & Reporting</h3>
+                <p class="text-gray-300 mb-4">Deep insights into learning progress, engagement, and performance metrics.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Real-time dashboards</li>
+                    <li>• Progress tracking</li>
+                    <li>• Custom reports</li>
+                    <li>• Data export</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Features Section -->
+<section class="category-section">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Advanced Capabilities</h2>
+            <p class="text-xl text-gray-300">Cutting-edge features that set us apart</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">AI-Powered Learning</h3>
+                <p class="text-gray-300 mb-4">Personalized learning paths powered by artificial intelligence for optimal outcomes.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Smart recommendations</li>
+                    <li>• Adaptive learning</li>
+                    <li>• Content optimization</li>
+                    <li>• Performance prediction</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Certification System</h3>
+                <p class="text-gray-300 mb-4">Professional certification management with customizable templates and verification.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Custom certificates</li>
+                    <li>• Digital badges</li>
+                    <li>• Verification system</li>
+                    <li>• Blockchain security</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Mobile Learning</h3>
+                <p class="text-gray-300 mb-4">Learn anywhere with our responsive mobile app and offline capabilities.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Native mobile apps</li>
+                    <li>• Offline mode</li>
+                    <li>• Push notifications</li>
+                    <li>• Progressive web app</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Collaboration Features Section -->
+<section class="category-section">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Collaboration Tools</h2>
+            <p class="text-xl text-gray-300">Connect learners and foster engagement</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Discussion Forums</h3>
+                <p class="text-gray-300 mb-4">Rich discussion boards with threaded conversations, moderation, and gamification.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Threaded discussions</li>
+                    <li>• Rich media support</li>
+                    <li>• Moderation tools</li>
+                    <li>• Engagement tracking</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Live Sessions</h3>
+                <p class="text-gray-300 mb-4">Integrated video conferencing for live classes, webinars, and virtual meetings.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• HD video streaming</li>
+                    <li>• Screen sharing</li>
+                    <li>• Recording capability</li>
+                    <li>• Interactive tools</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Group Projects</h3>
+                <p class="text-gray-300 mb-4">Collaborative project management with team assignments and progress tracking.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Team formation</li>
+                    <li>• Task management</li>
+                    <li>• File sharing</li>
+                    <li>• Peer review</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Integrations Section -->
+<section class="category-section">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Seamless Integrations</h2>
+            <p class="text-xl text-gray-300">Connect with your favorite tools and systems</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div class="integration-card">
+                <div class="integration-logo">
+                    <i class="fab fa-slack"></i>
+                </div>
+                <h4 class="font-semibold">Slack</h4>
+                <p class="text-gray-400 text-sm">Team communication</p>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-logo">
+                    <i class="fab fa-microsoft"></i>
+                </div>
+                <h4 class="font-semibold">Office 365</h4>
+                <p class="text-gray-400 text-sm">Productivity suite</p>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-logo">
+                    <i class="fab fa-google"></i>
+                </div>
+                <h4 class="font-semibold">Google Workspace</h4>
+                <p class="text-gray-400 text-sm">Collaboration tools</p>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-logo">
+                    <i class="fab fa-salesforce"></i>
+                </div>
+                <h4 class="font-semibold">Salesforce</h4>
+                <p class="text-gray-400 text-sm">CRM integration</p>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-logo">
+                    <i class="fab fa-zoom"></i>
+                </div>
+                <h4 class="font-semibold">Zoom</h4>
+                <p class="text-gray-400 text-sm">Video conferencing</p>
+            </div>
+            
+            <div class="integration-card">
+                <div class="integration-logo">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h4 class="font-semibold">API Access</h4>
+                <p class="text-gray-400 text-sm">Custom integrations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Security Features Section -->
+<section class="category-section">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Enterprise Security</h2>
+            <p class="text-xl text-gray-300">Bank-level security for your peace of mind</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Data Protection</h3>
+                <p class="text-gray-300 mb-4">Enterprise-grade encryption and compliance with global data protection regulations.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• 256-bit encryption</li>
+                    <li>• GDPR compliant</li>
+                    <li>• SOC 2 certified</li>
+                    <li>• Regular audits</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Access Control</h3>
+                <p class="text-gray-300 mb-4">Advanced authentication and authorization mechanisms for secure access.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• SSO integration</li>
+                    <li>• Multi-factor auth</li>
+                    <li>• IP restrictions</li>
+                    <li>• Session management</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4">Audit & Compliance</h3>
+                <p class="text-gray-300 mb-4">Comprehensive audit trails and compliance reporting for regulatory requirements.</p>
+                <ul class="text-gray-400 space-y-2 text-sm">
+                    <li>• Activity logging</li>
+                    <li>• Compliance reports</li>
+                    <li>• Data retention</li>
+                    <li>• Risk assessment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
