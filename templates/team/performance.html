@@ -258,6 +258,43 @@
             </div>
         </div>
     </div>
+
+    <!-- Organization Certificates -->
+    <div class="chart-container">
+        <h3 class="chart-title">Organization Certificates (Students)</h3>
+        <div class="performance-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Certificate No.</th>
+                        <th>Issued Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for certificate in organization_certificates|slice:":20" %}
+                    <tr>
+                        <td>
+                            <div class="font-semibold">{{ certificate.user.first_name }} {{ certificate.user.last_name }}</div>
+                            <div class="text-sm text-gray-400">{{ certificate.user.email }}</div>
+                        </td>
+                        <td>{{ certificate.course.title|default:certificate.course_name }}</td>
+                        <td>{{ certificate.certificate_number }}</td>
+                        <td>{{ certificate.issued_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-gray-400 py-8">
+                            <i class="fas fa-award text-3xl mb-3"></i>
+                            <p>No student certificates issued yet for this organization.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     
     <!-- Filters -->
     <div class="filter-section">

@@ -494,3 +494,133 @@ class UserAchievement(models.Model):
     
     def __str__(self):
         return f"{self.user.email} - {self.achievement.name}"
+
+
+class GeneratedReport(models.Model):
+    """
+    Generated analytics reports
+    """
+    
+    REPORT_TYPES = [
+        ('user_activity', 'User Activity'),
+        ('course_performance', 'Course Performance'),
+        ('learning_progress', 'Learning Progress'),
+        ('organization_summary', 'Organization Summary'),
+        ('team_performance', 'Team Performance'),
+    ]
+    
+    FORMAT_TYPES = [
+        ('json', 'JSON'),
+        ('csv', 'CSV'),
+        ('pdf', 'PDF'),
+        ('excel', 'Excel'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=300, db_index=True)
+    report_type = models.CharField(
+        max_length=30,
+        choices=REPORT_TYPES,
+        db_index=True
+    )
+    
+    # Relationships
+    organization = models.ForeignKey(
+        'organizations.Organization',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='generated_reports',
+        db_index=True
+    )
+    generated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='generated_reports',
+        db_index=True
+    )
+    
+    # Report data and settings
+    data = models.JSONField(default=list)
+    format_type = models.CharField(
+        max_length=10,
+        choices=FORMAT_TYPES,
+        default='json'
+    )
+    date_range = models.CharField(
+        max_length=10,
+        default='30d',
+        help_text="Date range for the report (e.g., 7d, 30d, 90d, 1y)"
+    )
+    
+    # File storage (for generated files)
+    file = models.FileField(
+        upload_to='reports/',
+        null=True,
+        blank=True
+    )
+    file_size = models.BigIntegerField(default=0)
+    
+    # Status and timestamps
+    is_ready = models.BooleanField(default=True, db_index=True)
+    generated_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    
+    class Meta:
+        db_table = 'generated_reports'
+        verbose_name = 'Generated Report'
+        verbose_name_plural = 'Generated Reports'
+        indexes = [
+            models.Index(fields=['organization', 'generated_at']),
+            models.Index(fields=['generated_by', 'generated_at']),
+            models.Index(fields=['report_type']),
+            models.Index(fields=['is_ready']),
+            models.Index(fields=['expires_at']),
+        ]
+        ordering = ['-generated_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.get_report_type_display()}"
+    
+    @property
+    def is_expired(self):
+        """Check if report has expired"""
+        if self.expires_at:
+            return timezone.now() > self.expires_at
+        return False
+    
+    @property
+    def file_size_display(self):
+        """Get human-readable file size"""
+        if not self.file_size or self.file_size == 0:
+            return '0 bytes'
+        
+        size = self.file_size
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if size < 1024.0:
+                return f"{size:.1f} {unit}"
+            size /= 1024.0
+        return f"{size:.1f} TB"
+    
+    def can_user_access(self, user):
+        """Check if user can access this report"""
+        if not user or not user.is_authenticated:
+            return False
+        
+        # Superadmins can access all reports
+        if user.is_superadmin():
+            return True
+        
+        # Report owner can access
+        if self.generated_by == user:
+            return True
+        
+        # Organization admins can access organization reports
+        if (user.is_admin_or_above() and 
+            self.organization and 
+            user.organization == self.organization):
+            return True
+        
+        return False

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AgoraProf">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#g)"/>
+  <path d="M14 28L32 18L50 28L32 38Z" fill="#ffffff"/>
+  <path d="M22 34V42C22 44 27 47 32 47C37 47 42 44 42 42V34L32 40Z" fill="#dbeafe"/>
+</svg>

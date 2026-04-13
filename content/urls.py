@@ -6,6 +6,7 @@ app_name = 'content'
 urlpatterns = [
     # Content management
     path('upload/', views.content_upload, name='content_upload'),
+    path('manager-library/', views.manager_uploaded_content, name='manager_uploaded_content'),
     path('organize/', views.content_organize, name='content_organize'),
     path('approve/', views.content_approve, name='content_approve'),
     path('browse/', views.courses_browse, name='courses_browse'),

@@ -11138,3 +11138,862 @@ ERROR 2026-04-09 15:19:52,086 basehttp 19236 6324 "GET /team/communication/ HTTP
 INFO 2026-04-09 15:20:05,227 basehttp 19236 6324 "GET /dashboard/ HTTP/1.1" 302 0
 INFO 2026-04-09 15:20:05,385 basehttp 19236 6324 "GET /dashboard/manager/ HTTP/1.1" 200 61809
 INFO 2026-04-09 15:36:50,180 basehttp 19236 19668 "GET /team/assign/ HTTP/1.1" 200 53767
+INFO 2026-04-09 16:31:13,203 autoreload 19236 16972 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:31:20,916 autoreload 23388 24004 Watching for file changes with StatReloader
+INFO 2026-04-09 16:31:58,603 autoreload 23388 24004 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:32:09,446 autoreload 22892 4520 Watching for file changes with StatReloader
+INFO 2026-04-09 16:34:05,652 autoreload 22892 4520 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:34:14,814 autoreload 19644 11924 Watching for file changes with StatReloader
+INFO 2026-04-09 16:35:37,186 autoreload 19644 11924 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:35:45,577 autoreload 20664 18296 Watching for file changes with StatReloader
+INFO 2026-04-09 16:36:41,810 autoreload 20664 18296 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:36:45,378 autoreload 14404 8404 Watching for file changes with StatReloader
+INFO 2026-04-09 16:39:16,680 autoreload 14404 8404 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:39:26,116 autoreload 3596 23728 Watching for file changes with StatReloader
+INFO 2026-04-09 16:42:31,120 autoreload 3596 23728 D:\AGORA2\analytics\models.py changed, reloading.
+INFO 2026-04-09 16:42:34,734 autoreload 11448 15120 Watching for file changes with StatReloader
+INFO 2026-04-09 16:43:26,447 autoreload 11448 15120 D:\AGORA2\content\models.py changed, reloading.
+INFO 2026-04-09 16:43:27,752 autoreload 16056 8656 Watching for file changes with StatReloader
+INFO 2026-04-09 16:43:48,911 autoreload 16056 8656 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-09 16:43:50,678 autoreload 3884 6536 Watching for file changes with StatReloader
+INFO 2026-04-09 20:33:41,585 autoreload 14432 13428 Watching for file changes with StatReloader
+INFO 2026-04-09 20:36:58,954 autoreload 14432 13428 D:\AGORA2\content\models.py changed, reloading.
+INFO 2026-04-09 20:37:00,679 autoreload 5504 8384 Watching for file changes with StatReloader
+INFO 2026-04-09 20:39:58,931 basehttp 5504 7892 "GET / HTTP/1.1" 200 51933
+WARNING 2026-04-09 20:40:09,462 log 5504 10524 Not Found: /favicon.ico
+WARNING 2026-04-09 20:40:09,463 basehttp 5504 10524 "GET /favicon.ico HTTP/1.1" 404 10282
+INFO 2026-04-09 20:40:14,514 basehttp 5504 10524 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-09 20:40:15,327 basehttp 5504 10524 "GET /dashboard/manager/ HTTP/1.1" 200 61809
+INFO 2026-04-10 17:47:21,722 autoreload 26116 26120 Watching for file changes with StatReloader
+INFO 2026-04-10 17:50:21,473 autoreload 37760 37764 Watching for file changes with StatReloader
+INFO 2026-04-10 17:50:38,851 basehttp 12800 38608 "GET / HTTP/1.1" 200 51933
+INFO 2026-04-10 17:50:44,921 basehttp 12800 38608 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-10 17:50:45,882 basehttp 12800 38608 "GET /dashboard/manager/ HTTP/1.1" 200 61809
+ERROR 2026-04-10 17:50:50,984 log 12800 38608 Internal Server Error: /team/schedule/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2350, in team_schedule
+    from training.models import TrainingEvent, EventAttendance
+  File "D:\AGORA2\training\models.py", line 10, in <module>
+    class TrainingEvent(models.Model):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class training.models.TrainingEvent doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-10 17:50:51,026 basehttp 12800 38608 "GET /team/schedule/ HTTP/1.1" 500 107603
+INFO 2026-04-10 17:51:05,861 basehttp 12800 38608 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-10 17:51:06,094 basehttp 12800 38608 "GET /dashboard/manager/ HTTP/1.1" 200 61809
+ERROR 2026-04-10 17:51:09,593 log 12800 38608 Internal Server Error: /team/performance/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2187, in team_performance
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-10 17:51:09,597 basehttp 12800 38608 "GET /team/performance/ HTTP/1.1" 500 82194
+ERROR 2026-04-10 17:51:24,540 log 12800 38608 Internal Server Error: /team/add/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2065, in team_add
+    return render(request, 'team/add.html', context)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: team/add.html
+ERROR 2026-04-10 17:51:24,549 basehttp 12800 38608 "GET /team/add/ HTTP/1.1" 500 95490
+ERROR 2026-04-10 17:51:27,867 log 12800 38608 Internal Server Error: /team/add/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2065, in team_add
+    return render(request, 'team/add.html', context)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: team/add.html
+ERROR 2026-04-10 17:51:27,873 basehttp 12800 38608 "GET /team/add/ HTTP/1.1" 500 95490
+ERROR 2026-04-10 17:51:34,799 log 12800 38608 Internal Server Error: /content/upload/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: content_files
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 174, in content_upload
+    page_obj = paginator.get_page(page_number)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\paginator.py", line 68, in get_page
+    return self.page(number)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\paginator.py", line 72, in page
+    number = self.validate_number(number)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\paginator.py", line 53, in validate_number
+    if number > self.num_pages:
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\paginator.py", line 99, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\paginator.py", line 93, in count
+    return c()
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: content_files
+ERROR 2026-04-10 17:51:34,829 basehttp 12800 38608 "GET /content/upload/ HTTP/1.1" 500 173246
+INFO 2026-04-10 17:51:43,096 basehttp 12800 38608 - Broken pipe from ('127.0.0.1', 64993)
+INFO 2026-04-10 17:51:44,316 basehttp 12800 22664 "GET /courses/create/ HTTP/1.1" 200 57043
+INFO 2026-04-10 17:51:55,150 basehttp 12800 22664 "GET /courses/browse/ HTTP/1.1" 200 50833
+INFO 2026-04-10 17:51:59,212 basehttp 12800 22664 "POST /content/enroll/34b504f7-71b5-4534-86eb-17fa7c1d6aa0/ HTTP/1.1" 302 0
+INFO 2026-04-10 17:51:59,260 basehttp 12800 22664 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-10 17:51:59,453 basehttp 12800 22664 "GET /dashboard/manager/ HTTP/1.1" 200 61995
+ERROR 2026-04-10 17:52:04,923 log 12800 22664 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2085, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-10 17:52:04,925 basehttp 12800 22664 "GET /team/assign/ HTTP/1.1" 500 80408
+ERROR 2026-04-10 17:52:12,010 log 12800 22664 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2085, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-10 17:52:12,019 basehttp 12800 22664 "GET /team/assign/ HTTP/1.1" 500 80408
+INFO 2026-04-10 17:52:23,481 basehttp 12800 22664 "GET /courses/browse/ HTTP/1.1" 200 50833
+INFO 2026-04-10 17:52:30,690 basehttp 12800 22664 "GET /features/ HTTP/1.1" 200 55491
+WARNING 2026-04-10 17:52:38,279 log 12800 22664 Not Found: /partners/
+WARNING 2026-04-10 17:52:38,282 basehttp 12800 22664 "GET /partners/ HTTP/1.1" 404 10276
+WARNING 2026-04-10 17:52:41,801 log 12800 22664 Not Found: /press/
+WARNING 2026-04-10 17:52:41,803 basehttp 12800 22664 "GET /press/ HTTP/1.1" 404 10267
+WARNING 2026-04-10 17:52:45,143 log 12800 22664 Not Found: /blog/
+WARNING 2026-04-10 17:52:45,147 basehttp 12800 22664 "GET /blog/ HTTP/1.1" 404 10264
+WARNING 2026-04-10 17:52:47,997 log 12800 22664 Not Found: /careers/
+WARNING 2026-04-10 17:52:48,000 basehttp 12800 22664 "GET /careers/ HTTP/1.1" 404 10273
+INFO 2026-04-10 17:52:51,005 basehttp 12800 22664 "GET /about/ HTTP/1.1" 200 51234
+INFO 2026-04-10 18:06:39,063 basehttp 12800 43840 "GET /profile/ HTTP/1.1" 200 57495
+INFO 2026-04-10 18:06:39,329 basehttp 12800 43840 "GET /media/avatars/BMW_M5_WALLPAPER_.jpeg?v=1775534610 HTTP/1.1" 304 0
+INFO 2026-04-10 18:06:50,270 basehttp 12800 43840 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-10 18:06:50,527 basehttp 12800 43840 "GET /dashboard/manager/ HTTP/1.1" 200 61809
+ERROR 2026-04-10 18:06:53,898 log 12800 43840 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2085, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-10 18:06:53,908 basehttp 12800 43840 "GET /team/assign/ HTTP/1.1" 500 80408
+ERROR 2026-04-10 18:10:25,753 log 12800 43840 Internal Server Error: /team/performance/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2187, in team_performance
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-10 18:10:25,798 basehttp 12800 43840 "GET /team/performance/ HTTP/1.1" 500 82194
+ERROR 2026-04-10 18:11:07,977 log 12800 50488 Internal Server Error: /team/schedule/
+Traceback (most recent call last):
+  File "D:\AGORA2\content\views.py", line 2350, in team_schedule
+    from training.models import TrainingEvent, EventAttendance
+ImportError: cannot import name 'TrainingEvent' from 'training.models' (D:\AGORA2\training\models.py)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2567, in team_schedule
+    'current_month': today.month,
+UnboundLocalError: local variable 'today' referenced before assignment
+ERROR 2026-04-10 18:11:08,643 basehttp 12800 50488 "GET /team/schedule/ HTTP/1.1" 500 84315
+ERROR 2026-04-10 18:11:09,449 log 12800 43840 Internal Server Error: /team/schedule/
+Traceback (most recent call last):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2350, in team_schedule
+    from training.models import TrainingEvent, EventAttendance
+  File "D:\AGORA2\training\models.py", line 10, in <module>
+    class TrainingEvent(models.Model):
+  File "C:\Users\THINKPAD\AppData\Roaming\Python\Python39\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class training.models.TrainingEvent doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+INFO 2026-04-10 18:11:09,567 basehttp 12800 43840 - Broken pipe from ('127.0.0.1', 64200)
+INFO 2026-04-12 12:25:57,812 autoreload 83776 94592 Watching for file changes with StatReloader
+INFO 2026-04-12 12:26:38,092 basehttp 83776 31996 "GET / HTTP/1.1" 200 51933
+WARNING 2026-04-12 12:26:42,032 log 83776 31996 Not Found: /favicon.ico
+WARNING 2026-04-12 12:26:42,039 basehttp 83776 31996 "GET /favicon.ico HTTP/1.1" 404 10282
+INFO 2026-04-12 12:26:44,102 basehttp 83776 68888 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-12 12:26:44,454 basehttp 83776 68888 "GET /dashboard/manager/ HTTP/1.1" 200 61809
+ERROR 2026-04-12 12:26:47,069 log 83776 40972 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2085, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-12 12:26:47,098 basehttp 83776 40972 "GET /team/assign/ HTTP/1.1" 500 80780
+ERROR 2026-04-12 12:26:52,130 log 83776 40972 Internal Server Error: /team/performance/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2187, in team_performance
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-12 12:26:52,135 basehttp 83776 40972 "GET /team/performance/ HTTP/1.1" 500 82566
+ERROR 2026-04-12 12:27:51,814 log 83776 40972 Internal Server Error: /team/schedule/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2350, in team_schedule
+    from training.models import TrainingEvent, EventAttendance
+  File "D:\AGORA2\training\models.py", line 10, in <module>
+    class TrainingEvent(models.Model):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class training.models.TrainingEvent doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-12 12:27:51,825 basehttp 83776 40972 "GET /team/schedule/ HTTP/1.1" 500 107814
+ERROR 2026-04-12 12:42:40,301 log 83776 27484 Internal Server Error: /team/add/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2065, in team_add
+    return render(request, 'team/add.html', context)
+  File "D:\AGORA2\venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\AGORA2\venv\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "D:\AGORA2\venv\lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: team/add.html
+ERROR 2026-04-12 12:42:40,306 basehttp 83776 27484 "GET /team/add/ HTTP/1.1" 500 95397
+INFO 2026-04-12 12:43:04,299 basehttp 83776 27484 "GET /courses/create/ HTTP/1.1" 200 57043
+INFO 2026-04-12 12:43:08,018 basehttp 83776 27484 "GET /courses/browse/ HTTP/1.1" 200 50833
+ERROR 2026-04-12 12:43:12,248 log 83776 27484 Internal Server Error: /content/upload/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: content_files
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 174, in content_upload
+    page_obj = paginator.get_page(page_number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 68, in get_page
+    return self.page(number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 72, in page
+    number = self.validate_number(number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 53, in validate_number
+    if number > self.num_pages:
+  File "D:\AGORA2\venv\lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 99, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+  File "D:\AGORA2\venv\lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 93, in count
+    return c()
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: content_files
+ERROR 2026-04-12 12:43:12,269 basehttp 83776 27484 "GET /content/upload/ HTTP/1.1" 500 172347
+ERROR 2026-04-12 12:44:43,773 log 83776 34648 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2085, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-12 12:44:43,776 basehttp 83776 34648 "GET /team/assign/ HTTP/1.1" 500 80780
+ERROR 2026-04-12 12:44:48,274 log 83776 34648 Internal Server Error: /learning/paths/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2933, in learning_paths_view
+    from learning.models import LearningPath, PathCourse, PathEnrollment
+  File "D:\AGORA2\learning\models.py", line 10, in <module>
+    class LearningPath(models.Model):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class learning.models.LearningPath doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-12 12:44:48,283 basehttp 83776 34648 "GET /learning/paths/ HTTP/1.1" 500 106375
+ERROR 2026-04-12 12:44:53,230 log 83776 34648 Internal Server Error: /team/communication/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2597, in team_communication
+    from messaging.models import Message, MessageReceipt, MessageReply, MessageTemplate
+  File "D:\AGORA2\messaging\models.py", line 10, in <module>
+    class Message(models.Model):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class messaging.models.Message doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-12 12:44:53,237 basehttp 83776 34648 "GET /team/communication/ HTTP/1.1" 500 105887
+INFO 2026-04-12 12:44:57,348 basehttp 83776 34648 "GET /analytics/team/ HTTP/1.1" 200 49871
+INFO 2026-04-12 12:45:38,273 basehttp 83776 34648 "GET /analytics/reports/ HTTP/1.1" 200 55671
+INFO 2026-04-12 12:45:51,194 basehttp 83776 34648 "GET /analytics/team/ HTTP/1.1" 200 49871
+ERROR 2026-04-12 12:50:44,825 log 83776 34648 Internal Server Error: /team/add/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2065, in team_add
+    return render(request, 'team/add.html', context)
+  File "D:\AGORA2\venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\AGORA2\venv\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "D:\AGORA2\venv\lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: team/add.html
+ERROR 2026-04-12 12:50:44,830 basehttp 83776 34648 "GET /team/add/ HTTP/1.1" 500 95397
+ERROR 2026-04-12 12:51:35,073 log 83776 34648 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2085, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-12 12:51:35,076 basehttp 83776 34648 "GET /team/assign/ HTTP/1.1" 500 80780
+INFO 2026-04-12 13:05:41,373 autoreload 47116 97052 Watching for file changes with StatReloader
+INFO 2026-04-12 13:05:47,623 basehttp 47116 107248 "GET / HTTP/1.1" 200 51933
+WARNING 2026-04-12 13:05:49,695 log 47116 77868 Not Found: /favicon.ico
+WARNING 2026-04-12 13:05:49,696 basehttp 47116 77868 "GET /favicon.ico HTTP/1.1" 404 10282
+INFO 2026-04-12 13:07:13,196 basehttp 47116 38024 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-12 13:07:13,296 basehttp 47116 38024 "GET /dashboard/manager/ HTTP/1.1" 200 60958
+ERROR 2026-04-12 13:07:28,377 log 47116 38024 Internal Server Error: /team/performance/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2187, in team_performance
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-12 13:07:28,381 basehttp 47116 38024 "GET /team/performance/ HTTP/1.1" 500 82566
+INFO 2026-04-12 13:10:17,037 autoreload 47116 97052 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-12 13:10:18,433 autoreload 82260 52156 Watching for file changes with StatReloader
+INFO 2026-04-12 13:10:30,701 autoreload 82260 52156 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-12 13:10:32,137 autoreload 22248 76616 Watching for file changes with StatReloader
+INFO 2026-04-12 13:15:08,065 basehttp 22248 71644 "GET /dashboard/manager/ HTTP/1.1" 200 60958
+ERROR 2026-04-12 13:15:11,148 log 22248 71644 Internal Server Error: /team/performance/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2265, in team_performance
+    recent_completions = Enrollment.objects.filter(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1545, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1576, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1426, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1236, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1724, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'completed_at' into field. Choices are: certificate, certificate_issued, certificate_url, certificates, completion_date, course, course_id, created_at, end_date, enrollment_date, id, is_active, last_accessed_at, lesson_progress, notes, payment_amount, payment_date, payment_status, progress_percentage, start_date, status, total_time_spent, updated_at, user, user_id
+ERROR 2026-04-12 13:15:11,157 basehttp 22248 71644 "GET /team/performance/ HTTP/1.1" 500 130735
+ERROR 2026-04-12 13:15:17,921 log 22248 71644 Internal Server Error: /team/communication/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2645, in team_communication
+    from messaging.models import Message, MessageReceipt, MessageReply, MessageTemplate
+  File "D:\AGORA2\messaging\models.py", line 10, in <module>
+    class Message(models.Model):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class messaging.models.Message doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-12 13:15:17,946 basehttp 22248 71644 "GET /team/communication/ HTTP/1.1" 500 105887
+ERROR 2026-04-12 13:15:22,788 log 22248 71644 Internal Server Error: /team/performance/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2265, in team_performance
+    recent_completions = Enrollment.objects.filter(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1545, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1576, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1426, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1236, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 1724, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'completed_at' into field. Choices are: certificate, certificate_issued, certificate_url, certificates, completion_date, course, course_id, created_at, end_date, enrollment_date, id, is_active, last_accessed_at, lesson_progress, notes, payment_amount, payment_date, payment_status, progress_percentage, start_date, status, total_time_spent, updated_at, user, user_id
+ERROR 2026-04-12 13:15:22,797 basehttp 22248 71644 "GET /team/performance/ HTTP/1.1" 500 130735
+INFO 2026-04-12 13:16:04,646 autoreload 22248 76616 D:\AGORA2\accounts\views.py changed, reloading.
+INFO 2026-04-12 13:16:05,984 autoreload 79232 63628 Watching for file changes with StatReloader
+INFO 2026-04-12 13:16:12,565 autoreload 79232 63628 D:\AGORA2\accounts\views.py changed, reloading.
+INFO 2026-04-12 13:16:13,764 autoreload 89064 30044 Watching for file changes with StatReloader
+INFO 2026-04-12 13:16:21,252 autoreload 89064 30044 D:\AGORA2\agoraprof\urls.py changed, reloading.
+INFO 2026-04-12 13:16:22,179 autoreload 28124 110608 Watching for file changes with StatReloader
+ERROR 2026-04-12 13:18:19,664 log 28124 46076 Internal Server Error: /team/communication/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2645, in team_communication
+    from messaging.models import Message, MessageReceipt, MessageReply, MessageTemplate
+  File "D:\AGORA2\messaging\models.py", line 10, in <module>
+    class Message(models.Model):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class messaging.models.Message doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-12 13:18:19,667 basehttp 28124 46076 "GET /team/communication/ HTTP/1.1" 500 105887
+ERROR 2026-04-12 13:18:21,232 log 28124 46076 Internal Server Error: /team/communication/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2645, in team_communication
+    from messaging.models import Message, MessageReceipt, MessageReply, MessageTemplate
+  File "D:\AGORA2\messaging\models.py", line 10, in <module>
+    class Message(models.Model):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\base.py", line 134, in __new__
+    raise RuntimeError(
+RuntimeError: Model class messaging.models.Message doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR 2026-04-12 13:18:21,233 basehttp 28124 46076 "GET /team/communication/ HTTP/1.1" 500 106024
+INFO 2026-04-12 13:18:22,987 basehttp 28124 46076 "GET /dashboard/manager/ HTTP/1.1" 200 62108
+ERROR 2026-04-12 13:18:49,729 log 28124 46076 Internal Server Error: /team/add/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2065, in team_add
+    return render(request, 'team/add.html', context)
+  File "D:\AGORA2\venv\lib\site-packages\django\shortcuts.py", line 24, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\AGORA2\venv\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "D:\AGORA2\venv\lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: team/add.html
+ERROR 2026-04-12 13:18:49,736 basehttp 28124 46076 "GET /team/add/ HTTP/1.1" 500 95397
+ERROR 2026-04-12 13:19:22,985 log 28124 46076 Internal Server Error: /content/upload/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: content_files
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 174, in content_upload
+    page_obj = paginator.get_page(page_number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 68, in get_page
+    return self.page(number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 72, in page
+    number = self.validate_number(number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 53, in validate_number
+    if number > self.num_pages:
+  File "D:\AGORA2\venv\lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 99, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+  File "D:\AGORA2\venv\lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 93, in count
+    return c()
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: content_files
+ERROR 2026-04-12 13:19:22,996 basehttp 28124 46076 "GET /content/upload/ HTTP/1.1" 500 172347
+INFO 2026-04-12 13:19:26,297 basehttp 28124 46076 "GET /courses/browse/ HTTP/1.1" 200 50833
+INFO 2026-04-12 13:19:31,296 basehttp 28124 46076 "GET /content/organize/ HTTP/1.1" 200 41996
+INFO 2026-04-12 13:19:39,996 autoreload 28124 110608 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-12 13:19:44,496 autoreload 35916 109508 Watching for file changes with StatReloader
+INFO 2026-04-12 13:19:48,007 basehttp 35916 72468 "GET /content/organize/ HTTP/1.1" 200 41996
+ERROR 2026-04-12 13:19:53,562 log 35916 72468 Internal Server Error: /content/upload/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: content_files
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 174, in content_upload
+    page_obj = paginator.get_page(page_number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 68, in get_page
+    return self.page(number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 72, in page
+    number = self.validate_number(number)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 53, in validate_number
+    if number > self.num_pages:
+  File "D:\AGORA2\venv\lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 99, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+  File "D:\AGORA2\venv\lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\paginator.py", line 93, in count
+    return c()
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\query.py", line 608, in count
+    return self.query.get_count(using=self.db)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 568, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\query.py", line 554, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 102, in execute
+    return super().execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+  File "D:\AGORA2\venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 328, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: content_files
+ERROR 2026-04-12 13:19:53,595 basehttp 35916 72468 "GET /content/upload/ HTTP/1.1" 500 172347
+INFO 2026-04-12 13:23:48,826 autoreload 35916 109508 D:\AGORA2\content\models.py changed, reloading.
+INFO 2026-04-12 13:23:50,285 autoreload 63268 95992 Watching for file changes with StatReloader
+INFO 2026-04-12 13:24:13,981 autoreload 63268 95992 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-12 13:24:15,655 autoreload 111104 107052 Watching for file changes with StatReloader
+INFO 2026-04-12 13:24:22,611 autoreload 111104 107052 D:\AGORA2\content\urls.py changed, reloading.
+INFO 2026-04-12 13:24:23,728 autoreload 43392 87964 Watching for file changes with StatReloader
+INFO 2026-04-12 13:24:34,675 autoreload 43392 87964 D:\AGORA2\accounts\views.py changed, reloading.
+INFO 2026-04-12 13:24:36,455 autoreload 44460 32992 Watching for file changes with StatReloader
+INFO 2026-04-12 13:26:21,115 basehttp 44460 68748 "GET /dashboard/manager/ HTTP/1.1" 200 62108
+INFO 2026-04-12 13:35:04,694 basehttp 44460 63668 "GET /analytics/team/ HTTP/1.1" 200 49871
+INFO 2026-04-12 13:35:11,121 basehttp 44460 63668 "GET /content/upload/ HTTP/1.1" 200 62631
+INFO 2026-04-12 13:35:38,448 basehttp 44460 63668 "POST /content/upload/ HTTP/1.1" 200 64176
+INFO 2026-04-12 13:36:31,994 basehttp 44460 29208 "GET /content/upload/ HTTP/1.1" 200 63994
+INFO 2026-04-12 13:36:37,753 basehttp 44460 29208 "GET /content/organize/ HTTP/1.1" 200 41996
+INFO 2026-04-12 13:36:43,183 basehttp 44460 29208 "GET /courses/manage/?status=DRAFT HTTP/1.1" 200 52736
+ERROR 2026-04-12 13:36:52,361 log 44460 29208 Internal Server Error: /team/assign/
+Traceback (most recent call last):
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\AGORA2\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AGORA2\venv\lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+  File "D:\AGORA2\content\views.py", line 2228, in team_assign
+    team_members = User.objects.active().filter(
+NameError: name 'User' is not defined
+ERROR 2026-04-12 13:36:52,366 basehttp 44460 29208 "GET /team/assign/ HTTP/1.1" 500 80780
+INFO 2026-04-13 00:43:42,404 autoreload 116600 56876 Watching for file changes with StatReloader
+INFO 2026-04-13 00:43:47,148 basehttp 116600 82200 "GET / HTTP/1.1" 200 51933
+WARNING 2026-04-13 00:43:49,077 log 116600 82200 Not Found: /favicon.ico
+WARNING 2026-04-13 00:43:49,078 basehttp 116600 82200 "GET /favicon.ico HTTP/1.1" 404 10425
+INFO 2026-04-13 00:43:56,011 basehttp 116600 82200 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:43:56,462 basehttp 116600 82200 "GET /dashboard/manager/ HTTP/1.1" 200 62108
+INFO 2026-04-13 00:50:38,725 basehttp 116600 100852 "GET /logout/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:50:38,742 basehttp 116600 100852 "GET /login/ HTTP/1.1" 200 47167
+INFO 2026-04-13 00:53:00,710 basehttp 116600 100852 "POST /login/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:53:00,735 basehttp 116600 100852 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:53:00,919 basehttp 116600 100852 "GET /dashboard/student/ HTTP/1.1" 200 60299
+INFO 2026-04-13 00:53:52,114 basehttp 116600 100852 "GET /logout/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:53:52,124 basehttp 116600 100852 "GET /login/ HTTP/1.1" 200 47167
+INFO 2026-04-13 00:55:30,614 basehttp 116600 100852 "POST /login/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:55:30,636 basehttp 116600 100852 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 00:55:30,702 basehttp 116600 100852 "GET /dashboard/admin/ HTTP/1.1" 200 56206
+INFO 2026-04-13 01:02:58,153 basehttp 116600 113060 "GET /courses/create/ HTTP/1.1" 200 57827
+INFO 2026-04-13 01:03:03,081 basehttp 116600 113060 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 01:03:03,130 basehttp 116600 113060 "GET /dashboard/admin/ HTTP/1.1" 200 56034
+INFO 2026-04-13 01:03:07,708 basehttp 116600 113060 "GET /courses/manage/ HTTP/1.1" 200 55275
+INFO 2026-04-13 01:06:04,122 basehttp 116600 113060 "GET /logout/ HTTP/1.1" 302 0
+INFO 2026-04-13 01:06:04,134 basehttp 116600 113060 "GET /login/ HTTP/1.1" 200 47167
+INFO 2026-04-13 01:06:15,728 basehttp 116600 113060 "POST /login/ HTTP/1.1" 302 0
+INFO 2026-04-13 01:06:15,744 basehttp 116600 113060 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 01:06:15,839 basehttp 116600 113060 "GET /dashboard/student/ HTTP/1.1" 200 60299
+INFO 2026-04-13 01:06:49,430 basehttp 116600 113060 "GET /content/manager-library/ HTTP/1.1" 200 41416
+INFO 2026-04-13 01:06:53,341 basehttp 116600 113060 "GET /media/content/files/5._DATA_MINING_L_5_1.pdf HTTP/1.1" 200 633626
+INFO 2026-04-13 08:10:01,822 autoreload 112360 25864 Watching for file changes with StatReloader
+INFO 2026-04-13 08:10:31,954 basehttp 112360 43980 "GET / HTTP/1.1" 200 51934
+WARNING 2026-04-13 08:10:34,302 log 112360 10580 Not Found: /favicon.ico
+WARNING 2026-04-13 08:10:34,303 basehttp 112360 10580 "GET /favicon.ico HTTP/1.1" 404 10425
+INFO 2026-04-13 08:10:43,282 basehttp 112360 35888 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:10:43,633 basehttp 112360 35888 "GET /dashboard/student/ HTTP/1.1" 200 60127
+INFO 2026-04-13 08:10:46,181 basehttp 112360 35888 "GET /content/browse/ HTTP/1.1" 200 49123
+INFO 2026-04-13 08:10:56,506 basehttp 112360 35888 "GET /content/student-courses/ HTTP/1.1" 200 50719
+INFO 2026-04-13 08:11:00,181 basehttp 112360 35888 "GET /learning/continue/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:11:00,240 basehttp 112360 35888 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:11:00,499 basehttp 112360 35888 "GET /dashboard/student/ HTTP/1.1" 200 60563
+INFO 2026-04-13 08:11:04,435 basehttp 112360 35888 "GET /learning/continue/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:11:04,467 basehttp 112360 35888 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:11:04,646 basehttp 112360 35888 "GET /dashboard/student/ HTTP/1.1" 200 60563
+INFO 2026-04-13 08:20:54,925 basehttp 112360 49576 "GET /learning/continue/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:20:54,970 basehttp 112360 49576 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:20:55,186 basehttp 112360 49576 "GET /dashboard/student/ HTTP/1.1" 200 60563
+INFO 2026-04-13 08:21:01,517 basehttp 112360 49576 "GET /learning/continue/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:21:01,546 basehttp 112360 49576 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:21:01,711 basehttp 112360 49576 "GET /dashboard/student/ HTTP/1.1" 200 60563
+INFO 2026-04-13 08:22:33,297 basehttp 112360 49576 "GET /profile/ HTTP/1.1" 200 57488
+INFO 2026-04-13 08:22:34,808 basehttp 112360 49576 "GET /media/avatars/AI_Brain.jpeg?v=1775489353 HTTP/1.1" 200 110694
+INFO 2026-04-13 08:22:39,644 basehttp 112360 49576 "GET /content/manager-library/ HTTP/1.1" 200 41416
+INFO 2026-04-13 08:22:57,567 basehttp 112360 49576 "GET / HTTP/1.1" 200 51934
+INFO 2026-04-13 08:22:59,814 basehttp 112360 49576 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:23:00,091 basehttp 112360 49576 "GET /dashboard/student/ HTTP/1.1" 200 60127
+INFO 2026-04-13 08:23:09,506 basehttp 112360 49576 "GET /content/manager-library/ HTTP/1.1" 200 41416
+INFO 2026-04-13 08:23:11,968 basehttp 112360 49576 "GET /media/content/files/5._DATA_MINING_L_5_1.pdf HTTP/1.1" 200 633626
+INFO 2026-04-13 08:23:41,303 autoreload 112360 25864 D:\AGORA2\content\views.py changed, reloading.
+INFO 2026-04-13 08:23:43,373 autoreload 49424 95928 Watching for file changes with StatReloader
+INFO 2026-04-13 08:32:52,167 basehttp 49424 87168 "GET /content/course/aa769fbc-c79f-4ca0-b043-277d53e50022/certificate/ HTTP/1.1" 200 2027
+INFO 2026-04-13 08:33:16,372 basehttp 49424 87168 "GET / HTTP/1.1" 200 51934
+INFO 2026-04-13 08:33:18,851 basehttp 49424 87168 "GET /about/ HTTP/1.1" 200 51235
+INFO 2026-04-13 08:33:20,441 basehttp 49424 87168 "GET /features/ HTTP/1.1" 200 55492
+INFO 2026-04-13 08:33:22,107 basehttp 49424 87168 "GET /pricing/ HTTP/1.1" 200 57994
+INFO 2026-04-13 08:33:23,204 basehttp 49424 87168 "GET /faq/ HTTP/1.1" 200 60049
+WARNING 2026-04-13 08:34:18,557 log 49424 87168 Not Found: /contact/
+WARNING 2026-04-13 08:34:18,559 basehttp 49424 87168 "GET /contact/ HTTP/1.1" 404 10416
+WARNING 2026-04-13 08:34:33,587 log 49424 87168 Not Found: /contact/
+WARNING 2026-04-13 08:34:33,589 basehttp 49424 87168 "GET /contact/ HTTP/1.1" 404 10416
+INFO 2026-04-13 08:35:16,356 autoreload 49424 95928 D:\AGORA2\agoraprof\urls.py changed, reloading.
+INFO 2026-04-13 08:35:18,233 autoreload 103048 76132 Watching for file changes with StatReloader
+INFO 2026-04-13 08:35:43,253 basehttp 103048 66760 "GET /pricing/ HTTP/1.1" 200 57994
+INFO 2026-04-13 08:36:15,335 basehttp 103048 66760 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:36:15,680 basehttp 103048 66760 "GET /dashboard/student/ HTTP/1.1" 200 60127
+INFO 2026-04-13 08:36:33,105 basehttp 103048 66760 "GET /achievements/ HTTP/1.1" 200 47424
+INFO 2026-04-13 08:47:32,687 basehttp 103048 8900 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:47:32,846 basehttp 103048 8900 "GET /dashboard/student/ HTTP/1.1" 200 60127
+INFO 2026-04-13 08:55:01,380 basehttp 103048 19812 "GET /learning/continue/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:55:01,499 basehttp 103048 19812 "GET /content/student-courses/ HTTP/1.1" 200 50936
+INFO 2026-04-13 08:55:08,514 basehttp 103048 19812 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:55:08,697 basehttp 103048 19812 "GET /dashboard/student/ HTTP/1.1" 200 60127
+INFO 2026-04-13 08:55:20,328 basehttp 103048 19812 "GET /logout/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:55:20,343 basehttp 103048 19812 "GET /login/ HTTP/1.1" 200 47167
+INFO 2026-04-13 08:55:40,298 basehttp 103048 19812 "POST /login/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:55:40,344 basehttp 103048 19812 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:55:40,526 basehttp 103048 19812 "GET /dashboard/superadmin/ HTTP/1.1" 200 66538
+INFO 2026-04-13 08:56:22,233 basehttp 103048 19812 "GET /users/manage/ HTTP/1.1" 200 65353
+INFO 2026-04-13 08:56:37,093 basehttp 103048 19812 "GET /users/invite/ HTTP/1.1" 200 42765
+INFO 2026-04-13 08:57:29,896 basehttp 103048 19812 "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2026-04-13 08:57:30,109 basehttp 103048 19812 "GET /dashboard/superadmin/ HTTP/1.1" 200 66366
+INFO 2026-04-13 09:02:21,332 basehttp 103048 19812 "GET /admin/ HTTP/1.1" 200 24673
+INFO 2026-04-13 09:02:24,904 basehttp 103048 59532 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2026-04-13 09:02:24,906 basehttp 103048 89128 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2929
+INFO 2026-04-13 09:02:24,911 basehttp 103048 107640 "GET /static/admin/css/responsive.css HTTP/1.1" 200 18533
+INFO 2026-04-13 09:02:24,917 basehttp 103048 59532 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2026-04-13 09:02:24,941 basehttp 103048 19812 "GET /static/admin/css/base.css HTTP/1.1" 200 21207
+INFO 2026-04-13 09:02:24,946 basehttp 103048 67856 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2694
+INFO 2026-04-13 09:02:24,971 basehttp 103048 67856 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2026-04-13 09:02:25,000 basehttp 103048 59532 "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+INFO 2026-04-13 09:02:25,002 basehttp 103048 19812 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2026-04-13 09:02:25,223 basehttp 103048 89876 "GET /static/admin/js/theme.js HTTP/1.1" 200 1943

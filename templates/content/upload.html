@@ -275,15 +275,62 @@
     </div>
     
     <!-- Upload Area -->
-    <div class="upload-area" id="uploadArea">
+    <form method="post" enctype="multipart/form-data" class="upload-area" id="uploadArea">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="upload_file">
         <i class="fas fa-cloud-upload-alt upload-icon"></i>
-        <div class="upload-text">Drag & Drop Files Here</div>
-        <div class="upload-subtext">or click to browse from your computer</div>
-        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-text">Upload Files (Video, Audio, Docs)</div>
+        <div class="upload-subtext">Supported: PDF, DOC, PPT, MP4, AVI, MOV, MP3, WAV, Images, Archives</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 text-left">
+            <input type="text" name="title" class="filter-input" placeholder="Content title (optional)">
+            <select name="category" class="filter-select">
+                {% for value,label in category_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <select name="access_level" class="filter-select">
+                {% for value,label in access_level_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="description" class="filter-input" placeholder="Description (optional)">
+        </div>
+        <div class="flex items-center gap-4 mb-4 justify-center">
+            <label class="text-sm text-gray-300"><input type="checkbox" name="allow_download" checked> Allow Download</label>
+            <label class="text-sm text-gray-300"><input type="checkbox" name="is_public"> Public</label>
+        </div>
+        <input type="file" name="files" id="fileInput" class="file-input" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi,.mov,.mp3,.wav,.jpg,.jpeg,.png,.gif,.zip,.rar" required>
+        <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">
             <i class="fas fa-folder-open mr-2"></i> Choose Files
         </button>
-        <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi,.mov,.jpg,.jpeg,.png,.gif,.zip,.rar">
-    </div>
+        <button type="submit" class="upload-btn ml-2">
+            <i class="fas fa-upload mr-2"></i> Upload Now
+        </button>
+    </form>
+
+    <form method="post" class="file-list">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_link">
+        <h2 class="text-xl font-semibold text-white mb-4">Share External Link</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input type="text" name="link_title" class="filter-input" placeholder="Link title" required>
+            <input type="url" name="link_url" class="filter-input" placeholder="https://..." required>
+            <select name="link_category" class="filter-select">
+                {% for value,label in link_category_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <select name="link_access_level" class="filter-select">
+                {% for value,label in link_access_level_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="link_description" class="filter-input md:col-span-2" placeholder="Description (optional)">
+        </div>
+        <button type="submit" class="upload-btn mt-4">
+            <i class="fas fa-link mr-2"></i> Save Link
+        </button>
+    </form>
     
     <!-- File List -->
     <div class="file-list">

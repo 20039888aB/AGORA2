@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.db.models import Q, Count, Sum
+from django.db import OperationalError, ProgrammingError
 from datetime import timedelta
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 @login_required
 def content_upload(request):
     """
-    Content upload page for managers and admins
+    Content upload page for managers and admins with full file handling
     """
     user = request.user
     
@@ -26,13 +27,299 @@ def content_upload(request):
     if not (user.is_manager_or_above() or user.is_admin_or_above()):
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard')
-    
-    context = {
-        'user': user,
-        'page_title': 'Upload Content',
-    }
-    
+
+    try:
+        from content.models import ContentFile, ContentLink, FileDownloadLog, FileShare
+        from django.core.files.uploadedfile import UploadedFile
+        from django.core.paginator import Paginator
+        import mimetypes
+        import os
+        
+        # Handle file upload
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            
+            if action == 'upload_file':
+                uploaded_files = request.FILES.getlist('files')
+                title = request.POST.get('title', '')
+                description = request.POST.get('description', '')
+                category = request.POST.get('category', 'TRAINING')
+                is_public = request.POST.get('is_public') == 'on'
+                allow_download = request.POST.get('allow_download') == 'on'
+                access_level = request.POST.get('access_level', 'ALL')
+                
+                files_uploaded = 0
+                files_failed = 0
+                
+                for uploaded_file in uploaded_files:
+                    try:
+                        # Validate file
+                        if not isinstance(uploaded_file, UploadedFile):
+                            continue
+                        
+                        # Check file size (100MB limit)
+                        max_size = 100 * 1024 * 1024  # 100MB
+                        if uploaded_file.size > max_size:
+                            files_failed += 1
+                            continue
+                        
+                        # Create content file record
+                        content_file = ContentFile.objects.create(
+                            title=title or uploaded_file.name,
+                            description=description,
+                            file=uploaded_file,
+                            original_filename=uploaded_file.name,
+                            uploaded_by=user,
+                            organization=user.organization,
+                            category=category,
+                            is_public=is_public,
+                            allow_download=allow_download,
+                            access_level=access_level,
+                            status='UPLOADING'
+                        )
+                        
+                        # Set MIME type
+                        mime_type, _ = mimetypes.guess_type(uploaded_file.name)
+                        if mime_type:
+                            content_file.mime_type = mime_type
+                            content_file.save(update_fields=['mime_type'])
+                        
+                        # Mark as uploaded (processing would happen asynchronously in production)
+                        content_file.update_upload_progress(100)
+                        content_file.mark_as_ready()
+                        
+                        files_uploaded += 1
+                        
+                    except Exception as e:
+                        files_failed += 1
+                        logger.error(f"Error uploading file {uploaded_file.name}: {str(e)}")
+                
+                if files_uploaded > 0:
+                    messages.success(request, f'Successfully uploaded {files_uploaded} files.')
+                if files_failed > 0:
+                    messages.error(request, f'Failed to upload {files_failed} files.')
+            
+            elif action == 'delete_file':
+                file_id = request.POST.get('file_id')
+                try:
+                    content_file = ContentFile.objects.get(
+                        id=file_id,
+                        uploaded_by=user,
+                        organization=user.organization
+                    )
+                    
+                    # Delete file from storage
+                    if content_file.file and os.path.exists(content_file.file.path):
+                        os.remove(content_file.file.path)
+                    
+                    # Delete database record
+                    content_file.delete()
+                    messages.success(request, 'File deleted successfully.')
+                except ContentFile.DoesNotExist:
+                    messages.error(request, 'File not found.')
+            
+            elif action == 'create_share':
+                file_id = request.POST.get('file_id')
+                expires_days = request.POST.get('expires_days')
+                max_downloads = request.POST.get('max_downloads', 0)
+                password = request.POST.get('password', '')
+                
+                try:
+                    content_file = ContentFile.objects.get(
+                        id=file_id,
+                        uploaded_by=user,
+                        organization=user.organization
+                    )
+                    
+                    # Create share link
+                    share = FileShare.objects.create(
+                        file=content_file,
+                        created_by=user,
+                        expires_at=timezone.now() + timedelta(days=int(expires_days)) if expires_days else None,
+                        max_downloads=int(max_downloads) if max_downloads else 0,
+                        password=password
+                    )
+                    
+                    messages.success(request, f'Share link created: {request.build_absolute_uri("/shared/{share.share_token}")}')
+                except ContentFile.DoesNotExist:
+                    messages.error(request, 'File not found.')
+
+            elif action == 'create_link':
+                link_title = request.POST.get('link_title', '').strip()
+                link_url = request.POST.get('link_url', '').strip()
+                link_description = request.POST.get('link_description', '').strip()
+                link_category = request.POST.get('link_category', 'REFERENCE').strip().upper()
+                link_access_level = request.POST.get('link_access_level', 'ALL').strip().upper()
+
+                allowed_categories = {'VIDEO', 'AUDIO', 'ARTICLE', 'REFERENCE', 'OTHER'}
+                allowed_access = {'ALL', 'MANAGERS', 'ADMINS'}
+
+                if not link_title or not link_url:
+                    messages.error(request, 'Link title and URL are required.')
+                elif link_category not in allowed_categories:
+                    messages.error(request, 'Invalid link category selected.')
+                elif link_access_level not in allowed_access:
+                    messages.error(request, 'Invalid access level selected.')
+                else:
+                    ContentLink.objects.create(
+                        title=link_title,
+                        description=link_description,
+                        url=link_url,
+                        category=link_category,
+                        access_level=link_access_level,
+                        organization=user.organization,
+                        uploaded_by=user,
+                        is_active=True,
+                    )
+                    messages.success(request, 'Link shared successfully.')
+        
+        # Get uploaded files
+        uploaded_files = ContentFile.objects.filter(
+            uploaded_by=user,
+            organization=user.organization
+        ).order_by('-created_at')
+        
+        # Filter by file type
+        file_type_filter = request.GET.get('file_type')
+        if file_type_filter:
+            uploaded_files = uploaded_files.filter(file_type=file_type_filter)
+        
+        # Filter by category
+        category_filter = request.GET.get('category')
+        if category_filter:
+            uploaded_files = uploaded_files.filter(category=category_filter)
+        
+        # Search
+        search_query = request.GET.get('search')
+        if search_query:
+            uploaded_files = uploaded_files.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(original_filename__icontains=search_query)
+            )
+        
+        # Pagination
+        paginator = Paginator(uploaded_files, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        # Calculate statistics
+        total_files = uploaded_files.count()
+        total_size = uploaded_files.aggregate(
+            total_size=Sum('file_size')
+        )['total_size'] or 0
+        
+        # File type statistics
+        file_types = {}
+        for file_type, _ in ContentFile.FILE_TYPES:
+            count = uploaded_files.filter(file_type=file_type).count()
+            if count > 0:
+                file_types[file_type] = count
+        
+        # Recent uploads (last 7 days)
+        seven_days_ago = timezone.now() - timedelta(days=7)
+        recent_uploads_count = uploaded_files.filter(created_at__gte=seven_days_ago).count()
+        recent_uploads = uploaded_files.select_related('uploaded_by').order_by('-created_at')[:10]
+
+        shared_links = ContentLink.objects.filter(
+            organization=user.organization,
+            uploaded_by=user,
+            is_active=True
+        ).order_by('-created_at')[:10]
+        
+        # Get shared files
+        shared_files = FileShare.objects.filter(
+            created_by=user,
+            is_active=True
+        ).select_related('file').order_by('-created_at')[:10]
+        
+        context = {
+            'user': user,
+            'page_title': 'Upload Content',
+            'uploaded_files': page_obj,
+            'total_files': total_files,
+            'total_size': total_size,
+            'file_types': file_types,
+            'recent_uploads': recent_uploads,
+            'recent_uploads_count': recent_uploads_count,
+            'shared_files': shared_files,
+            'shared_links': shared_links,
+            'file_type_choices': ContentFile.FILE_TYPES,
+            'category_choices': ContentFile._meta.get_field('category').choices,
+            'access_level_choices': ContentFile._meta.get_field('access_level').choices,
+            'link_category_choices': ContentLink._meta.get_field('category').choices,
+            'link_access_level_choices': ContentLink._meta.get_field('access_level').choices,
+        }
+        
+    except (ImportError, OperationalError, ProgrammingError):
+        messages.error(request, 'Content upload features are not available. Please contact administrator.')
+        context = {
+            'user': user,
+            'page_title': 'Upload Content',
+            'uploaded_files': [],
+            'total_files': 0,
+            'total_size': 0,
+            'file_types': {},
+            'recent_uploads': 0,
+            'recent_uploads_count': 0,
+            'shared_files': [],
+            'shared_links': [],
+            'file_type_choices': [],
+            'category_choices': [],
+            'access_level_choices': [],
+            'link_category_choices': [],
+            'link_access_level_choices': [],
+        }
+
     return render(request, 'content/upload.html', context)
+
+
+@login_required
+def manager_uploaded_content(request):
+    """Student/manager view for organization content uploaded by managers."""
+    user = request.user
+
+    if not user.organization:
+        messages.error(request, 'You must belong to an organization to view shared content.')
+        return redirect('dashboard')
+
+    try:
+        from content.models import ContentFile, ContentLink
+
+        manager_files = ContentFile.objects.filter(
+            organization=user.organization,
+            uploaded_by__role='MANAGER',
+            status='READY',
+            access_level='ALL'
+        ).select_related('uploaded_by').order_by('-created_at')
+
+        manager_links = ContentLink.objects.filter(
+            organization=user.organization,
+            uploaded_by__role='MANAGER',
+            is_active=True,
+            access_level='ALL'
+        ).select_related('uploaded_by').order_by('-created_at')
+
+        context = {
+            'user': user,
+            'page_title': 'Manager Uploaded Content',
+            'manager_files': manager_files,
+            'manager_links': manager_links,
+            'manager_files_count': manager_files.count(),
+            'manager_links_count': manager_links.count(),
+        }
+    except (ImportError, OperationalError, ProgrammingError):
+        messages.error(request, 'Shared content is not available yet. Please contact administrator.')
+        context = {
+            'user': user,
+            'page_title': 'Manager Uploaded Content',
+            'manager_files': [],
+            'manager_links': [],
+            'manager_files_count': 0,
+            'manager_links_count': 0,
+        }
+
+    return render(request, 'content/manager_library.html', context)
 
 
 @login_required
@@ -58,7 +345,7 @@ def content_organize(request):
 @login_required
 def content_approve(request):
     """
-    Content approval page for admins
+    Content approval page for admins with comprehensive course approval workflow
     """
     user = request.user
     
@@ -69,75 +356,202 @@ def content_approve(request):
     
     try:
         from courses.models import Course
+        from content.models import CourseApproval
 
         if request.method == 'POST':
             action = request.POST.get('action')
-            course_id = request.POST.get('course_id')
-
-            course = get_object_or_404(Course, id=course_id)
+            approval_id = request.POST.get('approval_id')
+            
+            if approval_id:
+                approval = get_object_or_404(CourseApproval, id=approval_id)
+                course = approval.course
+            else:
+                # Fallback for courses without approval records
+                course_id = request.POST.get('course_id')
+                course = get_object_or_404(Course, id=course_id)
+                approval = None
 
             if not user.is_superadmin() and user.organization and course.organization != user.organization:
                 messages.error(request, 'You do not have permission to review this course.')
                 return redirect('content:content_approve')
 
-            uploader_role = getattr(getattr(course, 'instructor', None), 'role', None)
-            if uploader_role != 'MANAGER':
-                messages.error(request, 'Only manager-uploaded courses can be reviewed here.')
-                return redirect('content:content_approve')
-
+            # Handle different actions
             if action == 'approve':
-                course.status = 'PUBLISHED'
-                course.save(update_fields=['status', 'updated_at'])
-                messages.success(request, f'Course "{course.title}" approved successfully.')
+                if approval:
+                    # Get approval scores and notes
+                    review_notes = request.POST.get('review_notes', '')
+                    content_score = request.POST.get('content_quality_score')
+                    technical_score = request.POST.get('technical_quality_score')
+                    educational_score = request.POST.get('educational_value_score')
+                    
+                    # Convert scores to integers if provided
+                    content_score = int(content_score) if content_score else None
+                    technical_score = int(technical_score) if technical_score else None
+                    educational_score = int(educational_score) if educational_score else None
+                    
+                    if approval.approve(
+                        approved_by=user,
+                        notes=review_notes,
+                        content_score=content_score,
+                        technical_score=technical_score,
+                        educational_score=educational_score
+                    ):
+                        messages.success(request, f'Course "{course.title}" approved successfully.')
+                    else:
+                        messages.error(request, 'Unable to approve course. Check permissions.')
+                else:
+                    # Fallback approval for courses without approval workflow
+                    course.status = 'PUBLISHED'
+                    course.save(update_fields=['status', 'updated_at'])
+                    messages.success(request, f'Course "{course.title}" approved successfully.')
+            
             elif action == 'reject':
-                course.status = 'ARCHIVED'
-                course.save(update_fields=['status', 'updated_at'])
-                messages.success(request, f'Course "{course.title}" rejected and archived.')
-            else:
-                messages.error(request, 'Invalid action.')
+                if approval:
+                    rejection_reason = request.POST.get('rejection_reason', '')
+                    required_changes = request.POST.getlist('required_changes')
+                    
+                    if approval.reject(
+                        reviewed_by=user,
+                        reason=rejection_reason,
+                        required_changes=required_changes
+                    ):
+                        messages.success(request, f'Course "{course.title}" rejected.')
+                    else:
+                        messages.error(request, 'Unable to reject course. Check permissions.')
+                else:
+                    # Fallback rejection
+                    course.status = 'ARCHIVED'
+                    course.save(update_fields=['status', 'updated_at'])
+                    messages.success(request, f'Course "{course.title}" rejected and archived.')
+            
+            elif action == 'return_for_changes':
+                if approval:
+                    review_notes = request.POST.get('review_notes', '')
+                    required_changes = request.POST.getlist('required_changes')
+                    
+                    if approval.return_for_changes(
+                        reviewed_by=user,
+                        notes=review_notes,
+                        required_changes=required_changes
+                    ):
+                        messages.success(request, f'Course "{course.title}" returned for changes.')
+                    else:
+                        messages.error(request, 'Unable to return course. Check permissions.')
+                else:
+                    messages.error(request, 'Course approval workflow not available for this course.')
+            
+            elif action == 'start_review':
+                if approval:
+                    if approval.start_review(reviewed_by=user):
+                        messages.success(request, f'Review started for "{course.title}".')
+                    else:
+                        messages.error(request, 'Unable to start review. Check permissions.')
+                else:
+                    messages.error(request, 'Course approval workflow not available for this course.')
+            
+            elif action == 'resubmit':
+                if approval:
+                    if approval.resubmit():
+                        messages.success(request, f'Course "{course.title}" resubmitted for approval.')
+                    else:
+                        messages.error(request, 'Unable to resubmit course.')
+                else:
+                    messages.error(request, 'Course approval workflow not available for this course.')
 
             return redirect('content:content_approve')
 
+        # Get course approvals with proper workflow
+        if user.is_superadmin():
+            pending_approvals = CourseApproval.objects.filter(
+                status__in=['PENDING', 'UNDER_REVIEW']
+            ).select_related('course', 'course__instructor', 'submitted_by', 'reviewed_by')
+            
+            reviewed_approvals = CourseApproval.objects.filter(
+                status__in=['APPROVED', 'REJECTED', 'RETURNED']
+            ).select_related('course', 'course__instructor', 'submitted_by', 'reviewed_by', 'approved_by')
+        else:
+            pending_approvals = CourseApproval.objects.filter(
+                status__in=['PENDING', 'UNDER_REVIEW'],
+                course__organization=user.organization
+            ).select_related('course', 'course__instructor', 'submitted_by', 'reviewed_by')
+            
+            reviewed_approvals = CourseApproval.objects.filter(
+                status__in=['APPROVED', 'REJECTED', 'RETURNED'],
+                course__organization=user.organization
+            ).select_related('course', 'course__instructor', 'submitted_by', 'reviewed_by', 'approved_by')
+
+        # Also get courses without approval workflow (legacy support)
         pending_courses = Course.objects.select_related('organization', 'instructor').filter(
             is_active=True,
             status='DRAFT',
-            instructor__role='MANAGER'
+            instructor__role='MANAGER',
+            approval_request__isnull=True  # Courses without approval workflow
         )
+        
         reviewed_courses = Course.objects.select_related('organization', 'instructor').filter(
             is_active=True,
             instructor__role='MANAGER',
-            status__in=['PUBLISHED', 'ARCHIVED']
+            status__in=['PUBLISHED', 'ARCHIVED'],
+            approval_request__isnull=True  # Courses without approval workflow
         ).order_by('-updated_at')
 
         if not user.is_superadmin() and user.organization:
             pending_courses = pending_courses.filter(organization=user.organization)
             reviewed_courses = reviewed_courses.filter(organization=user.organization)
 
-        pending_count = pending_courses.count()
-        approved_today = reviewed_courses.filter(
+        # Calculate statistics
+        pending_count = pending_approvals.count() + pending_courses.count()
+        approved_today = reviewed_approvals.filter(
+            status='APPROVED',
+            approved_at__date=timezone.now().date()
+        ).count() + reviewed_courses.filter(
             status='PUBLISHED',
             updated_at__date=timezone.now().date()
         ).count()
-        rejected_count = reviewed_courses.filter(status='ARCHIVED').count()
-
+        rejected_count = reviewed_approvals.filter(status='REJECTED').count() + reviewed_courses.filter(status='ARCHIVED').count()
+        
+        # Get approval statistics
+        approval_stats = {
+            'total_pending': pending_approvals.count(),
+            'under_review': pending_approvals.filter(status='UNDER_REVIEW').count(),
+            'high_priority': pending_approvals.filter(priority='HIGH').count(),
+            'urgent': pending_approvals.filter(priority='URGENT').count(),
+            'returned_for_changes': reviewed_approvals.filter(status='RETURNED').count(),
+        }
+        
+        # Get recent approvals
+        recent_approvals = reviewed_approvals.order_by('-approved_at')[:10]
+        
         context = {
             'user': user,
             'page_title': 'Approve Content',
+            'pending_approvals': pending_approvals.order_by('-submitted_at'),
+            'reviewed_approvals': reviewed_approvals.order_by('-approved_at')[:25],
             'pending_courses': pending_courses.order_by('-created_at'),
             'reviewed_courses': reviewed_courses[:25],
+            'recent_approvals': recent_approvals,
             'pending_count': pending_count,
             'approved_today': approved_today,
             'rejected_count': rejected_count,
+            'approval_stats': approval_stats,
+            'approval_status_choices': CourseApproval.APPROVAL_STATUS,
+            'priority_choices': CourseApproval.PRIORITY_LEVELS,
         }
     except ImportError:
         context = {
             'user': user,
             'page_title': 'Approve Content',
+            'pending_approvals': [],
+            'reviewed_approvals': [],
             'pending_courses': [],
             'reviewed_courses': [],
+            'recent_approvals': [],
             'pending_count': 0,
             'approved_today': 0,
             'rejected_count': 0,
+            'approval_stats': {},
+            'approval_status_choices': [],
+            'priority_choices': [],
         }
 
     return render(request, 'content/approve.html', context)
@@ -160,9 +574,18 @@ class ContentBrowseView(LoginRequiredMixin, TemplateView):
             from courses.models import Course
             from enrollments.models import Enrollment as CourseEnrollment
             
-            # Get courses based on user's organization
+            # Get courses based on user's organization and role
             if user.organization:
-                courses = Course.objects.filter(organization=user.organization)
+                if user.is_student():
+                    # Students only see PUBLISHED (approved) courses
+                    courses = Course.objects.filter(
+                        organization=user.organization,
+                        status='PUBLISHED',
+                        is_active=True
+                    )
+                else:
+                    # Managers and admins see all courses in their organization
+                    courses = Course.objects.filter(organization=user.organization)
             else:
                 courses = Course.objects.all()
             
@@ -757,7 +1180,7 @@ def learning_continue(request):
         else:
             # No active courses, redirect to course browse
             messages.info(request, 'No active courses found. Browse available courses to get started.')
-            return redirect('student_course_browse')
+            return redirect('content:student_course_browse')
             
     except ImportError:
         messages.error(request, 'Learning system not available.')
@@ -1726,10 +2149,60 @@ def team_add(request):
     if not user.is_manager_or_above():
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard')
+
+    if not user.organization:
+        messages.error(request, 'You must belong to an organization to add team members.')
+        return redirect('dashboard')
+
+    from accounts.models import User
+
+    allowed_roles = ['STUDENT'] if user.is_manager() else ['STUDENT', 'MANAGER', 'ADMIN']
+    role_choices = [(code, label) for code, label in User.ROLE_CHOICES if code in allowed_roles]
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        selected_role = request.POST.get('role', 'STUDENT').strip().upper()
+        password = request.POST.get('password', '').strip()
+
+        if not email:
+            messages.error(request, 'Email is required.')
+        elif selected_role not in allowed_roles:
+            messages.error(request, 'You do not have permission to assign that role.')
+        elif User.objects.filter(email=email).exists():
+            messages.error(request, 'A user with this email already exists.')
+        elif len(password) < 8:
+            messages.error(request, 'Password must be at least 8 characters long.')
+        else:
+            new_user = User.objects.create_user(
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                role=selected_role,
+                organization=user.organization,
+                is_active=True,
+            )
+
+            if user.is_manager():
+                new_user.managed_by = user
+                new_user.save(update_fields=['managed_by'])
+
+            messages.success(request, f'Team member {email} was added successfully.')
+            return redirect('team_add')
+
+    team_members = User.objects.active().filter(
+        organization=user.organization,
+        role='STUDENT'
+    ).order_by('first_name', 'last_name', 'email')
     
     context = {
         'user': user,
         'page_title': 'Add Team Member',
+        'role_choices': role_choices,
+        'team_members': team_members,
+        'total_team_members': team_members.count(),
     }
     
     return render(request, 'team/add.html', context)
@@ -1738,80 +2211,793 @@ def team_add(request):
 @login_required
 def team_assign(request):
     """
-    Assign training to team page for managers
+    Assign training to team page for managers with full database integration
     """
     user = request.user
-    
-    # Check permissions
+
     if not user.is_manager_or_above():
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard')
-    
-    context = {
-        'user': user,
-        'page_title': 'Assign Training',
-    }
-    
+
+    try:
+        from courses.models import Course
+        from enrollments.models import Enrollment
+        from organizations.models import Team
+        
+        # Get team members managed by this manager
+        team_members = User.objects.active().filter(
+            organization=user.organization,
+            managed_by=user
+        ).select_related('profile', 'profile__team', 'profile__department')
+        
+        # Get available courses in the organization (only approved/published courses)
+        available_courses = Course.objects.filter(
+            organization=user.organization,
+            is_active=True,
+            status='PUBLISHED',
+            allow_organization_access=True
+        ).select_related('category', 'instructor').order_by('title')
+        
+        # Get recent assignments
+        recent_assignments = Enrollment.objects.filter(
+            course__organization=user.organization,
+            assigned_by=user
+        ).select_related('user', 'course').order_by('-created_at')[:10]
+        
+        # Handle assignment form submission
+        if request.method == 'POST':
+            selected_members = request.POST.getlist('members')
+            selected_courses = request.POST.getlist('courses')
+            assignment_type = request.POST.get('assignment_type', 'immediate')
+            deadline = request.POST.get('deadline')
+            
+            if selected_members and selected_courses:
+                assignments_created = 0
+                
+                for member_id in selected_members:
+                    for course_id in selected_courses:
+                        member = User.objects.get(id=member_id)
+                        course = Course.objects.get(id=course_id)
+                        
+                        # Check if already enrolled
+                        existing_enrollment = Enrollment.objects.filter(
+                            user=member,
+                            course=course
+                        ).first()
+                        
+                        if not existing_enrollment:
+                            # Create new enrollment
+                            enrollment = Enrollment.objects.create(
+                                user=member,
+                                course=course,
+                                assigned_by=user,
+                                status='ASSIGNED',
+                                assigned_at=timezone.now(),
+                                deadline=timezone.parse(deadline) if deadline else None
+                            )
+                            assignments_created += 1
+                
+                messages.success(request, f'Successfully assigned {assignments_created} training courses.')
+            else:
+                messages.error(request, 'Please select at least one team member and one course.')
+        
+        # Prepare context data
+        context = {
+            'page_title': 'Assign Training',
+            'team_members': team_members,
+            'available_courses': available_courses,
+            'recent_assignments': recent_assignments,
+            'total_members': team_members.count(),
+            'total_courses': available_courses.count(),
+            'total_assignments': recent_assignments.count(),
+        }
+        
+    except ImportError as e:
+        messages.error(request, 'Some features are not available. Please contact administrator.')
+        context = {
+            'page_title': 'Assign Training',
+            'team_members': [],
+            'available_courses': [],
+            'recent_assignments': [],
+            'total_members': 0,
+            'total_courses': 0,
+            'total_assignments': 0,
+        }
+
     return render(request, 'team/assign.html', context)
 
 
 @login_required
 def team_performance(request):
     """
-    Team performance review page for managers
+    Team performance review page for managers with real performance metrics
     """
     user = request.user
-    
-    # Check permissions
+
     if not user.is_manager_or_above():
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard')
-    
-    context = {
-        'user': user,
-        'page_title': 'Team Performance',
-    }
-    
+
+    try:
+        from accounts.models import User
+        from courses.models import Course
+        from enrollments.models import Enrollment
+        from certificates.models import Certificate
+        from organizations.models import Team
+        from django.db.models import Avg, Count, Sum, Q, F
+        from datetime import datetime, timedelta
+        
+        # Get team members managed by this manager
+        team_members = User.objects.active().filter(
+            organization=user.organization,
+            managed_by=user
+        ).select_related('profile', 'profile__team', 'profile__department')
+        
+        # Calculate team performance metrics
+        team_metrics = []
+        total_courses_completed = 0
+        total_hours_completed = 0
+        total_certificates_earned = 0
+        
+        for member in team_members:
+            # Get enrollments for this member
+            member_enrollments = Enrollment.objects.filter(
+                user=member,
+                course__organization=user.organization
+            ).select_related('course')
+            
+            # Calculate member metrics
+            courses_completed = member_enrollments.filter(status='COMPLETED').count()
+            courses_in_progress = member_enrollments.filter(status='ACTIVE').count()
+            total_enrollments = member_enrollments.count()
+            
+            # Calculate hours completed (sum of course durations for completed courses)
+            hours_completed = member_enrollments.filter(status='COMPLETED').aggregate(
+                total_hours=Sum('course__duration_hours')
+            )['total_hours'] or 0
+            
+            # Get certificates earned
+            certificates_count = Certificate.objects.filter(
+                user=member,
+                course__organization=user.organization
+            ).count()
+            
+            # Calculate completion rate
+            completion_rate = (courses_completed / total_enrollments * 100) if total_enrollments > 0 else 0
+            
+            # Calculate average score (if scores are available)
+            avg_score = member_enrollments.filter(
+                status='COMPLETED'
+            ).aggregate(avg_score=Avg('score'))['avg_score'] or 0
+            
+            # Get recent activity
+            recent_enrollment = member_enrollments.order_by('-created_at').first()
+            last_activity = recent_enrollment.created_at if recent_enrollment else None
+            
+            member_metrics = {
+                'member': member,
+                'courses_completed': courses_completed,
+                'courses_in_progress': courses_in_progress,
+                'total_enrollments': total_enrollments,
+                'hours_completed': hours_completed,
+                'certificates_count': certificates_count,
+                'completion_rate': round(completion_rate, 1),
+                'avg_score': round(avg_score, 1),
+                'last_activity': last_activity,
+                'performance_level': get_performance_level(completion_rate, avg_score),
+            }
+            
+            team_metrics.append(member_metrics)
+            total_courses_completed += courses_completed
+            total_hours_completed += hours_completed
+            total_certificates_earned += certificates_count
+        
+        # Sort team members by performance
+        team_metrics.sort(key=lambda x: x['completion_rate'], reverse=True)
+        
+        # Get top performer
+        top_performer = team_metrics[0] if team_metrics else None
+        
+        # Calculate team averages
+        team_size = len(team_metrics)
+        avg_completion_rate = sum(m['completion_rate'] for m in team_metrics) / team_size if team_size > 0 else 0
+        avg_hours_per_member = total_hours_completed / team_size if team_size > 0 else 0
+        
+        # Get performance trends (last 30 days)
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        recent_completions = Enrollment.objects.filter(
+            user__in=team_members,
+            status='COMPLETED',
+            completed_at__gte=thirty_days_ago
+        ).count()
+        
+        # Get course completion rates
+        course_stats = []
+        org_courses = Course.objects.filter(
+            organization=user.organization,
+            is_active=True
+        ).annotate(
+            enrollment_count=Count('enrollment', filter=Q(enrollment__user__in=team_members)),
+            completion_count=Count('enrollment', filter=Q(enrollment__user__in=team_members, enrollment__status='COMPLETED'))
+        ).order_by('-enrollment_count')[:10]
+        
+        for course in org_courses:
+            if course.enrollment_count > 0:
+                completion_rate = (course.completion_count / course.enrollment_count) * 100
+                course_stats.append({
+                    'course': course,
+                    'enrollment_count': course.enrollment_count,
+                    'completion_count': course.completion_count,
+                    'completion_rate': round(completion_rate, 1)
+                })
+
+        # Organization-wide student certificates (with related course) for this manager's organization
+        organization_certificates = Certificate.objects.filter(
+            user__organization=user.organization,
+            user__role='STUDENT',
+            course__organization=user.organization,
+            status='ISSUED'
+        ).select_related('user', 'course').order_by('-issued_date')
+        organization_certificates_count = organization_certificates.count()
+
+        # Template-compatible data projections
+        average_score = (
+            sum(m['avg_score'] for m in team_metrics) / team_size
+            if team_size > 0 else 0
+        )
+        active_learners = sum(1 for m in team_metrics if m['courses_in_progress'] > 0)
+
+        team_performance = [
+            {
+                'id': metric['member'].id,
+                'first_name': metric['member'].first_name,
+                'last_name': metric['member'].last_name,
+                'email': metric['member'].email,
+                'role': metric['member'].role,
+                'completed_courses': metric['courses_completed'],
+                'average_score': metric['avg_score'],
+                'performance_level': metric['performance_level'],
+                'last_activity': metric['last_activity'],
+            }
+            for metric in team_metrics
+        ]
+
+        top_performers = team_performance[:3]
+        
+        # Prepare context data
+        context = {
+            'page_title': 'Team Performance Review',
+            'team_metrics': team_metrics,
+            'top_performer': top_performer,
+            'team_size': team_size,
+            'total_courses_completed': total_courses_completed,
+            'total_hours_completed': total_hours_completed,
+            'total_certificates_earned': total_certificates_earned,
+            'avg_completion_rate': round(avg_completion_rate, 1),
+            'avg_hours_per_member': round(avg_hours_per_member, 1),
+            'recent_completions': recent_completions,
+            'course_stats': course_stats,
+            'overall_completion_rate': round(avg_completion_rate, 1),
+            'average_score': round(average_score, 1),
+            'active_learners': active_learners,
+            'certificates_earned': organization_certificates_count,
+            'team_performance': team_performance,
+            'top_performers': top_performers,
+            'organization_certificates': organization_certificates,
+        }
+        
+    except ImportError as e:
+        messages.error(request, 'Some performance features are not available. Please contact administrator.')
+        context = {
+            'page_title': 'Team Performance Review',
+            'team_metrics': [],
+            'top_performer': None,
+            'team_size': 0,
+            'total_courses_completed': 0,
+            'total_hours_completed': 0,
+            'total_certificates_earned': 0,
+            'avg_completion_rate': 0,
+            'avg_hours_per_member': 0,
+            'recent_completions': 0,
+            'course_stats': [],
+            'overall_completion_rate': 0,
+            'average_score': 0,
+            'active_learners': 0,
+            'certificates_earned': 0,
+            'team_performance': [],
+            'top_performers': [],
+            'organization_certificates': [],
+        }
+
     return render(request, 'team/performance.html', context)
+
+
+def get_performance_level(completion_rate, avg_score):
+    """Helper function to determine performance level"""
+    if completion_rate >= 90 and avg_score >= 85:
+        return 'Excellent'
+    elif completion_rate >= 75 and avg_score >= 70:
+        return 'Good'
+    elif completion_rate >= 60 and avg_score >= 60:
+        return 'Average'
+    elif completion_rate >= 40:
+        return 'Below Average'
+    else:
+        return 'Needs Improvement'
 
 
 @login_required
 def team_schedule(request):
     """
-    Training calendar page for managers
+    Training calendar page for managers with full database integration
     """
     user = request.user
     
-    # Check permissions
     if not user.is_manager_or_above():
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard')
-    
-    context = {
-        'user': user,
-        'page_title': 'Training Calendar',
-    }
-    
+
+    try:
+        from training.models import TrainingEvent, EventAttendance
+        from courses.models import Course
+        from enrollments.models import Enrollment
+        from organizations.models import Team
+        from datetime import datetime, timedelta
+        from django.db.models import Q, Count
+        import calendar
+        
+        # Get team members managed by this manager
+        team_members = User.objects.active().filter(
+            organization=user.organization,
+            managed_by=user
+        ).select_related('profile', 'profile__team', 'profile__department')
+        
+        # Get current date and month/year parameters
+        today = timezone.now()
+        year = int(request.GET.get('year', today.year))
+        month = int(request.GET.get('month', today.month))
+        
+        # Get calendar month data
+        cal = calendar.Calendar(firstweekday=0)  # Monday as first day
+        month_days = cal.monthdatescalendar(year, month)
+        
+        # Get training events for the month
+        month_start = timezone.datetime(year, month, 1).replace(tzinfo=timezone.get_current_timezone())
+        if month == 12:
+            month_end = timezone.datetime(year + 1, 1, 1).replace(tzinfo=timezone.get_current_timezone())
+        else:
+            month_end = timezone.datetime(year, month + 1, 1).replace(tzinfo=timezone.get_current_timezone())
+        
+        # Get events for the organization and team
+        events = TrainingEvent.objects.filter(
+            organization=user.organization,
+            start_time__gte=month_start,
+            start_time__lt=month_end,
+            status='SCHEDULED'
+        ).select_related('course', 'created_by').prefetch_related('participants').order_by('start_time')
+        
+        # Also get events where team members are participants
+        team_events = TrainingEvent.objects.filter(
+            participants__in=team_members,
+            start_time__gte=month_start,
+            start_time__lt=month_end,
+            status='SCHEDULED'
+        ).select_related('course', 'created_by').prefetch_related('participants').order_by('start_time')
+        
+        # Combine and deduplicate events
+        all_events = list(events) + [event for event in team_events if event not in events]
+        
+        # Organize events by date
+        events_by_date = {}
+        for event in all_events:
+            event_date = event.start_time.date()
+            if event_date not in events_by_date:
+                events_by_date[event_date] = []
+            events_by_date[event_date].append(event)
+        
+        # Get upcoming events (next 30 days)
+        upcoming_start = today
+        upcoming_end = today + timedelta(days=30)
+        upcoming_events = TrainingEvent.objects.filter(
+            Q(organization=user.organization) | Q(participants__in=team_members),
+            start_time__gte=upcoming_start,
+            start_time__lt=upcoming_end,
+            status='SCHEDULED'
+        ).select_related('course', 'created_by').prefetch_related('participants').order_by('start_time').distinct()
+        
+        # Get recent past events (last 30 days)
+        recent_start = today - timedelta(days=30)
+        recent_end = today
+        recent_events = TrainingEvent.objects.filter(
+            Q(organization=user.organization) | Q(participants__in=team_members),
+            start_time__gte=recent_start,
+            start_time__lt=recent_end,
+            status__in=['COMPLETED', 'CANCELLED']
+        ).select_related('course', 'created_by').prefetch_related('participants').order_by('-start_time').distinct()
+        
+        # Handle event creation
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            
+            if action == 'create_event':
+                # Extract event data
+                title = request.POST.get('title')
+                description = request.POST.get('description', '')
+                event_type = request.POST.get('event_type', 'TRAINING')
+                start_time = request.POST.get('start_time')
+                end_time = request.POST.get('end_time')
+                location = request.POST.get('location', '')
+                virtual_meeting_url = request.POST.get('virtual_meeting_url', '')
+                is_virtual = request.POST.get('is_virtual') == 'on'
+                all_day = request.POST.get('all_day') == 'on'
+                course_id = request.POST.get('course')
+                max_participants = request.POST.get('max_participants', 0)
+                selected_participants = request.POST.getlist('participants')
+                
+                if title and start_time:
+                    # Parse dates
+                    start_dt = timezone.datetime.fromisoformat(start_time).replace(tzinfo=timezone.get_current_timezone())
+                    if end_time:
+                        end_dt = timezone.datetime.fromisoformat(end_time).replace(tzinfo=timezone.get_current_timezone())
+                    else:
+                        end_dt = start_dt + timedelta(hours=1)
+                    
+                    # Create event
+                    event = TrainingEvent.objects.create(
+                        title=title,
+                        description=description,
+                        event_type=event_type,
+                        organization=user.organization,
+                        created_by=user,
+                        start_time=start_dt,
+                        end_time=end_dt,
+                        location=location,
+                        virtual_meeting_url=virtual_meeting_url,
+                        is_virtual=is_virtual,
+                        all_day=all_day,
+                        max_participants=int(max_participants) if max_participants else 0
+                    )
+                    
+                    # Add course if specified
+                    if course_id:
+                        try:
+                            course = Course.objects.get(id=course_id, organization=user.organization)
+                            event.course = course
+                            event.save()
+                        except Course.DoesNotExist:
+                            pass
+                    
+                    # Add participants
+                    if selected_participants:
+                        participants = User.objects.filter(id__in=selected_participants, organization=user.organization)
+                        event.participants.set(participants)
+                    
+                    messages.success(request, f'Event "{title}" created successfully.')
+                else:
+                    messages.error(request, 'Please provide at least a title and start time.')
+            
+            elif action == 'delete_event':
+                event_id = request.POST.get('event_id')
+                try:
+                    event = TrainingEvent.objects.get(id=event_id, organization=user.organization)
+                    event.status = 'CANCELLED'
+                    event.save()
+                    messages.success(request, f'Event "{event.title}" cancelled.')
+                except TrainingEvent.DoesNotExist:
+                    messages.error(request, 'Event not found.')
+        
+        # Get available courses for event creation
+        available_courses = Course.objects.filter(
+            organization=user.organization,
+            is_active=True,
+            status='PUBLISHED'
+        ).order_by('title')
+        
+        # Prepare calendar data for template
+        calendar_data = []
+        for week in month_days:
+            week_data = []
+            for day in week:
+                if day.month == month:
+                    events_count = len(events_by_date.get(day, []))
+                    week_data.append({
+                        'date': day,
+                        'is_today': day.date() == today.date(),
+                        'events': events_by_date.get(day, []),
+                        'events_count': events_count,
+                        'is_current_month': True
+                    })
+                else:
+                    week_data.append({
+                        'date': day,
+                        'is_today': False,
+                        'events': [],
+                        'events_count': 0,
+                        'is_current_month': False
+                    })
+            calendar_data.append(week_data)
+        
+        # Calculate statistics
+        total_events = len(all_events)
+        upcoming_count = upcoming_events.count()
+        recent_count = recent_events.count()
+        
+        # Get event type statistics
+        event_types = {}
+        for event in all_events:
+            event_type = event.get_event_type_display()
+            event_types[event_type] = event_types.get(event_type, 0) + 1
+        
+        context = {
+            'user': user,
+            'page_title': 'Training Calendar',
+            'team_members': team_members,
+            'calendar_data': calendar_data,
+            'current_month': month,
+            'current_year': year,
+            'current_date': today,
+            'month_name': calendar.month_name[month],
+            'all_events': all_events,
+            'upcoming_events': upcoming_events[:10],
+            'recent_events': recent_events[:10],
+            'available_courses': available_courses,
+            'total_events': total_events,
+            'upcoming_count': upcoming_count,
+            'recent_count': recent_count,
+            'event_types': event_types,
+            'team_size': team_members.count(),
+        }
+        
+    except ImportError as e:
+        messages.error(request, 'Calendar features are not available. Please contact administrator.')
+        context = {
+            'user': user,
+            'page_title': 'Training Calendar',
+            'team_members': [],
+            'calendar_data': [],
+            'current_month': today.month,
+            'current_year': today.year,
+            'current_date': today,
+            'month_name': calendar.month_name[today.month],
+            'all_events': [],
+            'upcoming_events': [],
+            'recent_events': [],
+            'available_courses': [],
+            'total_events': 0,
+            'upcoming_count': 0,
+            'recent_count': 0,
+            'event_types': {},
+            'team_size': 0,
+        }
+
     return render(request, 'team/schedule.html', context)
 
 
 @login_required
 def team_communication(request):
     """
-    Team communication page for managers
+    Team communication page for managers with full messaging functionality
     """
     user = request.user
     
-    # Check permissions
     if not user.is_manager_or_above():
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('dashboard')
-    
-    context = {
-        'user': user,
-        'page_title': 'Team Communication',
-    }
-    
+
+    try:
+        from messaging.models import Message, MessageReceipt, MessageReply, MessageTemplate
+        from organizations.models import Team
+        from django.db.models import Q, Count
+        from datetime import timedelta
+        
+        # Get team members managed by this manager
+        team_members = User.objects.active().filter(
+            organization=user.organization,
+            managed_by=user
+        ).select_related('profile', 'profile__team', 'profile__department')
+        
+        # Handle message actions
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            
+            if action == 'send_message':
+                # Extract message data
+                subject = request.POST.get('subject')
+                content = request.POST.get('content')
+                message_type = request.POST.get('message_type', 'ANNOUNCEMENT')
+                priority = request.POST.get('priority', 'NORMAL')
+                allow_replies = request.POST.get('allow_replies') == 'on'
+                requires_acknowledgment = request.POST.get('requires_acknowledgment') == 'on'
+                recipient_type = request.POST.get('recipient_type', 'team')
+                selected_recipients = request.POST.getlist('recipients')
+                expires_days = request.POST.get('expires_days')
+                
+                if subject and content:
+                    # Create message
+                    message = Message.objects.create(
+                        subject=subject,
+                        content=content,
+                        message_type=message_type,
+                        priority=priority,
+                        sender=user,
+                        organization=user.organization,
+                        allow_replies=allow_replies,
+                        requires_acknowledgment=requires_acknowledgment,
+                        expires_at=timezone.now() + timedelta(days=int(expires_days)) if expires_days else None
+                    )
+                    
+                    # Add recipients based on type
+                    if recipient_type == 'team':
+                        message.recipients.set(team_members)
+                    elif recipient_type == 'selected' and selected_recipients:
+                        recipients = User.objects.filter(id__in=selected_recipients, organization=user.organization)
+                        message.recipients.set(recipients)
+                    elif recipient_type == 'organization':
+                        org_members = User.objects.active().filter(organization=user.organization)
+                        message.recipients.set(org_members)
+                    
+                    # Send message
+                    message.send_message()
+                    messages.success(request, f'Message "{subject}" sent to {message.recipient_count} recipients.')
+                else:
+                    messages.error(request, 'Please provide both subject and content.')
+            
+            elif action == 'delete_message':
+                message_id = request.POST.get('message_id')
+                try:
+                    message = Message.objects.get(id=message_id, sender=user, organization=user.organization)
+                    # Delete message and all related receipts
+                    message.delete()
+                    messages.success(request, 'Message deleted successfully.')
+                except Message.DoesNotExist:
+                    messages.error(request, 'Message not found.')
+            
+            elif action == 'mark_as_read':
+                message_id = request.POST.get('message_id')
+                try:
+                    receipt = MessageReceipt.objects.get(
+                        message_id=message_id,
+                        recipient=user,
+                        status='DELIVERED'
+                    )
+                    receipt.mark_as_read()
+                    messages.success(request, 'Message marked as read.')
+                except MessageReceipt.DoesNotExist:
+                    messages.error(request, 'Message not found or already read.')
+            
+            elif action == 'send_reply':
+                message_id = request.POST.get('message_id')
+                reply_content = request.POST.get('reply_content')
+                
+                if reply_content:
+                    try:
+                        parent_message = Message.objects.get(id=message_id, organization=user.organization)
+                        
+                        # Create reply
+                        reply = MessageReply.objects.create(
+                            parent_message=parent_message,
+                            sender=user,
+                            content=reply_content
+                        )
+                        
+                        messages.success(request, 'Reply sent successfully.')
+                    except Message.DoesNotExist:
+                        messages.error(request, 'Message not found.')
+                else:
+                    messages.error(request, 'Please provide reply content.')
+        
+        # Get sent messages by this manager
+        sent_messages = Message.objects.filter(
+            sender=user,
+            organization=user.organization,
+            is_sent=True
+        ).select_related('sender').prefetch_related('recipients').order_by('-sent_at')
+        
+        # Get received messages for this user
+        received_receipts = MessageReceipt.objects.filter(
+            recipient=user,
+            message__organization=user.organization
+        ).select_related('message', 'message__sender').order_by('-created_at')
+        
+        # Get message statistics
+        total_sent = sent_messages.count()
+        total_received = received_receipts.count()
+        unread_count = received_receipts.filter(status='DELIVERED').count()
+        pending_acknowledgments = received_receipts.filter(
+            message__requires_acknowledgment=True,
+            status__in=['DELIVERED', 'READ']
+        ).count()
+        
+        # Get recent messages (last 30 days)
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        recent_sent = sent_messages.filter(sent_at__gte=thirty_days_ago).count()
+        recent_received = received_receipts.filter(created_at__gte=thirty_days_ago).count()
+        
+        # Get message templates
+        templates = MessageTemplate.objects.filter(
+            organization=user.organization,
+            is_active=True
+        ).order_by('template_type', 'name')
+        
+        # Get message with replies for detailed view
+        message_with_replies = None
+        message_id = request.GET.get('message_id')
+        if message_id:
+            try:
+                message_with_replies = Message.objects.get(
+                    id=message_id,
+                    organization=user.organization
+                )
+                
+                # Check if user has access to this message
+                if (message_with_replies.sender == user or 
+                    message_with_replies.recipients.filter(id=user.id).exists()):
+                    
+                    # Get replies
+                    replies = MessageReply.objects.filter(
+                        parent_message=message_with_replies
+                    ).select_related('sender').order_by('created_at')
+                    
+                    # Mark as read if this is a received message
+                    if message_with_replies.recipients.filter(id=user.id).exists():
+                        receipt = MessageReceipt.objects.filter(
+                            message=message_with_replies,
+                            recipient=user
+                        ).first()
+                        if receipt and receipt.status == 'DELIVERED':
+                            receipt.mark_as_read()
+                    
+                    message_with_replies.replies_list = replies
+                else:
+                    message_with_replies = None
+                    messages.error(request, 'You do not have permission to view this message.')
+            except Message.DoesNotExist:
+                messages.error(request, 'Message not found.')
+        
+        # Get message type statistics
+        message_types = {}
+        for message in sent_messages:
+            msg_type = message.get_message_type_display()
+            message_types[msg_type] = message_types.get(msg_type, 0) + 1
+        
+        context = {
+            'user': user,
+            'page_title': 'Team Communication',
+            'team_members': team_members,
+            'sent_messages': sent_messages[:20],
+            'received_receipts': received_receipts[:20],
+            'message_with_replies': message_with_replies,
+            'templates': templates,
+            'total_sent': total_sent,
+            'total_received': total_received,
+            'unread_count': unread_count,
+            'pending_acknowledgments': pending_acknowledgments,
+            'recent_sent': recent_sent,
+            'recent_received': recent_received,
+            'message_types': message_types,
+            'team_size': team_members.count(),
+        }
+        
+    except ImportError as e:
+        messages.error(request, 'Messaging features are not available. Please contact administrator.')
+        context = {
+            'user': user,
+            'page_title': 'Team Communication',
+            'team_members': [],
+            'sent_messages': [],
+            'received_receipts': [],
+            'message_with_replies': None,
+            'templates': [],
+            'total_sent': 0,
+            'total_received': 0,
+            'unread_count': 0,
+            'pending_acknowledgments': 0,
+            'recent_sent': 0,
+            'recent_received': 0,
+            'message_types': {},
+            'team_size': 0,
+        }
+
     return render(request, 'team/communication.html', context)
 
 
@@ -1925,15 +3111,231 @@ def certificates_manage(request):
 @login_required
 def learning_paths_view(request):
     """
-    Learning paths page
+    Learning paths page with full course creation and path management
     """
     user = request.user
     
-    context = {
-        'user': user,
-        'page_title': 'Learning Paths',
-    }
-    
+    # Check permissions - managers and admins can create/manage paths
+    if not (user.is_manager_or_above() or user.is_admin_or_above()):
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('dashboard')
+
+    try:
+        from learning.models import LearningPath, PathCourse, PathEnrollment
+        from courses.models import Course
+        from enrollments.models import Enrollment
+        from django.core.paginator import Paginator
+        
+        # Handle learning path actions
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            
+            if action == 'create_path':
+                # Extract learning path data
+                title = request.POST.get('title')
+                description = request.POST.get('description')
+                short_description = request.POST.get('short_description', '')
+                difficulty_level = request.POST.get('difficulty_level', 'BEGINNER')
+                estimated_hours = request.POST.get('estimated_hours', 0)
+                prerequisites = request.POST.get('prerequisites', '')
+                is_sequential = request.POST.get('is_sequential') == 'on'
+                allow_skipping = request.POST.get('allow_skipping') == 'on'
+                max_enrollments = request.POST.get('max_enrollments', 0)
+                auto_enroll = request.POST.get('auto_enroll') == 'on'
+                certificate_enabled = request.POST.get('certificate_enabled') == 'on'
+                selected_courses = request.POST.getlist('courses')
+                course_orders = request.POST.getlist('course_order')
+                
+                if title and description:
+                    # Create learning path
+                    learning_path = LearningPath.objects.create(
+                        title=title,
+                        description=description,
+                        short_description=short_description,
+                        difficulty_level=difficulty_level,
+                        estimated_hours=int(estimated_hours) if estimated_hours else 0,
+                        prerequisites=prerequisites,
+                        organization=user.organization,
+                        created_by=user,
+                        is_sequential=is_sequential,
+                        allow_skipping=allow_skipping,
+                        max_enrollments=int(max_enrollments) if max_enrollments else 0,
+                        auto_enroll=auto_enroll,
+                        certificate_enabled=certificate_enabled,
+                        status='DRAFT'
+                    )
+                    
+                    # Add courses to path
+                    if selected_courses:
+                        for i, course_id in enumerate(selected_courses):
+                            try:
+                                course = Course.objects.get(id=course_id, organization=user.organization)
+                                order = int(course_orders[i]) if i < len(course_orders) else i + 1
+                                
+                                PathCourse.objects.create(
+                                    learning_path=learning_path,
+                                    course=course,
+                                    order=order
+                                )
+                            except Course.DoesNotExist:
+                                continue
+                    
+                    messages.success(request, f'Learning path "{title}" created successfully.')
+                else:
+                    messages.error(request, 'Please provide both title and description.')
+            
+            elif action == 'publish_path':
+                path_id = request.POST.get('path_id')
+                try:
+                    learning_path = LearningPath.objects.get(
+                        id=path_id,
+                        created_by=user,
+                        organization=user.organization
+                    )
+                    
+                    # Check if path has courses
+                    if learning_path.total_courses == 0:
+                        messages.error(request, 'Cannot publish a learning path without courses.')
+                    else:
+                        learning_path.status = 'PUBLISHED'
+                        learning_path.published_at = timezone.now()
+                        learning_path.save(update_fields=['status', 'published_at'])
+                        messages.success(request, f'Learning path "{learning_path.title}" published successfully.')
+                except LearningPath.DoesNotExist:
+                    messages.error(request, 'Learning path not found.')
+            
+            elif action == 'delete_path':
+                path_id = request.POST.get('path_id')
+                try:
+                    learning_path = LearningPath.objects.get(
+                        id=path_id,
+                        created_by=user,
+                        organization=user.organization
+                    )
+                    learning_path.delete()
+                    messages.success(request, 'Learning path deleted successfully.')
+                except LearningPath.DoesNotExist:
+                    messages.error(request, 'Learning path not found.')
+            
+            elif action == 'enroll_users':
+                path_id = request.POST.get('path_id')
+                selected_users = request.POST.getlist('users')
+                
+                if selected_users:
+                    try:
+                        learning_path = LearningPath.objects.get(
+                            id=path_id,
+                            organization=user.organization
+                        )
+                        
+                        enrollments_created = 0
+                        for user_id in selected_users:
+                            try:
+                                target_user = User.objects.get(id=user_id, organization=user.organization)
+                                
+                                if learning_path.can_user_enroll(target_user):
+                                    PathEnrollment.objects.create(
+                                        learning_path=learning_path,
+                                        user=target_user,
+                                        assigned_by=user
+                                    )
+                                    enrollments_created += 1
+                            except User.DoesNotExist:
+                                continue
+                        
+                        messages.success(request, f'Successfully enrolled {enrollments_created} users.')
+                    except LearningPath.DoesNotExist:
+                        messages.error(request, 'Learning path not found.')
+                else:
+                    messages.error(request, 'Please select at least one user.')
+        
+        # Get learning paths
+        learning_paths = LearningPath.objects.filter(
+            organization=user.organization
+        ).select_related('created_by').prefetch_related('path_courses__course').order_by('-created_at')
+        
+        # Filter by status
+        status_filter = request.GET.get('status')
+        if status_filter:
+            learning_paths = learning_paths.filter(status=status_filter)
+        
+        # Search
+        search_query = request.GET.get('search')
+        if search_query:
+            learning_paths = learning_paths.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+        
+        # Pagination
+        paginator = Paginator(learning_paths, 12)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        # Get available courses for path creation
+        available_courses = Course.objects.filter(
+            organization=user.organization,
+            is_active=True,
+            status='PUBLISHED'
+        ).order_by('title')
+        
+        # Get organization members for enrollment
+        org_members = User.objects.active().filter(
+            organization=user.organization
+        ).exclude(id=user.id).order_by('first_name', 'last_name')
+        
+        # Calculate statistics
+        total_paths = learning_paths.count()
+        published_paths = learning_paths.filter(status='PUBLISHED').count()
+        draft_paths = learning_paths.filter(status='DRAFT').count()
+        
+        # Get enrollment statistics
+        total_enrollments = PathEnrollment.objects.filter(
+            learning_path__organization=user.organization
+        ).count()
+        active_enrollments = PathEnrollment.objects.filter(
+            learning_path__organization=user.organization,
+            status='ACTIVE'
+        ).count()
+        completed_enrollments = PathEnrollment.objects.filter(
+            learning_path__organization=user.organization,
+            status='COMPLETED'
+        ).count()
+        
+        context = {
+            'user': user,
+            'page_title': 'Learning Paths',
+            'learning_paths': page_obj,
+            'available_courses': available_courses,
+            'org_members': org_members,
+            'total_paths': total_paths,
+            'published_paths': published_paths,
+            'draft_paths': draft_paths,
+            'total_enrollments': total_enrollments,
+            'active_enrollments': active_enrollments,
+            'completed_enrollments': completed_enrollments,
+            'difficulty_choices': LearningPath.DIFFICULTY_LEVELS,
+            'status_choices': LearningPath.STATUS_CHOICES,
+        }
+        
+    except ImportError as e:
+        messages.error(request, 'Learning paths features are not available. Please contact administrator.')
+        context = {
+            'user': user,
+            'page_title': 'Learning Paths',
+            'learning_paths': [],
+            'available_courses': [],
+            'org_members': [],
+            'total_paths': 0,
+            'published_paths': 0,
+            'draft_paths': 0,
+            'total_enrollments': 0,
+            'active_enrollments': 0,
+            'completed_enrollments': 0,
+            'difficulty_choices': [],
+            'status_choices': [],
+        }
+
     return render(request, 'learning/paths.html', context)
 
 

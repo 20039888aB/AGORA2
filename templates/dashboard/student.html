@@ -341,6 +341,16 @@
                 <div class="action-desc">View your badges</div>
             </div>
         </a>
+
+        <a href="/content/manager-library/" class="action-btn">
+            <div class="action-icon bg-gradient-to-br from-indigo-500 to-purple-500">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <div class="action-text">
+                <div class="action-title">Manager Content</div>
+                <div class="action-desc">{{ manager_uploaded_content_count|default:0 }} shared items</div>
+            </div>
+        </a>
         
         <a href="{% url 'profile' %}" class="action-btn">
             <div class="action-icon bg-gradient-to-br from-purple-500 to-pink-500">
@@ -423,6 +433,51 @@
                     <span class="text-blue-400 font-bold">{{ learning_hours|default:0 }}</span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Manager Uploaded Content -->
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">Manager Uploaded Content</h2>
+            <a href="/content/manager-library/" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-eye mr-2"></i> View All
+            </a>
+        </div>
+        <div class="course-list">
+            {% for item in recent_manager_uploaded_files %}
+            <div class="course-item">
+                <div class="course-thumbnail">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="course-info">
+                    <div class="course-title">{{ item.title }}</div>
+                    <div class="course-meta">{{ item.file_type }} • Uploaded by {{ item.uploaded_by.get_full_name|default:item.uploaded_by.email }}</div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for link in recent_manager_uploaded_links %}
+            <div class="course-item">
+                <div class="course-thumbnail">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="course-info">
+                    <div class="course-title">{{ link.title }}</div>
+                    <div class="course-meta">{{ link.category }} Link • Shared by {{ link.uploaded_by.get_full_name|default:link.uploaded_by.email }}</div>
+                </div>
+                <a href="{{ link.url }}" target="_blank" rel="noopener" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Open
+                </a>
+            </div>
+            {% endfor %}
+
+            {% if not recent_manager_uploaded_files and not recent_manager_uploaded_links %}
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-folder-open text-4xl mb-4"></i>
+                <p>No manager-shared content yet.</p>
+            </div>
+            {% endif %}
         </div>
     </div>
     

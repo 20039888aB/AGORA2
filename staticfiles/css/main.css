@@ -1,0 +1,8 @@
+/* Global stylesheet loaded by base_enhanced.html */
+
+@import url('./enhanced-colors.css');
+
+html, body {
+    margin: 0;
+    padding: 0;
+}

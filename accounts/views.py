@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q, Count, Avg, Sum
+from django.db import OperationalError, ProgrammingError
 from django.utils import timezone
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -777,8 +778,11 @@ def manager_dashboard(request):
     if not request.user.is_manager_or_above():
         return redirect('dashboard')  # Redirect to appropriate dashboard
     
-    # Get team members with real-time statistics
-    team_members = User.objects.filter(managed_by=request.user).order_by('-last_active_at')
+    # Get organization students with real-time statistics
+    team_members = User.objects.active().filter(
+        organization=request.user.organization,
+        role='STUDENT'
+    ).order_by('-last_active_at', '-created_at')
     
     # Team stats
     total_team_members = team_members.count()
@@ -919,6 +923,27 @@ def manager_dashboard(request):
 
 
 @login_required
+def manager_team_students(request):
+    """Numbered list of students in the manager's organization."""
+    if not request.user.is_manager_or_above():
+        return redirect('dashboard')
+
+    students = User.objects.active().filter(
+        organization=request.user.organization,
+        role='STUDENT'
+    ).order_by('first_name', 'last_name', 'email')
+
+    context = {
+        'user': request.user,
+        'students': students,
+        'total_students': students.count(),
+        'page_title': 'Team Students',
+    }
+
+    return render(request, 'team/members.html', context)
+
+
+@login_required
 def student_dashboard(request):
     """
     Student dashboard with learning-focused metrics
@@ -983,16 +1008,22 @@ def student_dashboard(request):
         if completed_assignments >= 1:
             achievements.append('Assignment Finisher')
 
-        # Get available courses for enrollment (strictly organization-based)
+        # Get available courses for enrollment (only approved courses)
         if request.user.organization:
+            # Only show PUBLISHED courses that have been approved
             org_courses = Course.objects.prefetch_related('documents').filter(
-                organization=request.user.organization
+                organization=request.user.organization,
+                status='PUBLISHED',  # Only approved courses
+                is_active=True
             )
+            
+            # Exclude courses the student is already enrolled in
             available_courses = org_courses.exclude(
                 id__in=enrollments.values_list('course_id', flat=True)
             ).order_by('-created_at')
+            
             logger.debug(
-                "student_dashboard: user=%s organization_id=%s org_courses=%s available_courses=%s",
+                "student_dashboard: user=%s organization_id=%s org_courses=%s available_courses=%s (APPROVED ONLY)",
                 request.user.id,
                 request.user.organization_id,
                 org_courses.count(),
@@ -1006,6 +1037,40 @@ def student_dashboard(request):
             )
 
         recommended_courses = list(available_courses[:3])
+
+        # Manager-uploaded organization content for students
+        try:
+            from content.models import ContentFile, ContentLink
+
+            manager_uploaded_files = ContentFile.objects.filter(
+                organization=request.user.organization,
+                uploaded_by__role='MANAGER',
+                status='READY',
+                access_level='ALL'
+            ).select_related('uploaded_by').order_by('-created_at')
+
+            manager_uploaded_links = ContentLink.objects.filter(
+                organization=request.user.organization,
+                uploaded_by__role='MANAGER',
+                is_active=True,
+                access_level='ALL'
+            ).select_related('uploaded_by').order_by('-created_at')
+        except (ImportError, OperationalError, ProgrammingError):
+            manager_uploaded_files = []
+            manager_uploaded_links = []
+
+        manager_uploaded_content_count = (
+            manager_uploaded_files.count() if hasattr(manager_uploaded_files, 'count') else 0
+        ) + (
+            manager_uploaded_links.count() if hasattr(manager_uploaded_links, 'count') else 0
+        )
+
+        recent_manager_uploaded_files = (
+            manager_uploaded_files[:3] if hasattr(manager_uploaded_files, '__getitem__') else []
+        )
+        recent_manager_uploaded_links = (
+            manager_uploaded_links[:3] if hasattr(manager_uploaded_links, '__getitem__') else []
+        )
         
         # Calculate growth percentages
         thirty_days_ago = timezone.now() - timedelta(days=30)
@@ -1043,6 +1108,9 @@ def student_dashboard(request):
         day_streak = 0
         achievements = []
         recommended_courses = []
+        manager_uploaded_content_count = 0
+        recent_manager_uploaded_files = []
+        recent_manager_uploaded_links = []
         # Fallback growth values
         enrollment_growth = 0
         certificate_growth = 0
@@ -1067,6 +1135,9 @@ def student_dashboard(request):
         'day_streak': day_streak,
         'achievements': achievements,
         'recommended_courses': recommended_courses,
+        'manager_uploaded_content_count': manager_uploaded_content_count,
+        'recent_manager_uploaded_files': recent_manager_uploaded_files,
+        'recent_manager_uploaded_links': recent_manager_uploaded_links,
         'enrollment_growth': enrollment_growth,
         'certificate_growth': certificate_growth,
         'assignment_growth': assignment_growth,

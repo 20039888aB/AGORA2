@@ -248,16 +248,6 @@
     
     <!-- Quick Actions -->
     <div class="quick-actions">
-        <a href="/team/assign/" class="action-btn">
-            <div class="action-icon bg-gradient-to-br from-green-500 to-emerald-500">
-                <i class="fas fa-user-plus"></i>
-            </div>
-            <div class="action-text">
-                <div class="action-title">Assign Training</div>
-                <div class="action-desc">Assign courses to team members</div>
-            </div>
-        </a>
-        
         <a href="/team/performance/" class="action-btn">
             <div class="action-icon bg-gradient-to-br from-blue-500 to-cyan-500">
                 <i class="fas fa-chart-line"></i>
@@ -265,16 +255,6 @@
             <div class="action-text">
                 <div class="action-title">Performance Review</div>
                 <div class="action-desc">Track team progress</div>
-            </div>
-        </a>
-        
-        <a href="/team/schedule/" class="action-btn">
-            <div class="action-icon bg-gradient-to-br from-purple-500 to-pink-500">
-                <i class="fas fa-calendar"></i>
-            </div>
-            <div class="action-text">
-                <div class="action-title">Training Calendar</div>
-                <div class="action-desc">Schedule training sessions</div>
             </div>
         </a>
         
@@ -311,7 +291,7 @@
     <!-- Team Metrics -->
     <div class="manager-grid mt-8">
         <!-- Total Team Members -->
-        <div class="team-card">
+        <a href="/team/members/" class="team-card block">
             <div class="team-icon bg-gradient-to-br from-orange-500 to-red-500">
                 <i class="fas fa-users"></i>
             </div>
@@ -323,8 +303,11 @@
                     <span class="text-gray-400">Active Members</span>
                     <span class="text-green-400 font-bold">{{ active_team_members }}</span>
                 </div>
+                <div class="text-sm text-orange-300 mt-2">
+                    <i class="fas fa-arrow-right mr-1"></i> View Students List
+                </div>
             </div>
-        </div>
+        </a>
         
         <!-- Training Progress -->
         <div class="team-card">

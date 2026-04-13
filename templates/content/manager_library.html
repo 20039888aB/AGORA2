@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Manager Uploaded Content{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 pt-24 pb-8">
+    <div class="glass p-6 mb-6">
+        <h1 class="text-2xl font-bold text-white mb-2">Manager Uploaded Content</h1>
+        <p class="text-gray-300">Files and links shared by managers in your organization.</p>
+        <div class="text-sm text-gray-400 mt-2">
+            Files: {{ manager_files_count }} • Links: {{ manager_links_count }}
+        </div>
+    </div>
+
+    <div class="glass p-6 mb-6">
+        <h2 class="text-xl font-semibold text-white mb-4">Shared Files</h2>
+        <div class="space-y-3">
+            {% for item in manager_files %}
+            <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                <div>
+                    <div class="text-white font-medium">{{ item.title }}</div>
+                    <div class="text-sm text-gray-400">{{ item.file_type }} • {{ item.file_size_display }} • By {{ item.uploaded_by.get_full_name|default:item.uploaded_by.email }}</div>
+                </div>
+                {% if item.file %}
+                <a href="{{ item.file.url }}" target="_blank" rel="noopener" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Open
+                </a>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">No files shared yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="glass p-6">
+        <h2 class="text-xl font-semibold text-white mb-4">Shared Links</h2>
+        <div class="space-y-3">
+            {% for link in manager_links %}
+            <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                <div>
+                    <div class="text-white font-medium">{{ link.title }}</div>
+                    <div class="text-sm text-gray-400">{{ link.category }} • By {{ link.uploaded_by.get_full_name|default:link.uploaded_by.email }}</div>
+                    {% if link.description %}
+                    <div class="text-sm text-gray-300 mt-1">{{ link.description }}</div>
+                    {% endif %}
+                </div>
+                <a href="{{ link.url }}" target="_blank" rel="noopener" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Visit Link
+                </a>
+            </div>
+            {% empty %}
+            <div class="text-center text-gray-400 py-8">No links shared yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
